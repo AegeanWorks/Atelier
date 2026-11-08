@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "name": "atelier",
+  "test_command": "npm test",
+  "topics": [
+    "aikit",
+    "aikit-integrated",
+    "source-available",
+    "aegean-license",
+    "commercial-license",
+    "developer-tools",
+    "ai-agent",
+    "code-editor",
+    "local-first",
+    "react",
+    "vite",
+    "typescript"
+  ],
+  "gates": {},
+  "ui_required": false,
+  "mechanics_required": false,
+  "created": "2026-11-08"
+}
