@@ -1,6 +1,7 @@
-import { randomUUID } from "node:crypto";
+﻿import { randomUUID } from "node:crypto";
 import { AtelierError } from "./config.js";
 import { runAgent } from "./agent.js";
+import { FULL_PROFILE } from "./eval/harness.js";
 import { appendMessage, type DbHandle } from "./db.js";
 import { catalogFor } from "./providers/catalog.js";
 import { createPlan } from "./plans.js";
@@ -26,6 +27,8 @@ export interface ExecuteOptions {
   /** `explicitAsk` is true when a permission rule said to ask: no automatic approver may say yes to that. */
   approve?: (call: { id: string; name: string; input: unknown }, resource: string, action: string, explicitAsk: boolean) => boolean | Promise<boolean>;
   adapter?: import("./providers/types.js").ProviderAdapter;
+  /** Caps the model turns of this run below the profile's default. */
+  maxSteps?: number;
 }
 
 export async function executeRun(handle: DbHandle, runId: string, options: ExecuteOptions = {}): Promise<void> {
@@ -67,6 +70,7 @@ export async function executeRun(handle: DbHandle, runId: string, options: Execu
     const outcome = await runAgent(handle, config, secrets, run, providerId, model, controller.signal, {
       ...(options.approve === undefined ? {} : { approve: options.approve }),
       ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
+      ...(options.maxSteps === undefined ? {} : { profile: { ...FULL_PROFILE, maxSteps: options.maxSteps } }),
     });
     if (outcome.status === "finished") {
       const message = appendMessage(handle, run.session_id, "assistant", outcome.text, null);

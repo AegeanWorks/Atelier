@@ -66,4 +66,16 @@ describe("CLI parsing", () => {
     expect(HELP).toMatch(/Agent Client Protocol/);
     expect(parse(["acp"]).command).toBe("acp");
   });
+
+  it("parses and validates --max-turns", () => {
+    expect(HELP).toContain("--max-turns");
+    expect(HELP).toMatch(/Exit codes:[\s\S]*0 {2}the command succeeded[\s\S]*2 {2}invalid usage/);
+    expect(parse(["run", "x", "--max-turns", "5"]).maxTurns).toBe(5);
+    expect(parse(["run", "x", "--max-turns=7"]).maxTurns).toBe(7);
+    expect(parse(["run", "x"]).maxTurns).toBeNull();
+    for (const bad of ["0", "-1", "abc", "1.5", "201"]) {
+      expect(validateRun(parse(["run", "x", `--max-turns=${bad}`]))?.what, bad).toMatch(/--max-turns/);
+    }
+    expect(validateRun(parse(["run", "x", "--max-turns", "3"]))).toBeNull();
+  });
 });

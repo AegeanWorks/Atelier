@@ -178,6 +178,7 @@ async function runCli(options: Options): Promise<number> {
       continueLatest: options.continue,
       images: options.images,
       autoApprove: options.yes,
+      ...(options.maxTurns === null ? {} : { maxTurns: options.maxTurns }),
     });
     if (options.json) {
       console.log(JSON.stringify(result));

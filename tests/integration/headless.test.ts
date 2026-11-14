@@ -146,4 +146,18 @@ describe("headless runs", () => {
       db.close();
     }
   });
+
+  it("stops at --max-turns with a blocked run that names the cap", async () => {
+    const home = homeWithFixture();
+    const workspace = tempDir("atelier-headless-ws-");
+    const call = (id: string, path: string) => ({ events: [{ type: "tool-call" as const, id, name: "read_file", input: { path } }, { type: "finish" as const, reason: "tool_calls" as const }] });
+    const adapter = new FixtureProviderAdapter({
+      provider: "fixture",
+      models: [{ id: "fixture-model" }],
+      responses: [call("r1", "a.txt"), call("r2", "b.txt"), call("r3", "c.txt"), { events: [{ type: "text-delta", text: "late" }, { type: "finish", reason: "stop" }] }],
+    });
+    const result = await runHeadless({ homeDir: home, workspace, prompt: "read things", maxTurns: 2, adapter });
+    expect(result.status).toBe("blocked");
+    expect(result.reason).toBe("step cap reached");
+  });
 });

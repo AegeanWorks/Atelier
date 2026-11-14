@@ -19,6 +19,7 @@ export interface HeadlessOptions {
   continueLatest?: boolean;
   images?: string[];
   autoApprove?: boolean;
+  maxTurns?: number;
   adapter?: ProviderAdapter;
 }
 
@@ -110,6 +111,7 @@ export async function runHeadless(options: HeadlessOptions): Promise<HeadlessRes
     const autoApprove = options.autoApprove === true;
     await executeRun(handle, active.id, {
       ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
+      ...(options.maxTurns === undefined ? {} : { maxSteps: options.maxTurns }),
       approve: (_call, resource, action, explicitAsk) => {
         // --yes approves what the run asks for, except edits of the agent's own configuration and calls a permission
         // rule said to ask about: those need a person.

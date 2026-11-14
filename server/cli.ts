@@ -4,7 +4,7 @@ export const HELP = `atelier ${VERSION} - local agent workspace
 
 Usage:
   atelier [options]
-  atelier run <prompt> [--mode plan|build] [--session <id> | --continue] [--image <file>]... [--yes] [--json]
+  atelier run <prompt> [--mode plan|build] [--session <id> | --continue] [--image <file>]... [--max-turns <n>] [--yes] [--json]
   atelier sessions [--json]
   atelier acp
   atelier --check
@@ -18,6 +18,7 @@ Options:
   --session <id>   continue an existing conversation
   --continue, -c   continue the most recent conversation
   --image <file>   attach a png, jpeg, gif or webp image (repeatable, at most 4)
+  --max-turns <n>  stop a run after n model turns (1 to 200; the default is 40)
   --yes            approve edits and commands for a headless build run
   --check          print runtime and path checks, then exit
   --doctor         print state and database diagnostics, then exit
@@ -27,6 +28,11 @@ acp speaks the Agent Client Protocol on stdin and stdout so an editor such as Ze
 it prints nothing else on stdout and logs to stderr.
   --help, -h       show this help
   --version        print the version
+
+Exit codes:
+  0  the command succeeded (a run finished)
+  1  the command failed (a run was blocked, hit its turn cap or hit an error)
+  2  invalid usage or configuration; nothing was run
 
 Environment:
   ATELIER_HOME       state directory (default ~/.atelier)
@@ -51,6 +57,8 @@ export interface Options {
   continue: boolean;
   images: string[];
   yes: boolean;
+  /** NaN when the value was not a number, so validateRun can name it. */
+  maxTurns: number | null;
 }
 
 export function parse(argv: string[]): Options {
@@ -70,6 +78,7 @@ export function parse(argv: string[]): Options {
     continue: false,
     images: [],
     yes: false,
+    maxTurns: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index] ?? "";
@@ -93,6 +102,10 @@ export function parse(argv: string[]): Options {
       options.images.push(next);
       index += 1;
     } else if (arg.startsWith("--image=")) options.images.push(arg.slice("--image=".length));
+    else if (arg === "--max-turns" && next !== undefined) {
+      options.maxTurns = Number(next);
+      index += 1;
+    } else if (arg.startsWith("--max-turns=")) options.maxTurns = Number(arg.slice("--max-turns=".length));
     else if (arg === "--yes" || arg === "-y") options.yes = true;
     else if (arg === "--port" && next !== undefined) {
       options.port = next;
@@ -144,6 +157,13 @@ export function validateRun(options: Options): ValidationError | null {
       what: `unknown mode '${options.mode}'.`,
       why: "modes are plan (read-only) and build (writes need approval).",
       fix: "pass `--mode plan` or `--mode build`.",
+    };
+  }
+  if (options.maxTurns !== null && (!Number.isInteger(options.maxTurns) || options.maxTurns < 1 || options.maxTurns > 200)) {
+    return {
+      what: "--max-turns must be a whole number from 1 to 200.",
+      why: "it caps how many model turns one run may take.",
+      fix: "pass for example `--max-turns 20`, or drop it for the default of 40.",
     };
   }
   if (options.yes && options.mode !== "build") {
