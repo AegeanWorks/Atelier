@@ -1,55 +1,17 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-host-guard",
+    "task_id": "atelier-hide-delegates",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794661506.8410127,
-    "owner": "claude:host",
-    "started_by": "claude:host",
+    "updated_at": 1794674734.6667376,
+    "owner": "claude:delegates",
+    "started_by": "claude:delegates",
     "continuations": [],
-    "completed_at": 1794661519.5429306
+    "completed_at": 1794674740.2599747
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-skill-scaffold",
-      "phase": "suspended",
-      "phase_num": 4,
-      "description": "Task 'atelier-skill-scaffold' suspended: Skill scaffolding is built and verified (Phase 4 passed, 10/10 gates) but not delivered: commit delivery is not authorized because the host restricts git to explicit user requests and none was made (PRINCIPLE-018 R1). Resume to complete once the user asks for a commit.",
-      "status": "suspended",
-      "timestamp": 1794657205.4952447,
-      "timestamp_str": "2026-11-14 14:53:25",
-      "agent": "claude:scaffold"
-    },
-    {
-      "task_id": "atelier-review-hardening",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: fix four defects found reviewing the working tree against the single starting commit: mentions bypassed the secrets policy, the path jail ignored symlinks and junctions, deny rules were dodged by path or whitespace or case spelling, and image blobs were written non-atomically and trusted forever",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794659250.2261271,
-      "timestamp_str": "2026-11-14 15:27:30",
-      "agent": "claude:review",
-      "impact_assessment": {
-        "why": "Review of the uncommitted tree found security and crash-safety gaps in features added this session; a deny rule that can be spelled around and a jail that links walk through are worse than no rule",
-        "benefits": "Secrets never reach a provider through a mention, links cannot leak files from outside the workspace, deny rules hold, and a crash cannot leave a corrupt image that is served forever",
-        "risks": "contract: resolveInside now refuses link escapes so a workspace that relies on an outward symlink loses that access, rules now match normalised spellings; dependency: none; concurrency: image write uses temp, fsync and rename; state: blob files are verified by content hash on load",
-        "mitigation": "Eight failing tests written first and confirmed failing for the right reasons, the existing 305 server and unit tests still pass, realpath cost measured with interleaved paired runs, fail closed when a real path cannot be resolved"
-      },
-      "plan_digest": "99fb87115bb58fe17e1a0cf092eb2b87f29a5788ec6b3c01db5f6aa50982e4ab"
-    },
-    {
-      "task_id": "atelier-review-hardening",
-      "phase": "suspended",
-      "phase_num": 2,
-      "description": "Task 'atelier-review-hardening' suspended: Review hardening is built and verified (Phase 4 passed, 10/10 gates) but not delivered: commit delivery is not authorized because the host restricts git to explicit user requests and none was made (PRINCIPLE-018 R1). Resume to complete once the user asks for a commit.",
-      "status": "suspended",
-      "timestamp": 1794659384.8465612,
-      "timestamp_str": "2026-11-14 15:29:44",
-      "agent": "claude:review"
-    },
     {
       "task_id": "atelier-review-hardening",
       "phase": "resumed",
@@ -281,6 +243,57 @@
       "timestamp": 1794661519.542934,
       "timestamp_str": "2026-11-14 16:05:19",
       "agent": "claude:host",
+      "delivery": {
+        "roots": [
+          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-hide-delegates",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan: hide the internal helper conversations a delegate call creates: DELEGATE_SESSIONS_SQL in server/db.ts, excluded from listSessions for the sidebar, boot, archived view, atelier sessions and run --continue, and from both search queries; still readable by id",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794674614.7992394,
+      "timestamp_str": "2026-11-14 19:43:34",
+      "agent": "claude:delegates",
+      "impact_assessment": {
+        "why": "Delegate helper conversations cluttered the sidebar and search, and atelier run --continue could pick one as the most recent conversation",
+        "benefits": "A conversation list that only shows what the user started, and a continue command that cannot attach to an internal session",
+        "risks": "contract: GET /api/sessions and search no longer return delegate sessions, getSession is unchanged; dependency: none; concurrency: read-only query change; state: none, no schema change",
+        "mitigation": "Identified by a run with a parent run id, which ordinary retry and fork runs never have, so normal conversations stay visible, five tests first including that guard, full suite of 489 tests run"
+      },
+      "plan_digest": "094fe7e57c818f04734bb04ec5390ffd2475c5923758f3902ace45cbd6f6120e"
+    },
+    {
+      "task_id": "atelier-hide-delegates",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "[1/1] Delegate conversations hidden: DELEGATE_SESSIONS_SQL, listSessions, both search queries, docs. 5 new integration tests written first (3 failing for the right reasons, 2 guards passing), 489 tests across 100 files pass, tsc clean, 10/10 gates first run. No UI file changed, the sidebar simply receives fewer rows. checklists: passed",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794674734.6667376,
+      "timestamp_str": "2026-11-14 19:45:34",
+      "agent": "claude:delegates",
+      "checklists": "passed",
+      "handoff": {
+        "state": "10/10 gates",
+        "next": "strict delivery needs the user to review the UI",
+        "open": "UI task review"
+      }
+    },
+    {
+      "task_id": "atelier-hide-delegates",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-hide-delegates' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794674740.2599766,
+      "timestamp_str": "2026-11-14 19:45:40",
+      "agent": "claude:delegates",
       "delivery": {
         "roots": [
           "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
