@@ -1,0 +1,27 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "events": [
+      { "type": "tool-call", "id": "c1", "name": "bash", "input": { "command": "node test.mjs" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "tool-call", "id": "c2", "name": "read_file", "input": { "path": "app.mjs" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "tool-call", "id": "c3", "name": "edit_file", "input": { "path": "app.mjs", "oldString": "0) - 1", "newString": "0)" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "tool-call", "id": "c4", "name": "bash", "input": { "command": "node test.mjs" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "text-delta", "text": "Green." },
+      { "type": "usage", "promptTokens": 240, "completionTokens": 4 },
+      { "type": "finish", "reason": "stop" }
+    ] }
+  ]
+}

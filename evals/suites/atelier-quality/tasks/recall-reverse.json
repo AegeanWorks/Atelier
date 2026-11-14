@@ -1,0 +1,21 @@
+{
+  "id": "recall-reverse",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "",
+  "provider": "fixture",
+  "fixture": "fixtures/recall-reverse.json",
+  "qualityChecks": [
+    {
+      "type": "exact",
+      "value": "jilo"
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 16,
+  "promptFile": "prompts/recall-reverse.txt"
+}

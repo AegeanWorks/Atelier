@@ -1,0 +1,16 @@
+{
+  "id": "r0-real",
+  "suite": "atelier-real",
+  "split": "test",
+  "mode": "agent",
+  "provider": "configured",
+  "prompt": "Read notes.txt and answer the vault key.",
+  "starter": {
+    "notes.txt": "vault key: 42\n"
+  },
+  "acceptance": {
+    "answerIncludes": "42",
+    "maxChangedFiles": 0
+  },
+  "tags": ["release", "real-provider"]
+}

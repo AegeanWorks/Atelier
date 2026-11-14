@@ -1,0 +1,21 @@
+{
+  "id": "recall-latest-status",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "",
+  "provider": "fixture",
+  "fixture": "fixtures/recall-latest-status.json",
+  "qualityChecks": [
+    {
+      "type": "exact",
+      "value": "delayed"
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 16,
+  "promptFile": "prompts/recall-latest-status.txt"
+}

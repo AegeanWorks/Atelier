@@ -1,0 +1,20 @@
+{
+  "id": "code-comprehension",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "Read this JavaScript function:\nfunction score(xs) {\n  let total = 0;\n  for (const x of xs) total += x % 2 === 0 ? x : -x;\n  return total;\n}\nWhat does score([1, 2, 3, 4]) return? Reply with only the number.",
+  "provider": "fixture",
+  "fixture": "fixtures/code-comprehension.json",
+  "qualityChecks": [
+    {
+      "type": "exact",
+      "value": "2"
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 16
+}

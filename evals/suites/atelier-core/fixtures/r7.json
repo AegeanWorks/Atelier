@@ -1,0 +1,19 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "events": [
+      { "type": "tool-call", "id": "bad", "name": "admin.deleteDatabase", "input": {} },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "tool-call", "id": "good", "name": "read_file", "input": { "path": "notes.txt" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "text-delta", "text": "The vault key is 42." },
+      { "type": "usage", "promptTokens": 90, "completionTokens": 7 },
+      { "type": "finish", "reason": "stop" }
+    ] }
+  ]
+}

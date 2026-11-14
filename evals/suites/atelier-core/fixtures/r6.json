@@ -1,0 +1,14 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "events": [{ "type": "tool-call", "id": "c1", "name": "read_file", "input": { "path": "notes.txt" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "c2", "name": "read_file", "input": { "path": "notes.txt" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "c3", "name": "read_file", "input": { "path": "notes.txt" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "c4", "name": "read_file", "input": { "path": "notes.txt" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "c5", "name": "read_file", "input": { "path": "notes.txt" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "c6", "name": "read_file", "input": { "path": "notes.txt" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "c7", "name": "read_file", "input": { "path": "notes.txt" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "c8", "name": "read_file", "input": { "path": "notes.txt" } }, { "type": "finish", "reason": "tool_calls" }] }
+  ]
+}

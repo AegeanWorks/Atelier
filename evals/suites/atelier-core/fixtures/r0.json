@@ -1,0 +1,15 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "events": [
+      { "type": "tool-call", "id": "c0", "name": "read_file", "input": { "path": "notes.txt" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "text-delta", "text": "42" },
+      { "type": "usage", "promptTokens": 60, "completionTokens": 1 },
+      { "type": "finish", "reason": "stop" }
+    ] }
+  ]
+}

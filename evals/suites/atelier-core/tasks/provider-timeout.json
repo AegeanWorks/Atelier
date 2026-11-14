@@ -1,0 +1,16 @@
+{
+  "id": "provider-timeout",
+  "suite": "atelier-core",
+  "split": "test",
+  "mode": "agent",
+  "prompt": "Answer after the provider recovers.",
+  "starter": {
+    "notes.txt": "vault key: 42\n"
+  },
+  "fixture": "fixtures/provider-timeout.json",
+  "acceptance": {
+    "expectStatus": "blocked",
+    "maxChangedFiles": 0
+  },
+  "tags": ["recovery", "provider"]
+}

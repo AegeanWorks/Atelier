@@ -1,0 +1,16 @@
+{
+  "id": "r8-failover",
+  "suite": "atelier-real",
+  "split": "test",
+  "mode": "agent",
+  "provider": "configured",
+  "prompt": "Read notes.txt and answer the vault key after the provider failover.",
+  "starter": {
+    "notes.txt": "vault key: 42\n"
+  },
+  "acceptance": {
+    "answerIncludes": "42",
+    "maxChangedFiles": 0
+  },
+  "tags": ["release", "real-provider", "failover"]
+}

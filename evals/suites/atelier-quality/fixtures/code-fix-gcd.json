@@ -1,0 +1,28 @@
+{
+  "provider": "fixture",
+  "models": [
+    {
+      "id": "fixture-model",
+      "name": "Fixture"
+    }
+  ],
+  "responses": [
+    {
+      "events": [
+        {
+          "type": "text-delta",
+          "text": "function gcd(a, b) {\n  while (b !== 0) {\n    const t = a % b;\n    a = b;\n    b = t;\n  }\n  return a;\n}"
+        },
+        {
+          "type": "usage",
+          "promptTokens": 0,
+          "completionTokens": 26
+        },
+        {
+          "type": "finish",
+          "reason": "stop"
+        }
+      ]
+    }
+  ]
+}

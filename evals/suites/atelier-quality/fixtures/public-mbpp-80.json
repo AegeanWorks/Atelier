@@ -1,0 +1,28 @@
+{
+  "provider": "fixture",
+  "models": [
+    {
+      "id": "fixture-model",
+      "name": "Fixture"
+    }
+  ],
+  "responses": [
+    {
+      "events": [
+        {
+          "type": "text-delta",
+          "text": "function tetrahedralNumber(n) {\n  return (n * (n + 1) * (n + 2)) / 6;\n}"
+        },
+        {
+          "type": "usage",
+          "promptTokens": 0,
+          "completionTokens": 18
+        },
+        {
+          "type": "finish",
+          "reason": "stop"
+        }
+      ]
+    }
+  ]
+}

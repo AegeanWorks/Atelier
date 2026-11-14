@@ -1,0 +1,19 @@
+Here is a delivery log, oldest first. A later line replaces an earlier one for the same parcel.
+01. P-410 is packed.
+02. P-417 is shipped.
+03. P-410 is shipped.
+04. P-424 is packed.
+05. P-410 is delayed.
+06. P-417 is delivered.
+07. P-424 is shipped.
+08. P-410 is shipped.
+09. P-431 is packed.
+10. P-410 is delayed.
+11. P-424 is delayed.
+12. P-431 is shipped.
+13. P-410 is delivered.
+14. P-431 is delayed.
+15. P-424 is delivered.
+16. P-410 is delayed.
+
+What is the latest status of parcel P-410? Reply with only the status.

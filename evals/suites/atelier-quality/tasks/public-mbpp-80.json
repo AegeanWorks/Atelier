@@ -1,0 +1,45 @@
+{
+  "id": "public-mbpp-80",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "Write a JavaScript function named tetrahedralNumber that takes a positive integer n and returns the nth tetrahedral number. Reply with code only.",
+  "provider": "fixture",
+  "fixture": "fixtures/public-mbpp-80.json",
+  "qualityChecks": [
+    {
+      "type": "jsTests",
+      "entry": "tetrahedralNumber",
+      "cases": [
+        {
+          "args": [
+            5
+          ],
+          "expect": 35
+        },
+        {
+          "args": [
+            6
+          ],
+          "expect": 56
+        },
+        {
+          "args": [
+            7
+          ],
+          "expect": 84
+        }
+      ]
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 512,
+  "source": {
+    "dataset": "MBPP",
+    "id": "MBPP/80",
+    "license": "CC-BY-4.0"
+  }
+}

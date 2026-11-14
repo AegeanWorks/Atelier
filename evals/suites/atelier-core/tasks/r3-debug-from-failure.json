@@ -1,0 +1,19 @@
+{
+  "id": "r3-debug-from-failure",
+  "suite": "atelier-core",
+  "split": "dev",
+  "mode": "agent",
+  "prompt": "Run node test.mjs, read app.mjs, fix the off-by-one, and re-run the test.",
+  "starter": {
+    "app.mjs": "export const total = (xs) => xs.reduce((a, b) => a + b, 0) - 1;\n",
+    "test.mjs": "import { total } from './app.mjs';\nif (total([1, 2, 3]) !== 6) throw new Error('total failed');\nconsole.log('ok');\n"
+  },
+  "fixture": "fixtures/r3.json",
+  "checks": [{ "command": "node test.mjs", "timeoutMs": 5000 }],
+  "protected": ["test.mjs"],
+  "acceptance": {
+    "maxChangedFiles": 1,
+    "mustPass": ["node test.mjs"]
+  },
+  "tags": ["debugging", "fail-then-pass"]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "code-fix-gcd",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "This JavaScript function has a bug:\nfunction gcd(a, b) {\n  while (b !== 0) {\n    const t = a % b;\n    a = b;\n    b = t;\n  }\n  return b;\n}\nIt should return the greatest common divisor of two non-negative integers. Fix the bug. Reply with code only, keeping the function name gcd.",
+  "provider": "fixture",
+  "fixture": "fixtures/code-fix-gcd.json",
+  "qualityChecks": [
+    {
+      "type": "jsTests",
+      "entry": "gcd",
+      "cases": [
+        {
+          "args": [
+            12,
+            18
+          ],
+          "expect": 6
+        },
+        {
+          "args": [
+            17,
+            5
+          ],
+          "expect": 1
+        },
+        {
+          "args": [
+            0,
+            9
+          ],
+          "expect": 9
+        },
+        {
+          "args": [
+            100,
+            75
+          ],
+          "expect": 25
+        }
+      ]
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 512
+}

@@ -1,0 +1,14 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "events": [
+      { "type": "tool-call", "id": "c1", "name": "edit_file", "input": { "path": "test.mjs", "oldString": "throw new Error('must not edit tests');", "newString": "console.log('patched');" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "text-delta", "text": "Patched the test." },
+      { "type": "finish", "reason": "stop" }
+    ] }
+  ]
+}

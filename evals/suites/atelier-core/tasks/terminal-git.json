@@ -1,0 +1,17 @@
+{
+  "id": "terminal-git",
+  "suite": "atelier-core",
+  "split": "test",
+  "mode": "agent",
+  "prompt": "Initialize a git repository, configure a local user, add notes.txt, and commit it.",
+  "starter": {
+    "notes.txt": "vault key: 42\n"
+  },
+  "fixture": "fixtures/terminal-git.json",
+  "checks": [{ "command": "git log --oneline", "timeoutMs": 5000 }],
+  "acceptance": {
+    "maxChangedFiles": 0,
+    "mustPass": ["git log --oneline"]
+  },
+  "tags": ["terminal", "git"]
+}

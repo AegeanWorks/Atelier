@@ -1,0 +1,16 @@
+{
+  "id": "release-smoke",
+  "suite": "atelier-core",
+  "split": "test",
+  "mode": "agent",
+  "prompt": "Read notes.txt and answer the vault key.",
+  "starter": {
+    "notes.txt": "vault key: 42\n"
+  },
+  "fixture": "fixtures/r0.json",
+  "acceptance": {
+    "answerIncludes": "42",
+    "maxChangedFiles": 0
+  },
+  "tags": ["release", "read-only"]
+}

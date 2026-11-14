@@ -1,0 +1,21 @@
+{
+  "id": "recall-register",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "",
+  "provider": "fixture",
+  "fixture": "fixtures/recall-register.json",
+  "qualityChecks": [
+    {
+      "type": "exact",
+      "value": "6732"
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 16,
+  "promptFile": "prompts/recall-register.txt"
+}

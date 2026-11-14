@@ -1,0 +1,12 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "events": [{ "type": "tool-call", "id": "g1", "name": "bash", "input": { "command": "git init" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "g2", "name": "bash", "input": { "command": "git config user.email test@example.com" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "g3", "name": "bash", "input": { "command": "git config user.name Test" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "g4", "name": "bash", "input": { "command": "git add notes.txt" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "tool-call", "id": "g5", "name": "bash", "input": { "command": "git commit -m init" } }, { "type": "finish", "reason": "tool_calls" }] },
+    { "events": [{ "type": "text-delta", "text": "Committed." }, { "type": "usage", "promptTokens": 120, "completionTokens": 2 }, { "type": "finish", "reason": "stop" }] }
+  ]
+}

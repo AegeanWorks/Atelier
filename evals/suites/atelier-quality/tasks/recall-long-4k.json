@@ -1,0 +1,24 @@
+{
+  "id": "recall-long-4k",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "",
+  "provider": "fixture",
+  "fixture": "fixtures/recall-long-4k.json",
+  "qualityChecks": [
+    {
+      "type": "exact",
+      "value": "VAULT-4510"
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 16,
+  "promptFile": "prompts/recall-long-4k.txt",
+  "budgets": {
+    "wallMs": 120000
+  }
+}

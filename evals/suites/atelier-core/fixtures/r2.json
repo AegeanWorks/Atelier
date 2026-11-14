@@ -1,0 +1,19 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "events": [
+      { "type": "tool-call", "id": "c1", "name": "edit_file", "input": { "path": "a.mjs", "oldString": "AMOUNT = 1", "newString": "AMOUNT = 2" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "tool-call", "id": "c2", "name": "edit_file", "input": { "path": "b.mjs", "oldString": "() => 1", "newString": "() => 2" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "text-delta", "text": "Both files updated." },
+      { "type": "usage", "promptTokens": 180, "completionTokens": 5 },
+      { "type": "finish", "reason": "stop" }
+    ] }
+  ]
+}

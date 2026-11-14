@@ -1,0 +1,20 @@
+{
+  "id": "r2-multi-file",
+  "suite": "atelier-core",
+  "split": "dev",
+  "mode": "agent",
+  "prompt": "Change the shared amount from 1 to 2 in both a.mjs and b.mjs, then run node test.mjs.",
+  "starter": {
+    "a.mjs": "export const AMOUNT = 1;\n",
+    "b.mjs": "export const get = () => 1;\n",
+    "test.mjs": "import { get } from './b.mjs';\nif (get() !== 2) throw new Error('get failed');\nconsole.log('ok');\n"
+  },
+  "fixture": "fixtures/r2.json",
+  "checks": [{ "command": "node test.mjs", "timeoutMs": 5000 }],
+  "protected": ["test.mjs"],
+  "acceptance": {
+    "maxChangedFiles": 2,
+    "mustPass": ["node test.mjs"]
+  },
+  "tags": ["multi-file", "editing"]
+}

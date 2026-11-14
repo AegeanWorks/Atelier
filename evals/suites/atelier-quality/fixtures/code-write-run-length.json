@@ -1,0 +1,28 @@
+{
+  "provider": "fixture",
+  "models": [
+    {
+      "id": "fixture-model",
+      "name": "Fixture"
+    }
+  ],
+  "responses": [
+    {
+      "events": [
+        {
+          "type": "text-delta",
+          "text": "function runLength(s) {\n  let out = \"\";\n  for (let i = 0; i < s.length;) {\n    let j = i;\n    while (j < s.length && s[j] === s[i]) j += 1;\n    out += s[i] + (j - i);\n    i = j;\n  }\n  return out;\n}"
+        },
+        {
+          "type": "usage",
+          "promptTokens": 0,
+          "completionTokens": 50
+        },
+        {
+          "type": "finish",
+          "reason": "stop"
+        }
+      ]
+    }
+  ]
+}

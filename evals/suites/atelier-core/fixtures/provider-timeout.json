@@ -1,0 +1,7 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "error": { "code": "PROVIDER_TIMEOUT", "message": "simulated provider timeout" } }
+  ]
+}

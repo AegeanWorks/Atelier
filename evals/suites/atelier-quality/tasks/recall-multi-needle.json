@@ -1,0 +1,21 @@
+{
+  "id": "recall-multi-needle",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "",
+  "provider": "fixture",
+  "fixture": "fixtures/recall-multi-needle.json",
+  "qualityChecks": [
+    {
+      "type": "exact",
+      "value": "VAULT-2222"
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 16,
+  "promptFile": "prompts/recall-multi-needle.txt"
+}

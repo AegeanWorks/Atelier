@@ -1,0 +1,27 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "events": [
+      { "type": "tool-call", "id": "d1", "name": "delegate", "input": { "brief": "Summarize alpha." } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "text-delta", "text": "chunk alpha" },
+      { "type": "finish", "reason": "stop" }
+    ] },
+    { "events": [
+      { "type": "tool-call", "id": "d2", "name": "delegate", "input": { "brief": "Summarize beta." } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "text-delta", "text": "chunk beta" },
+      { "type": "finish", "reason": "stop" }
+    ] },
+    { "events": [
+      { "type": "text-delta", "text": "The vault key is 42." },
+      { "type": "usage", "promptTokens": 150, "completionTokens": 7 },
+      { "type": "finish", "reason": "stop" }
+    ] }
+  ]
+}

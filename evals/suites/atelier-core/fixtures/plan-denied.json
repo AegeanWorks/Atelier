@@ -1,0 +1,15 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "events": [
+      { "type": "tool-call", "id": "c1", "name": "write_file", "input": { "path": "should-not-exist.txt", "content": "no" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "text-delta", "text": "Plan mode refused the write." },
+      { "type": "usage", "promptTokens": 40, "completionTokens": 6 },
+      { "type": "finish", "reason": "stop" }
+    ] }
+  ]
+}

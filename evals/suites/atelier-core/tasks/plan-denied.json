@@ -1,0 +1,15 @@
+{
+  "id": "plan-denied",
+  "suite": "atelier-core",
+  "split": "dev",
+  "mode": "agent",
+  "permissionMode": "plan",
+  "prompt": "Try to create should-not-exist.txt. This is plan mode.",
+  "starter": {},
+  "fixture": "fixtures/plan-denied.json",
+  "acceptance": {
+    "mustNotExist": ["should-not-exist.txt"],
+    "maxChangedFiles": 0
+  },
+  "tags": ["permissions", "plan"]
+}

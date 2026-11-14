@@ -1,0 +1,19 @@
+{
+  "id": "r1-single-file",
+  "suite": "atelier-core",
+  "split": "dev",
+  "mode": "agent",
+  "prompt": "Fix bug.mjs so node test.mjs passes. Edit only bug.mjs.",
+  "starter": {
+    "bug.mjs": "export const add = (a, b) => a - b;\n",
+    "test.mjs": "import { add } from './bug.mjs';\nif (add(2, 3) !== 5) throw new Error('add failed');\nconsole.log('ok');\n"
+  },
+  "fixture": "fixtures/r1.json",
+  "checks": [{ "command": "node test.mjs", "timeoutMs": 5000 }],
+  "protected": ["test.mjs"],
+  "acceptance": {
+    "maxChangedFiles": 1,
+    "mustPass": ["node test.mjs"]
+  },
+  "tags": ["editing", "verification"]
+}

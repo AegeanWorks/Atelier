@@ -1,0 +1,24 @@
+{
+  "id": "recall-long-8k",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "",
+  "provider": "fixture",
+  "fixture": "fixtures/recall-long-8k.json",
+  "qualityChecks": [
+    {
+      "type": "exact",
+      "value": "VAULT-8823"
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 16,
+  "promptFile": "prompts/recall-long-8k.txt",
+  "budgets": {
+    "wallMs": 120000
+  }
+}

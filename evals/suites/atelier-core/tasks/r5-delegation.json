@@ -1,0 +1,16 @@
+{
+  "id": "r5-delegation",
+  "suite": "atelier-core",
+  "split": "dev",
+  "mode": "agent",
+  "prompt": "Delegate a read-only brief for alpha, then one for beta, then answer the vault key.",
+  "starter": {
+    "notes.txt": "vault key: 42\n"
+  },
+  "fixture": "fixtures/r5.json",
+  "acceptance": {
+    "answerIncludes": "42",
+    "maxChangedFiles": 0
+  },
+  "tags": ["delegation", "read-only"]
+}

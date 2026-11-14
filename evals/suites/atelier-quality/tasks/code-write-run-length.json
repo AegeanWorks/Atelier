@@ -1,0 +1,46 @@
+{
+  "id": "code-write-run-length",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "Write a JavaScript function named runLength that run-length encodes a string as each character followed by how many times it repeats in a row, for example \"aaabcc\" becomes \"a3b1c2\". Reply with code only.",
+  "provider": "fixture",
+  "fixture": "fixtures/code-write-run-length.json",
+  "qualityChecks": [
+    {
+      "type": "jsTests",
+      "entry": "runLength",
+      "cases": [
+        {
+          "args": [
+            "aaabcc"
+          ],
+          "expect": "a3b1c2"
+        },
+        {
+          "args": [
+            ""
+          ],
+          "expect": ""
+        },
+        {
+          "args": [
+            "abc"
+          ],
+          "expect": "a1b1c1"
+        },
+        {
+          "args": [
+            "zzzz"
+          ],
+          "expect": "z4"
+        }
+      ]
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 512
+}

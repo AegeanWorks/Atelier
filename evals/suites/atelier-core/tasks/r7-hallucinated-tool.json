@@ -1,0 +1,16 @@
+{
+  "id": "r7-hallucinated-tool",
+  "suite": "atelier-core",
+  "split": "dev",
+  "mode": "agent",
+  "prompt": "Read notes.txt and answer the vault key. Use only real tools.",
+  "starter": {
+    "notes.txt": "vault key: 42\n"
+  },
+  "fixture": "fixtures/r7.json",
+  "acceptance": {
+    "answerIncludes": "42",
+    "maxChangedFiles": 0
+  },
+  "tags": ["tools", "refusal"]
+}

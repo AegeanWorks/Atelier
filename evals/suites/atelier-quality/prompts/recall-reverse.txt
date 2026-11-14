@@ -1,0 +1,43 @@
+Here is the badge register.
+Badge 300: holder kaka, room A1, PIN 8919.
+Badge 301: holder nuren, room B2, PIN 7838.
+Badge 302: holder movi, room C3, PIN 6757.
+Badge 303: holder todar, room D4, PIN 5676.
+Badge 304: holder tata, room E5, PIN 4595.
+Badge 305: holder renzan, room F6, PIN 3514.
+Badge 306: holder elmi, room A7, PIN 2433.
+Badge 307: holder loto, room B8, PIN 1352.
+Badge 308: holder pepe, room C9, PIN 9271.
+Badge 309: holder zanro, room D10, PIN 8190.
+Badge 310: holder vimo, room E11, PIN 7109.
+Badge 311: holder jilo, room F12, PIN 6028.
+Badge 312: holder sasa, room A13, PIN 4947.
+Badge 313: holder ronu, room B14, PIN 3866.
+Badge 314: holder miel, room C15, PIN 2785.
+Badge 315: holder darji, room D16, PIN 1704.
+Badge 316: holder kaka, room E17, PIN 9623.
+Badge 317: holder nuren, room F18, PIN 8542.
+Badge 318: holder movi, room A19, PIN 7461.
+Badge 319: holder todar, room B20, PIN 6380.
+Badge 320: holder tata, room C21, PIN 5299.
+Badge 321: holder renzan, room D22, PIN 4218.
+Badge 322: holder elmi, room E23, PIN 3137.
+Badge 323: holder loto, room F24, PIN 2056.
+Badge 324: holder pepe, room A25, PIN 9975.
+Badge 325: holder zanro, room B26, PIN 8894.
+Badge 326: holder vimo, room C27, PIN 7813.
+Badge 327: holder jilo, room D28, PIN 6732.
+Badge 328: holder sasa, room E29, PIN 5651.
+Badge 329: holder ronu, room F30, PIN 4570.
+Badge 330: holder miel, room A31, PIN 3489.
+Badge 331: holder darji, room B32, PIN 2408.
+Badge 332: holder kaka, room C33, PIN 1327.
+Badge 333: holder nuren, room D34, PIN 9246.
+Badge 334: holder movi, room E35, PIN 8165.
+Badge 335: holder todar, room F36, PIN 7084.
+Badge 336: holder tata, room A37, PIN 6003.
+Badge 337: holder renzan, room B38, PIN 4922.
+Badge 338: holder elmi, room C39, PIN 3841.
+Badge 339: holder loto, room D40, PIN 2760.
+
+Who holds the badge with PIN 6732? Reply with only the name.

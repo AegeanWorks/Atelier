@@ -1,0 +1,16 @@
+{
+  "id": "r0-read-only",
+  "suite": "atelier-core",
+  "split": "dev",
+  "mode": "agent",
+  "prompt": "Read notes.txt and answer the vault key. Do not edit files.",
+  "starter": {
+    "notes.txt": "vault key: 42\n"
+  },
+  "fixture": "fixtures/r0.json",
+  "acceptance": {
+    "answerIncludes": "42",
+    "maxChangedFiles": 0
+  },
+  "tags": ["read-only", "answer"]
+}

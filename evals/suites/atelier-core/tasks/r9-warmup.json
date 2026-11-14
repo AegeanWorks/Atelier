@@ -1,0 +1,16 @@
+{
+  "id": "r9-warmup",
+  "suite": "atelier-core",
+  "split": "dev",
+  "mode": "agent",
+  "prompt": "Wait for provider warmup, then read notes.txt and answer the vault key.",
+  "starter": {
+    "notes.txt": "vault key: 42\n"
+  },
+  "fixture": "fixtures/r9.json",
+  "acceptance": {
+    "answerIncludes": "42",
+    "maxChangedFiles": 0
+  },
+  "tags": ["warmup", "wait"]
+}

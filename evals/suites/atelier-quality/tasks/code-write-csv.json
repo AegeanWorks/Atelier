@@ -1,0 +1,68 @@
+{
+  "id": "code-write-csv",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "Write a JavaScript function named parseCsvLine that parses one CSV line into an array of fields. Commas separate fields; a field may be wrapped in double quotes; inside quotes a comma is data and two double quotes stand for one quote. Empty fields are kept. Reply with code only.",
+  "provider": "fixture",
+  "fixture": "fixtures/code-write-csv.json",
+  "qualityChecks": [
+    {
+      "type": "jsTests",
+      "entry": "parseCsvLine",
+      "cases": [
+        {
+          "args": [
+            "a,b,c"
+          ],
+          "expect": [
+            "a",
+            "b",
+            "c"
+          ]
+        },
+        {
+          "args": [
+            "\"x, y\",z"
+          ],
+          "expect": [
+            "x, y",
+            "z"
+          ]
+        },
+        {
+          "args": [
+            "\"he said \"\"hi\"\"\",ok"
+          ],
+          "expect": [
+            "he said \"hi\"",
+            "ok"
+          ]
+        },
+        {
+          "args": [
+            ""
+          ],
+          "expect": [
+            ""
+          ]
+        },
+        {
+          "args": [
+            "a,,b"
+          ],
+          "expect": [
+            "a",
+            "",
+            "b"
+          ]
+        }
+      ]
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 512
+}

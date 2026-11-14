@@ -1,0 +1,31 @@
+[
+  {
+    "id": "write-readme",
+    "suite": "atelier-core",
+    "mode": "build",
+    "starter": {
+      "README.md": "# Demo\n"
+    },
+    "script": [
+      { "tool": "read_file", "input": { "path": "README.md" } },
+      { "tool": "write_file", "input": { "path": "README.md", "content": "# Demo\n\nupdated\n" } }
+    ],
+    "acceptance": {
+      "mustExist": ["README.md"],
+      "mustContain": { "README.md": "updated" }
+    }
+  },
+  {
+    "id": "plan-denied",
+    "suite": "atelier-core",
+    "mode": "plan",
+    "starter": {},
+    "script": [
+      { "tool": "write_file", "input": { "path": "should-not-exist.txt", "content": "no" } }
+    ],
+    "allowFailure": true,
+    "acceptance": {
+      "mustNotExist": ["should-not-exist.txt"]
+    }
+  }
+]

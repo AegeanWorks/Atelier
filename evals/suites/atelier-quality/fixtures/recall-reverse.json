@@ -1,0 +1,28 @@
+{
+  "provider": "fixture",
+  "models": [
+    {
+      "id": "fixture-model",
+      "name": "Fixture"
+    }
+  ],
+  "responses": [
+    {
+      "events": [
+        {
+          "type": "text-delta",
+          "text": "jilo"
+        },
+        {
+          "type": "usage",
+          "promptTokens": 0,
+          "completionTokens": 1
+        },
+        {
+          "type": "finish",
+          "reason": "stop"
+        }
+      ]
+    }
+  ]
+}

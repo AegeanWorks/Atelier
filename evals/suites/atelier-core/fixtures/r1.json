@@ -1,0 +1,16 @@
+{
+  "provider": "fixture",
+  "models": [{ "id": "fixture-model", "name": "Fixture" }],
+  "responses": [
+    { "events": [
+      { "type": "text-delta", "text": "Fixing the operator." },
+      { "type": "tool-call", "id": "c1", "name": "edit_file", "input": { "path": "bug.mjs", "oldString": "a - b", "newString": "a + b" } },
+      { "type": "finish", "reason": "tool_calls" }
+    ] },
+    { "events": [
+      { "type": "text-delta", "text": "The test passes." },
+      { "type": "usage", "promptTokens": 120, "completionTokens": 8 },
+      { "type": "finish", "reason": "stop" }
+    ] }
+  ]
+}

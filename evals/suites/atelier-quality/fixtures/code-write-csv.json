@@ -1,0 +1,28 @@
+{
+  "provider": "fixture",
+  "models": [
+    {
+      "id": "fixture-model",
+      "name": "Fixture"
+    }
+  ],
+  "responses": [
+    {
+      "events": [
+        {
+          "type": "text-delta",
+          "text": "function parseCsvLine(line) {\n  const out = [];\n  let field = \"\";\n  let quoted = false;\n  for (let i = 0; i < line.length; i += 1) {\n    const ch = line[i];\n    if (quoted) {\n      if (ch === '\"' && line[i + 1] === '\"') { field += '\"'; i += 1; }\n      else if (ch === '\"') quoted = false;\n      else field += ch;\n    } else if (ch === '\"') quoted = true;\n    else if (ch === ',') { out.push(field); field = \"\"; }\n    else field += ch;\n  }\n  out.push(field);\n  return out;\n}"
+        },
+        {
+          "type": "usage",
+          "promptTokens": 0,
+          "completionTokens": 119
+        },
+        {
+          "type": "finish",
+          "reason": "stop"
+        }
+      ]
+    }
+  ]
+}

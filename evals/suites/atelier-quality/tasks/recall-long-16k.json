@@ -1,0 +1,24 @@
+{
+  "id": "recall-long-16k",
+  "suite": "atelier-quality",
+  "split": "dev",
+  "mode": "quality",
+  "prompt": "",
+  "provider": "fixture",
+  "fixture": "fixtures/recall-long-16k.json",
+  "qualityChecks": [
+    {
+      "type": "exact",
+      "value": "VAULT-16047"
+    }
+  ],
+  "tags": [
+    "quality",
+    "modelduck"
+  ],
+  "maxTokens": 16,
+  "promptFile": "prompts/recall-long-16k.txt",
+  "budgets": {
+    "wallMs": 120000
+  }
+}
