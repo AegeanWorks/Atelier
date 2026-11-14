@@ -63,6 +63,7 @@ const configInput = z.object({
   mcpServers: z.array(mcpServerSchema).optional(),
   hooks: z.array(hookSchema).optional(),
   rules: z.array(ruleSchema).optional(),
+  shellEnvPassthrough: z.array(z.string().regex(/^[A-Za-z_][A-Za-z0-9_]*$/, "a variable name")).max(100).optional(),
 });
 
 function idFrom(value: string): string {
@@ -195,7 +196,7 @@ export function createProviderRoutes(deps: ProviderRouteDeps): Hono {
   app.get("/config", (c) => {
     const config = loadConfig(deps.paths);
     const secrets = loadSecrets(deps.paths);
-    return c.json({ providers: providerStatuses(config, secrets), roles: config.roles, defaults: config.defaults, mcpServers: config.mcpServers, hooks: config.hooks, rules: config.rules });
+    return c.json({ providers: providerStatuses(config, secrets), roles: config.roles, defaults: config.defaults, mcpServers: config.mcpServers, hooks: config.hooks, rules: config.rules, shellEnvPassthrough: config.shellEnvPassthrough });
   });
 
   app.put("/config", async (c) => {
@@ -224,8 +225,9 @@ export function createProviderRoutes(deps: ProviderRouteDeps): Hono {
     const mcpServers = pick(parsed.data.mcpServers, config.mcpServers);
     const hooks = pick(parsed.data.hooks, config.hooks);
     const rules = pick(parsed.data.rules, config.rules);
-    saveConfig(deps.paths, { ...config, roles, defaults, mcpServers, hooks, rules });
-    return c.json({ roles, defaults, mcpServers, hooks, rules });
+    const shellEnvPassthrough = pick(parsed.data.shellEnvPassthrough, config.shellEnvPassthrough);
+    saveConfig(deps.paths, { ...config, roles, defaults, mcpServers, hooks, rules, shellEnvPassthrough });
+    return c.json({ roles, defaults, mcpServers, hooks, rules, shellEnvPassthrough });
   });
 
   app.post("/providers/:id/complete", async (c) => {

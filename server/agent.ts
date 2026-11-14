@@ -7,6 +7,7 @@ import { requestApproval } from "./approvals.js";
 import { compactMessages, offloadToolOutput } from "./compaction.js";
 import { runHooks, recordHookResults } from "./hooks.js";
 import { evaluateRules } from "./rules.js";
+import { scrubbedEnv } from "./shellEnv.js";
 import { extractImages } from "./images.js";
 import { visionProblem } from "./providers/vision.js";
 import { McpHub } from "./mcp.js";
@@ -99,7 +100,7 @@ export async function runAgent(
   const providerConfig = config.providers.find((entry) => entry.id === providerId);
   const imageProblem = providerConfig === undefined ? null : visionProblem(providerConfig, model, messages);
   if (imageProblem !== null) return { status: "blocked", text: "", reason: imageProblem, requestHash: null, providerId };
-  const mcp = profile.toolNames.includes("mcp") ? await McpHub.open(config.mcpServers ?? []) : new McpHub([], []);
+  const mcp = profile.toolNames.includes("mcp") ? await McpHub.open(config.mcpServers ?? [], scrubbedEnv(process.env, { providers: config.providers, passthrough: config.shellEnvPassthrough })) : new McpHub([], []);
   const tools = [...toolSchemas(profile.toolNames), ...mcp.schemas()];
   let lastSignature = "";
   let repeats = 0;

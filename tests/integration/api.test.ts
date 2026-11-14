@@ -480,4 +480,21 @@ describe("HTTP API", () => {
       db.close();
     }
   });
+
+  it("stores the shell environment pass-through list and refuses a malformed name", async () => {
+    const { app, db, auth } = makeApp();
+    try {
+      const headers = { authorization: `Bearer ${auth.token}`, "content-type": "application/json" };
+      const good = await app.request("/api/config", { method: "PUT", headers, body: JSON.stringify({ shellEnvPassthrough: ["GITHUB_TOKEN", "NPM_TOKEN"] }) });
+      expect(good.status).toBe(200);
+      expect(((await good.json()) as { shellEnvPassthrough: string[] }).shellEnvPassthrough).toEqual(["GITHUB_TOKEN", "NPM_TOKEN"]);
+      const read = (await (await app.request("/api/config", { headers })).json()) as { shellEnvPassthrough: string[] };
+      expect(read.shellEnvPassthrough).toEqual(["GITHUB_TOKEN", "NPM_TOKEN"]);
+      const bad = await app.request("/api/config", { method: "PUT", headers, body: JSON.stringify({ shellEnvPassthrough: ["not a name"] }) });
+      expect(bad.status).toBe(400);
+      expect(((await (await app.request("/api/config", { headers })).json()) as { shellEnvPassthrough: string[] }).shellEnvPassthrough).toEqual(["GITHUB_TOKEN", "NPM_TOKEN"]);
+    } finally {
+      db.close();
+    }
+  });
 });

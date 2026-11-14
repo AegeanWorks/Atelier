@@ -32,10 +32,10 @@ class StdioMcpClient implements McpClient {
   private nextId = 1;
   private stderr = "";
 
-  constructor(private readonly server: McpServer) {
+  constructor(private readonly server: McpServer, baseEnv: NodeJS.ProcessEnv) {
     this.child = spawn(server.command ?? "", server.args ?? [], {
       stdio: ["pipe", "pipe", "pipe"],
-      env: { ...process.env, ...server.env },
+      env: { ...baseEnv, ...server.env },
       windowsHide: true,
     }) as ChildProcessWithoutNullStreams;
     this.child.stdout.setEncoding("utf8");
@@ -325,21 +325,21 @@ interface RegisteredTool {
   tool: McpTool;
 }
 
-function clientFor(server: McpServer): McpClient {
-  return server.transport === "http" ? new HttpMcpClient(server) : server.transport === "sse" ? new SseMcpClient(server) : new StdioMcpClient(server);
+function clientFor(server: McpServer, baseEnv: NodeJS.ProcessEnv): McpClient {
+  return server.transport === "http" ? new HttpMcpClient(server) : server.transport === "sse" ? new SseMcpClient(server) : new StdioMcpClient(server, baseEnv);
 }
 
 export class McpHub {
   private readonly registered = new Map<string, RegisteredTool>();
 
-  constructor(private readonly clients: McpClient[], readonly errors: string[]) {}
+  constructor(private readonly clients: McpClient[], readonly errors: string[], private readonly baseEnv: NodeJS.ProcessEnv = process.env) {}
 
-  static async open(servers: McpServer[]): Promise<McpHub> {
+  static async open(servers: McpServer[], baseEnv: NodeJS.ProcessEnv = process.env): Promise<McpHub> {
     const clients: McpClient[] = [];
     const errors: string[] = [];
-    const hub = new McpHub(clients, errors);
+    const hub = new McpHub(clients, errors, baseEnv);
     for (const server of servers) {
-      const client = clientFor(server);
+      const client = clientFor(server, baseEnv);
       try {
         await client.initialize();
         const tools = await client.listTools();
@@ -375,7 +375,7 @@ export class McpHub {
   private async restart(server: McpServer): Promise<boolean> {
     const stale = [...this.registered.entries()].filter(([, entry]) => entry.server.id === server.id);
     if (stale.length === 0) return false;
-    const client = clientFor(server);
+    const client = clientFor(server, this.baseEnv);
     try {
       await client.initialize();
       const tools = await client.listTools();

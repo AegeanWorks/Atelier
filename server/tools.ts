@@ -7,6 +7,8 @@ import type { DbHandle } from "./db.js";
 import { beginEffect, effectKey, finishEffect } from "./effects.js";
 import { checkPermission, isInside, type Mode } from "./permissions.js";
 import { checkpointPath } from "./checkpoints.js";
+import { scrubbedEnv } from "./shellEnv.js";
+import { loadConfig } from "./state.js";
 import { hashRequest } from "./providers/http.js";
 import { appendSessionEvent, type RunRow } from "./runs.js";
 import { formatHits, matchGlob, searchText, walkWorkspace } from "./search.js";
@@ -28,6 +30,8 @@ export interface ToolOutcome {
 interface ToolContext {
   workspace: string;
   mode: Mode;
+  /** Environment for commands the tool starts: the server's, without credentials. */
+  env: NodeJS.ProcessEnv;
 }
 
 interface ToolDefinition {
@@ -68,10 +72,11 @@ interface ShellResult {
   timedOut: boolean;
 }
 
-function runShell(command: string, cwd: string, timeoutMs: number): Promise<ShellResult> {
+function runShell(command: string, cwd: string, timeoutMs: number, env: NodeJS.ProcessEnv): Promise<ShellResult> {
   return new Promise((resolve) => {
     const child = spawn(command, {
       cwd,
+      env,
       shell: true,
       windowsHide: true,
       detached: process.platform !== "win32",
@@ -377,7 +382,7 @@ const TOOLS: Record<string, ToolDefinition> = {
     readOnly: false,
     async run(args, context) {
       const timeoutMs = Math.min(600_000, Math.max(1_000, Number(args.timeoutMs ?? 30_000)));
-      const result = await runShell(String(args.command), context.workspace, timeoutMs);
+      const result = await runShell(String(args.command), context.workspace, timeoutMs, context.env);
       if (result.timedOut) return clip(`timed out after ${timeoutMs} ms\n${result.output}`);
       return clip(`exit ${result.code ?? "signal"}\n${result.output}`);
     },
@@ -496,7 +501,7 @@ export async function executeTool(
 
   if (tool.readOnly) {
     try {
-      return { ok: true, output: await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode }) };
+      return { ok: true, output: await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: process.env }) };
     } catch (error) {
       return { ok: false, output: error instanceof Error ? error.message : String(error) };
     }
@@ -516,7 +521,8 @@ export async function executeTool(
     }
   }
   try {
-    const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode });
+    const config = loadConfig(handle.paths);
+    const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: scrubbedEnv(process.env, { providers: config.providers, passthrough: config.shellEnvPassthrough }) });
     finishEffect(handle, key, "applied", output, path === null ? null : hashFile(path));
     return { ok: true, output, effectKey: key };
   } catch (error) {

@@ -138,6 +138,7 @@ atelier/
 │   ├── runRoutes.ts          <- run, approval, image, compact and fork HTTP routes
 │   ├── runner.ts             <- run lifecycle: lease, execute, resume, stop
 │   ├── runs.ts               <- run and step records and session events
+│   ├── shellEnv.ts           <- secret-free environment for commands the agent runs
 │   ├── skills.ts             <- SKILL.md discovery and scaffolding
 │   ├── summarize.ts          <- /compact: a summary through the configured provider
 │   ├── terminal.ts           <- workspace command execution with process-tree teardown

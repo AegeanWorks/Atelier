@@ -18,6 +18,7 @@ const config: Config = {
   mcpServers: [],
   hooks: [],
   rules: [],
+  shellEnvPassthrough: [],
 };
 
 function event(value: Record<string, unknown>): string {

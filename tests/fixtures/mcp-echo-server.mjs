@@ -23,6 +23,10 @@ process.stdin.on("data", (chunk) => {
     } else if (message.method === "tools/call") {
       const text = String(message.params?.arguments?.text ?? "");
       if (text === "__die__") process.exit(0);
+      if (text === "__env__") {
+        send({ jsonrpc: "2.0", id: message.id, result: { content: [{ type: "text", text: JSON.stringify({ k: process.env.OPENAI_API_KEY ?? null, t: process.env.ATELIER_FAKE_TOKEN ?? null, explicit: process.env.EXPLICIT_FROM_CONFIG ?? null }) }], isError: false } });
+        continue;
+      }
       send({ jsonrpc: "2.0", id: message.id, result: { content: [{ type: "text", text: `echo:${text}` }], isError: text === "fail" } });
     } else if (message.id !== undefined) {
       send({ jsonrpc: "2.0", id: message.id, error: { code: -32601, message: "method not found" } });

@@ -508,3 +508,87 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: Every run went through the HTTP server and the workspace window, so atelier could not be used from a script, a CI job or a shell pipeline. Claude Code and opencode both accept a one-shot prompt and print the result, and users asked for atelier quality and features on that level.
 - **Decision**: Add an `atelier run <prompt>` command. Flag parsing and run validation move to `server/cli.ts` (pure, testable: positionals, `--mode`, `--session`, `--yes`, `--json`, a `--` terminator, and a what/why/fix validator). `server/headless.ts` resolves the home, opens the database, recovers, creates or resumes a conversation, records the user message and run, and executes it through the same `executeRun` path as the server by passing an options object with an `approve` callback and an optional adapter override. The default mode is plan (read-only); build mode has no approver, so the callback throws a specific `HEADLESS_APPROVAL` error and the run blocks immediately instead of waiting out the 60 s approval timer, unless `--yes` is passed, which approves everything and prints a warning to stderr. Output is the assistant text on stdout plus a summary on stderr, or one JSON object with status, text, run/session ids, step and tool counts and usage. Exit codes are 0 finished, 1 blocked and 2 invalid usage. `server/runner.ts` gains an optional `ExecuteOptions` pass-through; the server path is unchanged.
 - **Consequences**: atelier can now be scripted (`atelier run "fix the failing test" --mode build --yes`) and fails loudly and quickly when a build run cannot be approved rather than hanging a pipeline. `--yes` is deliberately explicit, warned about on stderr, and it cannot be combined with plan mode. Verified end to end against a local OpenAI-compatible server: a plan run printed the answer with exit 0, a build run without `--yes` exited 1 with the approval reason and wrote nothing, a build run with `--yes` exited 0 and wrote the file, and an unknown mode exited 2 with the error triad. Unit tests pin parse and validation; integration tests cover plan, session continuation, blocked approval, auto-approval, empty prompts and unknown sessions.
+
+### ADR-072: Slash commands and prompt files in the composer
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: The composer only sent text. Claude Code and opencode offer typed commands and reusable prompts, and switching mode, starting a conversation or exporting needed the mouse. Recorded retroactively: this and the following ADRs describe contract changes made earlier in the 2026-11-13/14 work and not written down at the time (PRINCIPLE-004 R4).
+- **Decision**: Typing `/` opens a menu of built-in commands (`/plan`, `/build`, `/new`, `/compact`, `/fork`, `/undo`, `/init`, `/instructions`, `/model`, `/skills`, `/skill-new`, `/export`, `/terminal`, `/theme`) and of prompt files. A prompt file is a markdown file in `.atelier/commands/` or `.claude/commands/` (`.atelier` wins a name clash), optionally with a `description:` frontmatter line; `$ARGUMENTS` is replaced by the text after the command, or the text is appended when absent. At most 100 files of 20 KB each. `GET /api/commands` serves them. An unknown `/name` is refused with a notice and never sent to the model; Enter runs a line whose first word is a known command. Pure parsing lives in `src/slash.ts`, discovery in `server/commands.ts`.
+- **Consequences**: Prompt files written for Claude Code work unchanged. The command set and file locations are now a public contract; renaming a built-in breaks muscle memory and scripts that rely on it. Commands load once at start and are refreshed by `/skills` and `/skill-new`.
+
+### ADR-073: Skills as on-demand SKILL.md bundles
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: Flat prompt files cannot carry a procedure the agent should follow only when it applies. Claude Code, Codex, Antigravity and Vibe all use a `SKILL.md` folder convention.
+- **Decision**: A skill is `.atelier/skills/<name>/SKILL.md` or `.claude/skills/<name>/SKILL.md` (`.atelier` wins) with optional `name:` and `description:` frontmatter, at most 30 skills of 50 KB, descriptions cut at 200 characters. The system prompt lists each skill's name, description and path and tells the agent to read one with `read_file` only when it clearly matches, so nothing is loaded up front and there is no new tool. Every skill is also a `/name` command; an explicit command file wins a clash. `GET /api/skills` lists them and `POST /api/skills` (`/skill-new`) scaffolds one from a template without ever overwriting (409 `SKILL_EXISTS`, 400 for a bad name or a multi-line description).
+- **Consequences**: Skills stay inside the existing permission model because reading one is an ordinary file read. The prompt grows by one line per skill. Skill files are instructions the agent follows, so a writable skill folder is an attack surface, which ADR-078 addresses.
+
+### ADR-074: Attachments are stored as markers, images as content-addressed blobs
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: Users wanted to point the agent at files (`@path`) and screenshots, and the stored message text is replayed to the model, exported and summarised, so how an attachment is represented is a data format.
+- **Decision**: On send, the server appends the contents of mentioned workspace files (at most 5, 12,000 characters each, secret-named files skipped) as `<attached_file path="...">` blocks to the stored user message. Images are uploaded with `POST /api/images` (`{mediaType, data}`; png, jpeg, gif or webp, 5 MB, magic bytes checked), stored once under `blobs/img_<first 16 hex of sha256>.<ext>`, written through a temp file, fsync and rename and verified against the hash on read, and referenced from the message only by `<attached_image id="..."/>`; `GET /api/images/:id` serves them. A run takes an optional `images` id list (at most 4). Each provider adapter maps images to its wire format. A model the catalog marks `vision: false` is refused before any provider call. The CLI gains `--image <file>` (repeatable). The transcript and exports show attachments as chips or names, never their bytes.
+- **Consequences**: Messages stay small and replayable and a torn write cannot leave a corrupt image trusted forever. The two marker formats are now part of stored history and must stay parseable. A model without a declared vision flag is sent the image and any provider error is shown as is.
+
+### ADR-075: Tool hooks with a veto
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: Teams want deterministic guardrails and automation around tool calls without changing the agent. Claude Code and Command Code offer hooks.
+- **Decision**: Config gains `hooks: [{ id, event: "pre_tool" | "post_tool", match, command, timeoutMs }]` (`match` is a regular expression over the tool name, default `.*`; timeout 100 ms to 60 s, default 10 s). A hook runs in the workspace with `ATELIER_HOOK_EVENT`, `ATELIER_TOOL`, `ATELIER_TOOL_INPUT` (first 8,000 characters), `ATELIER_RUN_ID` and `ATELIER_SESSION_ID`, plus `ATELIER_TOOL_OK` and `ATELIER_TOOL_OUTPUT` for `post_tool`. A `pre_tool` hook that exits 2 vetoes the call before any approval prompt and its output goes to the model as `Blocked by hook <id>: ...`; any other exit code, a timeout or a failure to start is recorded only; `post_tool` never blocks. Every result is stored as a `hook.result` event. Hooks keep the server's environment because the user wrote them (ADR-077).
+- **Consequences**: The environment variable names, the exit-code convention and the `hook.result` event are a contract for hook authors. Hooks run sequentially inside the tool loop, so a slow hook delays that call up to its timeout. Only two events exist; richer events and structured decisions are future work.
+
+### ADR-076: Permission rules decide whether to ask, never whether something is safe
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: In Build mode every edit and command prompted. Peers let users pre-approve routine actions and pre-refuse risky ones.
+- **Decision**: Config gains `rules: [{ id, action: "exec" | "edit", match, decision: "allow" | "deny" }]`; `match` is literal text with `*` as a wildcard over the whole command or path. A matching deny always wins and refuses without asking, even with `--yes`; otherwise the first matching allow skips the prompt. An allow never covers a command containing `&&`, `||`, `;`, `|`, `&`, redirection, backticks, `$(` or a newline, nor an edit path that climbs out with `..`. Edit paths are normalised before matching (separators, `./`, `//`, `..`, lower case on Windows) and commands have whitespace collapsed, with denies also ignoring case on Windows, so spelling cannot dodge a deny. Rules only decide whether to prompt: the checks in `executeTool` (secrets, paths outside the workspace, destructive commands) still run afterwards. Each decision is an `access.decision` event naming the rule, and the approval dock's Always allow saves an exact-match allow rule.
+- **Consequences**: Command rules are text matches, not parsed commands, and are documented as not a security boundary. There is no `ask` rule type yet, so a deny and an allow are the only outcomes besides the default prompt.
+
+### ADR-077: Commands the agent runs get a scrubbed environment
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: Verified on 2026-11-14 by running the real tools with fabricated keys: the `bash` tool, the terminal and hook commands all inherited the server's whole environment, so any approved or injected command could print provider keys. MCP stdio servers received `{ ...process.env, ...server.env }`, including after a crash and restart.
+- **Decision**: The agent's `bash` tool and MCP stdio servers (first start and restart) get the server's environment without secret-shaped variables: a name where KEY, TOKEN, SECRET, PASSWORD, PASSWD or CREDENTIAL(S) is a whole word or a joined form such as APIKEY ends the name, plus every provider's `apiKeyEnv` variable. Config gains `shellEnvPassthrough: string[]` (variable names, case-insensitive), carried by `GET` and `PUT /api/config`, to let chosen variables through. A server's own `env` entries are always passed. Hooks and the user's terminal panel keep the full environment because the user wrote or runs them. Implemented in `server/shellEnv.ts`.
+- **Consequences**: Legitimate commands that need `GITHUB_TOKEN`, `NPM_TOKEN` or `AWS_*` fail until those names are listed. This narrows one leak and is not a sandbox: the same user's files, including `~/.atelier/secrets.json`, remain readable by an approved command, so the shell must still be treated as unsandboxed.
+
+### ADR-078: The agent's own configuration is never auto-approved
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: Instruction files, skills, commands and settings are injected into every later run, so a prompt injection that can write one persists. Only `.git` and secret-named files were protected; verified on 2026-11-14 that `.atelier/`, `.claude/`, `.agents/`, `AGENTS.md` and `CLAUDE.md` could be edited with an ordinary approval or covered by an allow rule.
+- **Decision**: A path is protected when it is, or sits under, a `.atelier`, `.claude` or `.agents` directory, or is named `AGENTS.md` or `CLAUDE.md`, at any depth and in any spelling or case. An edit of a protected path is never auto-allowed by a rule (a deny still applies), and headless `--yes` refuses it for that call. An interactive approval by a person still works. Implemented as `isProtectedConfigPath` in `server/rules.ts` and the headless approver.
+- **Consequences**: `/init` and any agent change to these files always need a person. The approval dock still offers Always allow for such a path, which is harmless because the rule cannot take effect; hiding the button is deferred to the next UI batch.
+
+### ADR-079: Conversation operations and hidden delegate conversations
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: Long conversations degrade and users want to branch or revert. A delegate call also created internal helper conversations that cluttered lists and search, and `atelier run --continue` could pick one.
+- **Decision**: `POST /api/sessions/:id/compact` summarises the newest 16,000 characters of a conversation (attachment bodies reduced to names, 120 s timeout, never memoised) with the configured provider and opens a new conversation titled `Compacted: <title>` seeded with the summary; 400 `COMPACT_EMPTY`, 502 `COMPACT_FAILED`. `POST /api/sessions/:id/fork` copies the messages up to and including an optional `messageId` into a new conversation in one transaction; 400 `FORK_EMPTY`. `/undo` restores the newest checkpoint through the existing restore route, and a second `/undo` redoes it because a restore snapshots first. Delegate helper sessions, identified by a run with a parent run id (`DELEGATE_SESSIONS_SQL`), are excluded from the conversation list, search and the CLI sessions list but stay readable by id.
+- **Consequences**: Compact and fork never modify the original. Hiding delegates changes what `GET /api/sessions` and `/api/search` return. A conversation's usage totals now include its delegates (ADR-083).
+
+### ADR-080: CLI additions for resuming, listing and images
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: `atelier run` could continue a conversation only by id and could not list conversations or attach images, unlike Claude Code's `-c` and Kilo's session commands.
+- **Decision**: `atelier run` gains `--continue` / `-c` (the most recent conversation, an error when there is none, not combinable with `--session`) and a repeatable `--image <file>` (png, jpeg, gif or webp, at most 4, validated before any conversation is created). `atelier sessions [--json]` lists conversations newest first. `@path` mentions in a headless prompt attach file contents as in the UI. Exit codes stay 0 (finished), 1 (blocked or failed) and 2 (invalid usage), each with a What/Why/Fix message.
+- **Consequences**: The new flags and the `sessions` output are a scripting contract. Output remains a single JSON object with `--json`; streaming output and turn or budget caps are not provided yet.
+
+### ADR-081: Only local Host headers are answered
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: The server issued a session cookie and a script-readable CSRF cookie from an unauthenticated bootstrap route and never inspected the Host header, so a page on an attacker's domain rebound to 127.0.0.1 could obtain both and reach the whole API, including the terminal.
+- **Decision**: Every request, including the page and the cookie bootstrap, must carry a Host naming `localhost`, a `*.localhost` name or an IP literal (IPv4, or IPv6 in brackets, any port), or a plain DNS name listed in the new environment variable `ATELIER_ALLOWED_HOSTS` (comma separated; wildcards, ports and paths are ignored). Anything else gets `421 HOST_REJECTED` before any cookie is set. When no Host header is present the request URL's host is used. Implemented in `server/hosts.ts` as the first middleware.
+- **Consequences**: A reverse proxy or custom name needs `ATELIER_ALLOWED_HOSTS`. LAN access by IP address keeps working. The error response tells the user the fix.
+
+### ADR-082: The path jail follows links
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: `resolveInside` checked paths lexically, so a symlink or junction inside the workspace could read or create files outside it; verified with a real junction on 2026-11-14.
+- **Decision**: After the lexical check, the nearest existing ancestor of the path is resolved with `realpath` and must lie inside the real workspace; a path that cannot be resolved is refused (fail closed). `@` mentions also skip secret-named files.
+- **Consequences**: A workspace that relies on a link to a folder outside it loses that access through the file tools. The extra `realpath` call per file operation measured within noise (tool dispatch P95 4.56 ms with, 4.65 ms without).
+
+### ADR-083: Usage totals include delegates and expose the context window
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: A delegate's spend was invisible in its parent conversation, and users could not see how full the context window was.
+- **Decision**: `GET /api/usage?session=` adds the usage of the conversation's delegate sessions to its totals and reports them separately as `delegated: { requests, costUsd }`; the all-conversations view does not add them again. It also returns `last` (the latest billed request) and `context: { providerId, model, usedTokens, windowTokens | null }`, with the window taken from the catalog or the provider's own model list. The status bar shows `ctx N%`, amber from 70% and red from 90% with a `/compact` hint, and a plain token count when the window is unknown. Usage events are read in order.
+- **Consequences**: Cost for a conversation is now the cost of everything it triggered. The meter reflects the latest request's prompt size, which already includes automatic compaction.

@@ -89,6 +89,7 @@ const configSchema = z.object({
   mcpServers: z.array(mcpServerSchema).optional().default([]),
   hooks: z.array(hookSchema).optional().default([]),
   rules: z.array(ruleSchema).optional().default([]),
+  shellEnvPassthrough: z.array(z.string().regex(/^[A-Za-z_][A-Za-z0-9_]*$/, "a variable name")).max(100).optional().default([]),
 });
 
 const secretsSchema = z.object({
@@ -108,6 +109,7 @@ export function defaultConfig(): Config {
     mcpServers: [],
     hooks: [],
     rules: [],
+    shellEnvPassthrough: [],
   };
 }
 

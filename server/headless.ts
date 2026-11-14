@@ -1,6 +1,7 @@
 import { AtelierError, ensureHome, resolveHome } from "./config.js";
 import { attachMentionedFiles } from "./attachments.js";
 import { attachImages, saveImageFile } from "./images.js";
+import { isProtectedConfigPath } from "./rules.js";
 import { createSession, getSession, listEvents, listSessions, listMessages, openDatabase, recoverOnBoot } from "./db.js";
 import { executeRun } from "./runner.js";
 import { createRun, getRun, listRunSteps, type RunRow } from "./runs.js";
@@ -109,8 +110,9 @@ export async function runHeadless(options: HeadlessOptions): Promise<HeadlessRes
     const autoApprove = options.autoApprove === true;
     await executeRun(handle, active.id, {
       ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
-      approve: () => {
-        if (autoApprove) return true;
+      approve: (_call, resource, action) => {
+        // --yes approves what the run asks for, except edits of the agent's own configuration: those need a person.
+        if (autoApprove) return !(action === "edit" && isProtectedConfigPath(resource));
         throw new AtelierError(
           "HEADLESS_APPROVAL",
           "A tool needed approval, but headless runs have no approver.",

@@ -42,6 +42,19 @@ function fold(text: string, action: RuleAction, platform: NodeJS.Platform = proc
   return platform === "win32" ? collapsed.toLowerCase() : collapsed;
 }
 
+const PROTECTED_DIRS = new Set([".atelier", ".claude", ".agents"]);
+const PROTECTED_FILES = new Set(["agents.md", "claude.md"]);
+
+/**
+ * The agent's own configuration: instruction files, skills, commands and settings. A prompt injection that can write
+ * these steers every later run, so an edit of one is never auto-approved, wherever the file sits and however it is spelled.
+ */
+export function isProtectedConfigPath(path: string): boolean {
+  const parts = posix.normalize(path.replace(/\\/g, "/")).split("/").map((part) => part.toLowerCase()).filter((part) => part !== "" && part !== ".");
+  const last = parts.at(-1) ?? "";
+  return PROTECTED_FILES.has(last) || PROTECTED_DIRS.has(last) || parts.slice(0, -1).some((part) => PROTECTED_DIRS.has(part));
+}
+
 function climbsOut(path: string): boolean {
   return path === ".." || path.startsWith("../");
 }
@@ -62,6 +75,6 @@ export function evaluateRules(rules: Rule[], action: RuleAction, resource: strin
   const allow = rules.find((rule) => rule.action === action && rule.decision === "allow" && hit(rule));
   if (allow === undefined) return { decision: "ask", ruleId: null };
   if (action === "exec" && SHELL_CONTROL.test(resource)) return { decision: "ask", ruleId: null };
-  if (action === "edit" && climbsOut(target)) return { decision: "ask", ruleId: null };
+  if (action === "edit" && (climbsOut(target) || isProtectedConfigPath(target))) return { decision: "ask", ruleId: null };
   return { decision: "allow", ruleId: allow.id };
 }
