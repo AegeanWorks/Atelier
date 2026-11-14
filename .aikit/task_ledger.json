@@ -1,68 +1,17 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-a5-max-turns",
+    "task_id": "atelier-a5-stream-json",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794681617.1213448,
+    "updated_at": 1794682798.9423845,
     "owner": "claude:a5",
     "started_by": "claude:a5",
     "continuations": [],
-    "completed_at": 1794681623.0725956
+    "completed_at": 1794682809.668952
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-host-guard",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "[1/1] Host guard shipped: server/hosts.ts hostAllowed and parseAllowedHosts, first middleware in createApp answering 421 HOST_REJECTED before any cookie is issued, ATELIER_ALLOWED_HOSTS wired through main and help, README and docs/FEATURES.md. 8 new tests (6 unit, 2 http) written first, existing 24 api tests still pass, tsc clean, 10/10 gates. Real-socket proof against the running server: Host 127.0.0.1 and localhost answer 200 with a session cookie, Host evil.example and 127.0.0.1.evil.example answer 421 with no cookie. Real-browser control run through the real server unchanged at 390/768/1440. Also fixed README tree drift: committing made 43 tracked server and src files visible to the README tree gate, entries and descriptions added. No UI change. checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794661506.8410127,
-      "timestamp_str": "2026-11-14 16:05:06",
-      "agent": "claude:host",
-      "checklists": "passed",
-      "handoff": {
-        "state": "10/10 gates",
-        "next": "strict delivery also needs a human reviewed UI task for src changes",
-        "open": "UI task review needs the user"
-      }
-    },
-    {
-      "task_id": "atelier-host-guard",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-host-guard' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794661519.542934,
-      "timestamp_str": "2026-11-14 16:05:19",
-      "agent": "claude:host",
-      "delivery": {
-        "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-hide-delegates",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: hide the internal helper conversations a delegate call creates: DELEGATE_SESSIONS_SQL in server/db.ts, excluded from listSessions for the sidebar, boot, archived view, atelier sessions and run --continue, and from both search queries; still readable by id",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794674614.7992394,
-      "timestamp_str": "2026-11-14 19:43:34",
-      "agent": "claude:delegates",
-      "impact_assessment": {
-        "why": "Delegate helper conversations cluttered the sidebar and search, and atelier run --continue could pick one as the most recent conversation",
-        "benefits": "A conversation list that only shows what the user started, and a continue command that cannot attach to an internal session",
-        "risks": "contract: GET /api/sessions and search no longer return delegate sessions, getSession is unchanged; dependency: none; concurrency: read-only query change; state: none, no schema change",
-        "mitigation": "Identified by a run with a parent run id, which ordinary retry and fork runs never have, so normal conversations stay visible, five tests first including that guard, full suite of 489 tests run"
-      },
-      "plan_digest": "094fe7e57c818f04734bb04ec5390ffd2475c5923758f3902ace45cbd6f6120e"
-    },
     {
       "task_id": "atelier-hide-delegates",
       "phase": "verification",
@@ -339,6 +288,56 @@
       "status": "completed",
       "timestamp": 1794681623.0725982,
       "timestamp_str": "2026-11-14 21:40:23",
+      "agent": "claude:a5",
+      "delivery": {
+        "roots": [
+          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-a5-stream-json",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan: atelier run --output-format text|json|stream-json; stream-json prints each session event then a result line (G-009)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794681709.77149,
+      "timestamp_str": "2026-11-14 21:41:49",
+      "agent": "claude:a5",
+      "impact_assessment": {
+        "why": "G-009: the agent needs a live machine-readable view of a headless run",
+        "benefits": "An agent or script can follow a run as JSON Lines and parse one final result",
+        "risks": "contract: new flag, --json unchanged; dependency: headless polls listEvents every 50ms on its own handle; concurrency: poll plus final drain, no duplicates by seq; state: none",
+        "mitigation": "seq-ordered once-only test, mutation-checked, real-process check"
+      },
+      "plan_digest": "380ba5ca974fb93347718d502c34496175b3be6310ddca9cf754de84fd75104f"
+    },
+    {
+      "task_id": "atelier-a5-stream-json",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794682798.9423845,
+      "timestamp_str": "2026-11-14 21:59:58",
+      "agent": "claude:a5",
+      "checklists": "passed",
+      "handoff": {
+        "next": "--max-budget-usd",
+        "open": "A2 live model and A6 UI review need the user"
+      }
+    },
+    {
+      "task_id": "atelier-a5-stream-json",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-a5-stream-json' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794682809.668954,
+      "timestamp_str": "2026-11-14 22:00:09",
       "agent": "claude:a5",
       "delivery": {
         "roots": [
