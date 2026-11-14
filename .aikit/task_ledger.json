@@ -1,50 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-a5-stream-json",
+    "task_id": "atelier-a5-budget",
     "last_phase": "verification",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1794682798.9423845,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1794683209.9919684,
     "owner": "claude:a5",
     "started_by": "claude:a5",
-    "continuations": [],
-    "completed_at": 1794682809.668952
+    "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-hide-delegates",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "[1/1] Delegate conversations hidden: DELEGATE_SESSIONS_SQL, listSessions, both search queries, docs. 5 new integration tests written first (3 failing for the right reasons, 2 guards passing), 489 tests across 100 files pass, tsc clean, 10/10 gates first run. No UI file changed, the sidebar simply receives fewer rows. checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794674734.6667376,
-      "timestamp_str": "2026-11-14 19:45:34",
-      "agent": "claude:delegates",
-      "checklists": "passed",
-      "handoff": {
-        "state": "10/10 gates",
-        "next": "strict delivery needs the user to review the UI",
-        "open": "UI task review"
-      }
-    },
-    {
-      "task_id": "atelier-hide-delegates",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-hide-delegates' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794674740.2599766,
-      "timestamp_str": "2026-11-14 19:45:40",
-      "agent": "claude:delegates",
-      "delivery": {
-        "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
-        ],
-        "forced": false
-      }
-    },
     {
       "task_id": "atelier-a1-leaks",
       "phase": "planning",
@@ -344,6 +310,40 @@
           "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
         ],
         "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-a5-budget",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan: atelier run --max-budget-usd x stops a run when priced spend reaches x (G-009)",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794682897.5828788,
+      "timestamp_str": "2026-11-14 22:01:37",
+      "agent": "claude:a5",
+      "impact_assessment": {
+        "why": "G-009: an agent driving atelier must be able to bound what one headless run can spend",
+        "benefits": "A per-call spend cap, enforced between steps, with a clear blocked reason",
+        "risks": "contract: new optional flag, default unchanged; dependency: agent loop reads priceStep results it already computes; concurrency: none; state: none",
+        "mitigation": "Final answers are never discarded; unpriced models fail closed; mutation-checked tests"
+      },
+      "plan_digest": "6f53d7906248a76fb90d98121362ec4ef7d70e81182bea50d0628199c3b9a55d"
+    },
+    {
+      "task_id": "atelier-a5-budget",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794683209.9919684,
+      "timestamp_str": "2026-11-14 22:06:49",
+      "agent": "claude:a5",
+      "checklists": "passed",
+      "handoff": {
+        "next": "A3 leftovers (AGENTS.md chain)",
+        "open": "A2 live model and A6 UI review need the user"
       }
     }
   ]
