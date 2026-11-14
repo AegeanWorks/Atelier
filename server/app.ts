@@ -26,6 +26,7 @@ import { createEvalRoutes } from "./evalRoutes.js";
 import { createUsageRoutes } from "./usageRoutes.js";
 import { createPlanRoutes } from "./planRoutes.js";
 import { loadConfig, loadSecrets, providerStatuses } from "./state.js";
+import { hostAllowed } from "./hosts.js";
 
 export interface AppDeps {
   paths: AtelierPaths;
@@ -35,6 +36,8 @@ export interface AppDeps {
   version: string;
   startedAt: number;
   workspace: string;
+  /** Extra host names (beyond localhost and IP literals) the server answers to, from ATELIER_ALLOWED_HOSTS. */
+  allowedHosts?: string[];
 }
 
 const createSessionSchema = z.object({
@@ -81,6 +84,25 @@ function serveIndex(deps: AppDeps, c: Context): Response {
 
 export function createApp(deps: AppDeps): Hono<{ Variables: { authMode: string } }> {
   const app = new Hono<{ Variables: { authMode: string } }>();
+
+  // First of all: a DNS-rebinding page reaches this server under its own domain name, so refuse any Host that is
+  // neither localhost, an IP literal nor a name the operator listed. This runs before any cookie or token is issued.
+  app.use("*", async (c, next) => {
+    if (!hostAllowed(c.req.header("host") ?? new URL(c.req.url).host, deps.allowedHosts ?? [])) {
+      return c.json(
+        {
+          error: {
+            code: "HOST_REJECTED",
+            what: "This host name is not allowed.",
+            why: "Atelier only answers requests addressed to localhost or an IP address, which blocks DNS-rebinding attacks from web pages.",
+            fix: "Open it as http://127.0.0.1:<port> or http://localhost:<port>, or list the name in ATELIER_ALLOWED_HOSTS.",
+          },
+        },
+        421,
+      );
+    }
+    await next();
+  });
 
   app.use("*", async (c, next) => {
     await next();

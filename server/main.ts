@@ -2,6 +2,7 @@ import { openBrowser } from "./browser.js";
 import { resolveHome } from "./config.js";
 import { printReport } from "./errors.js";
 import { HELP, VERSION, parse, validateRun, type Options } from "./cli.js";
+import { parseAllowedHosts } from "./hosts.js";
 
 async function run(options: Options): Promise<void> {
   const { ensureHome, parsePort } = await import("./config.js");
@@ -84,6 +85,7 @@ async function run(options: Options): Promise<void> {
       version: VERSION,
       startedAt: Date.now(),
       workspace,
+      allowedHosts: parseAllowedHosts(process.env.ATELIER_ALLOWED_HOSTS),
     });
     const server = serve({ fetch: app.fetch, port, hostname: options.host }, (info) => {
       const url = `http://${options.host}:${info.port}`;

@@ -37,7 +37,7 @@ npm run help         # CLI help in under 1 s
 
 Headless runs are available for scripts and CI. `atelier run "<prompt>"` starts a read-only plan run in a new conversation and prints the answer on stdout with a one-line summary on stderr; `--session <id>` continues an existing conversation, `--continue` (`-c`) continues the most recent one (an error if there is none; it cannot be combined with `--session`), `atelier sessions [--json]` lists conversations newest first with id, last update and title, `@path` mentions in a headless prompt attach file contents exactly as in the UI, `--mode build` allows edits and commands, and `--json` prints one machine-readable object with status, text, run id, session id, step and tool counts and accumulated usage. A build run has no human to approve a write, so it fails fast with a clear reason unless you pass `--yes`, which prints a warning and approves every edit and command for that run; the exit code is 0 when the run finished, 1 when it blocked, and 2 for invalid usage.
 
-Pass `--no-open` to the server (or `start.bat --no-open`) to keep the window closed; the automated scripts and tests always pass it. Set `ATELIER_BROWSER` to a Chromium/Edge executable path to choose the app-window host explicitly.
+Pass `--no-open` to the server (or `start.bat --no-open`) to keep the window closed; the automated scripts and tests always pass it. Set `ATELIER_BROWSER` to a Chromium/Edge executable path to choose the app-window host explicitly. The server answers only requests addressed to `localhost`, `*.localhost` or an IP address, and refuses every other Host with `421 HOST_REJECTED` before issuing any cookie, which blocks DNS-rebinding attacks from web pages; if you reach it through a reverse proxy or a custom name, list that name in `ATELIER_ALLOWED_HOSTS` (comma separated).
 
 The server creates `~/.atelier/` (override with `ATELIER_HOME`), writes a 0600 runtime token, and keeps all state outside the project tree. The agent runs a system prompt that names the tool contract and injects the workspace's `AGENTS.md` (or `CLAUDE.md`) when present, bounded at 8,000 characters, so project rules travel with every turn. Providers and keys are configured in the **Settings** workspace tab; keys are read from the environment or a 0600 secrets file and rendered only as SET / MISSING. In build mode, `write_file`, `edit_file`, `multi_edit` and `bash` pause on a durable approval; approve or deny it in the dock above the composer, optionally with a short note that is recorded as the decision reason. Edit approvals carry a reviewable unified diff: the dock computes the proposed change in memory (`server/editPreview.ts` over the same pure edit functions the tools execute in `server/edits.ts`), stores it with the approval (schema 9 adds `approvals.preview`) and renders it collapsed-by-default with `+n/−n` counts and per-line add/remove colouring, so nothing is written until the diff is approved. Tools cover line-windowed reads, directory listing, glob, regex text search, exact and multi-edit writes, shell commands with a `timeoutMs` limit, git status and diff, delegation and MCP. Search works without external binaries: `ripgrep` uses `rg` when installed and otherwise falls back to a built-in walker that skips `node_modules`, `.git` and build output while honoring `include` globs, `ignoreCase` and literal `fixed` queries. `edit_file` accepts `replaceAll`, and `multi_edit` applies several exact edits to one file as a single atomic write with all-or-nothing validation. A timed-out command has its whole process tree killed, so a long child never keeps the workspace locked. Assistant tool calls are replayed back to every protocol in its native form — OpenAI `tool_calls`, Responses `function_call`/`function_call_output` items, Anthropic `tool_use`/`tool_result` blocks, Gemini `functionCall`/`functionResponse` parts — so multi-step tool use works across all four adapters. Large tool results are offloaded to `~/.atelier/artifacts/`, and long sessions are compacted to a bounded summary before each request; the system prompt is kept out of compaction. MCP servers are configured in `mcpServers` in `~/.atelier/config.json` (`{ id, name, transport: "stdio", command, args? }` or `{ id, name, transport: "http" | "sse", url }`) and appear to the agent as `mcp__<server>__<tool>`; calls are approval-gated and deduplicated through the effect ledger; a server that exits mid-run is rebuilt for later calls, and the failed call is reported rather than retried. Edits and deletes are snapshotted in a shadow git repository under `~/.atelier/checkpoints/`; `GET /api/checkpoints` lists them, `POST /api/checkpoints/restore` restores one path, and `POST /api/checkpoints/restore-directory` restores the latest checkpoint of every file under a prefix; the History tab drives both. `GET/POST/DELETE /api/worktrees` manages isolated branches under `~/.atelier/worktrees/`. The Preview tab opens a directory-prefixed session through the sandboxed `/api/preview/<token>/` proxy, so relative and root-relative assets resolve against the target; external hosts and redirects are refused.
 
@@ -85,6 +85,11 @@ npm run bench:agent       # repeated agent tasks with Wilson/bootstrap/McNemar r
 ```text
 atelier/
 ├── .gitignore               <- transient state, builds and local DBs excluded
+├── assets/
+├── docs/
+├── evals/
+├── package-lock.json
+├── scratch-mcp-sse.py
 ├── LICENSE                  <- Aegean License 1.1 (AL-1.1)
 ├── COMMERCIAL.md            <- commercial licensing terms
 ├── LICENSES/                <- REUSE license texts
@@ -107,6 +112,41 @@ atelier/
 │   ├── diff.ts            <- bounded LCS line diff with context trimming
 │   ├── editPreview.ts     <- approval diff for a proposed write
 │   ├── search.ts          <- built-in walker, glob and text search (no rg needed)
+│   ├── approvals.ts          <- durable tool approvals with diff preview and decisions
+│   ├── attachments.ts        <- appends @-mentioned file contents to a prompt, secret files skipped
+│   ├── audit.ts              <- per-run audit findings from the event log
+│   ├── checkpoints.ts        <- shadow-git snapshots before edits, restore for undo
+│   ├── commands.ts           <- custom prompt commands, with skills exposed as slash commands
+│   ├── compaction.ts         <- context compaction and tool-output offload
+│   ├── effects.ts            <- idempotent effect journal so a replay never repeats a write
+│   ├── errors.ts             <- What/Why/Fix error reports
+│   ├── eval/                 <- fixture adapters, statistics and run comparison for the eval harness
+│   ├── eval.ts               <- eval suite runner and gates
+│   ├── evalRoutes.ts         <- eval HTTP routes
+│   ├── fork.ts               <- copy a conversation up to a message into a new one
+│   ├── hooks.ts              <- pre/post tool hook runner, exit code 2 vetoes a call
+│   ├── hosts.ts              <- Host header allow-list that blocks DNS rebinding
+│   ├── images.ts             <- content-addressed image blobs with an integrity check
+│   ├── mcp.ts                <- MCP client hub over stdio, http and sse
+│   ├── mcpEffects.ts         <- MCP tool calls under the effect journal
+│   ├── permissions.ts        <- read/edit/exec permission decisions and the secret-path policy
+│   ├── planRoutes.ts         <- plan HTTP routes
+│   ├── plans.ts              <- durable plan objects with revisions
+│   ├── preview.ts            <- loopback preview proxy and dev-server detection
+│   ├── previewRoutes.ts      <- preview HTTP routes
+│   ├── rules.ts              <- allow/deny permission rules with path and command normalisation
+│   ├── runRoutes.ts          <- run, approval, image, compact and fork HTTP routes
+│   ├── runner.ts             <- run lifecycle: lease, execute, resume, stop
+│   ├── runs.ts               <- run and step records and session events
+│   ├── skills.ts             <- SKILL.md discovery and scaffolding
+│   ├── summarize.ts          <- /compact: a summary through the configured provider
+│   ├── terminal.ts           <- workspace command execution with process-tree teardown
+│   ├── todos.ts              <- agent todo list storage
+│   ├── usage.ts              <- token, cost and context-window accounting
+│   ├── usageRoutes.ts        <- usage HTTP route
+│   ├── workspace.ts          <- workspace file and git operations
+│   ├── workspaceRoutes.ts    <- files, git, terminal, command and skill HTTP routes
+│   ├── worktrees.ts          <- git worktree add and remove
 │   └── providers/         <- four protocol adapters, catalog, memoized runner
 ├── src/
 │   ├── App.tsx            <- four-region workspace shell
@@ -125,6 +165,15 @@ atelier/
 │   ├── HistoryPanel.tsx   <- checkpoint history and directory restore
 │   ├── ActivityFeed.tsx   <- live per-run tool activity under the transcript
 │   ├── TodoStrip.tsx      <- agent todo list with progress and current step
+│   ├── DiffView.tsx          <- unified diff renderer
+│   ├── attachments.ts        <- separates typed text from attached file and image markers
+│   ├── context.ts            <- context meter label and level
+│   ├── images.ts             <- image file checks and base64 reading
+│   ├── main.tsx              <- React entry point
+│   ├── mention.ts            <- @ mention parsing and ranking
+│   ├── rules.ts              <- builds the Always allow rule from an approval
+│   ├── slash.ts              <- built-in slash commands and prompt templates
+│   ├── terminalStore.ts      <- bounded persisted terminal history
 │   ├── theme.css          <- every color and spacing token
 │   ├── api.ts             <- credentialed fetch + structured errors
 │   └── types.ts

@@ -449,4 +449,35 @@ describe("HTTP API", () => {
       db.close();
     }
   });
+
+  it("refuses requests addressed to a DNS name that is not local, even with a valid token", async () => {
+    const { app, db, auth } = makeApp();
+    try {
+      const authz = { authorization: `Bearer ${auth.token}` };
+      for (const host of ["evil.example", "evil.example:4317", "127.0.0.1.evil.example"]) {
+        const bootstrap = await app.request("/api/auth", { headers: { host } });
+        expect(bootstrap.status, host).toBe(421);
+        expect(bootstrap.headers.getSetCookie()).toEqual([]);
+        expect((await app.request("/api/health", { headers: { host, ...authz } })).status, host).toBe(421);
+        expect((await app.request("/", { headers: { host } })).status, host).toBe(421);
+      }
+      const body = (await (await app.request("/api/auth", { headers: { host: "evil.example" } })).json()) as { error: { code: string; fix: string } };
+      expect(body.error.code).toBe("HOST_REJECTED");
+      expect(body.error.fix).toMatch(/127\.0\.0\.1|localhost/);
+    } finally {
+      db.close();
+    }
+  });
+
+  it("still serves localhost, loopback and IP hosts", async () => {
+    const { app, db, auth } = makeApp();
+    try {
+      for (const host of ["localhost:4317", "127.0.0.1:4317", "[::1]:4317", "192.168.1.5:4317"]) {
+        const response = await app.request("/api/health", { headers: { host, authorization: `Bearer ${auth.token}` } });
+        expect(response.status, host).toBe(200);
+      }
+    } finally {
+      db.close();
+    }
+  });
 });

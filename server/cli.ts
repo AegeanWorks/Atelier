@@ -28,6 +28,7 @@ Environment:
   ATELIER_HOME       state directory (default ~/.atelier)
   ATELIER_PORT       default port
   ATELIER_WORKSPACE  workspace reported by /api/boot
+  ATELIER_ALLOWED_HOSTS  extra host names to answer to, comma separated
 `;
 
 export interface Options {
