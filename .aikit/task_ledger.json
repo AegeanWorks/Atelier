@@ -1,56 +1,17 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-hide-delegates",
+    "task_id": "atelier-a1-leaks",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794674734.6667376,
-    "owner": "claude:delegates",
-    "started_by": "claude:delegates",
+    "updated_at": 1794677144.704239,
+    "owner": "claude:a1",
+    "started_by": "claude:a1",
     "continuations": [],
-    "completed_at": 1794674740.2599747
+    "completed_at": 1794677156.5581427
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-review-hardening",
-      "phase": "resumed",
-      "phase_num": 2,
-      "description": "Resumed 'atelier-review-hardening' after a pause",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794659392.7964752,
-      "timestamp_str": "2026-11-14 15:29:52",
-      "agent": "claude:review"
-    },
-    {
-      "task_id": "atelier-review-hardening",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "[1/1] Review hardening shipped: attachments skip secret paths, resolveInside resolves real paths through links and fails closed, rules normalise edit paths and collapse command whitespace with Windows case folding for denies, image blobs written atomically and verified by content hash, one lint warning fixed, README note. 14 new tests all failing first for the right reasons, 305 integration and unit tests pass, tsc and lint clean, 10/10 gates. G-006 paired perf of the realpath check, interleaved 3 rounds: toolDispatchP95Ms with 4.56 mean vs without 4.65 mean, agentRunP95Ms with 31.4/23.1/22.4 vs without 21.0/22.3/24.9, no regression distinguishable from noise. No UI change. checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794659393.9560385,
-      "timestamp_str": "2026-11-14 15:29:53",
-      "agent": "claude:review",
-      "checklists": "passed",
-      "handoff": {
-        "state": "10/10 gates and uncommitted",
-        "next": "ask the user to authorize a commit then complete this task",
-        "open": "commit not authorized",
-        "evidence": "aikit fix atelier 10/10"
-      }
-    },
-    {
-      "task_id": "atelier-review-hardening",
-      "phase": "suspended",
-      "phase_num": 4,
-      "description": "Task 'atelier-review-hardening' suspended: Review hardening is built and verified (Phase 4 passed, 10/10 gates) but not delivered: commit delivery is not authorized because the host restricts git to explicit user requests and none was made (PRINCIPLE-018 R1). Resume to complete once the user asks for a commit.",
-      "status": "suspended",
-      "timestamp": 1794659400.4257321,
-      "timestamp_str": "2026-11-14 15:30:00",
-      "agent": "claude:review"
-    },
     {
       "task_id": "atelier-review-hardening",
       "phase": "resumed",
@@ -294,6 +255,57 @@
       "timestamp": 1794674740.2599766,
       "timestamp_str": "2026-11-14 19:45:40",
       "agent": "claude:delegates",
+      "delivery": {
+        "roots": [
+          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-a1-leaks",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan A milestone A1: close the cheap leaks found in the verified findings and pay the ADR debt: shellEnv module scrubbing secret-shaped and provider key variables from the agent bash tool and from MCP stdio servers (first start and restart) with a shellEnvPassthrough config list, isProtectedConfigPath so edits of .atelier .claude .agents AGENTS.md and CLAUDE.md are never auto-approved and headless --yes refuses them, and twelve retroactive ADRs 072 to 083 for this session's contract changes",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794676995.1584778,
+      "timestamp_str": "2026-11-14 20:23:15",
+      "agent": "claude:a1",
+      "impact_assessment": {
+        "why": "A real run showed the bash tool, terminal and hooks print fabricated provider keys, MCP servers inherit the whole environment even after a restart, and agent configuration can be rewritten with an ordinary approval; seven commits also lacked the ADRs that PRINCIPLE-004 R4 requires",
+        "benefits": "A prompt-injected command can no longer just print API keys, a prompt injection cannot silently plant a skill or instruction, and the decision register matches the code",
+        "risks": "contract: config gains shellEnvPassthrough and existing commands that read key or token variables lose them until listed, McpHub.open and ToolContext gain a parameter; dependency: none; concurrency: none, one config read per exec tool call; state: config.json schema field with a default so old files load",
+        "mitigation": "Fabricated values only, 21 tests written first and confirmed failing for the right reasons, a mutation test proved the MCP restart check can fail, hooks and terminal intentionally unchanged and tested, the README and FEATURES state it is not a sandbox, no UI file changed so no UI task is needed"
+      },
+      "plan_digest": "490b59078d113e1ddb36e83969c9cb0ea9613b6b5982997861628bc9079a8c03"
+    },
+    {
+      "task_id": "atelier-a1-leaks",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "[1/1] A1 shipped: server/shellEnv.ts, shellEnvPassthrough config field through the config route, bash tool and MCP stdio first start and restart use the scrubbed environment, isProtectedConfigPath in server/rules.ts with the rule engine asking and headless --yes refusing, ADRs 072 to 083, README tree and docs/FEATURES.md. 21 new tests written first (6 shell-env unit, 5 protected-path unit, 6 env-leak integration incl a mutation-checked MCP restart case, 4 protected-config headless, 1 api), the previous scratch probe is now a regression test with fabricated values, tsc clean, 510 tests across 104 files pass, 10/10 gates on the first run. Hot path: one config read and one small env copy per bash call only; read tools unchanged, agent-perf passed. No UI file changed so no UI task. checklists: passed",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794677144.704239,
+      "timestamp_str": "2026-11-14 20:25:44",
+      "agent": "claude:a1",
+      "checklists": "passed",
+      "handoff": {
+        "state": "10/10 gates",
+        "next": "A2 live-model result needs a model endpoint or key from the user",
+        "open": "standing commit permission, A2 inputs"
+      }
+    },
+    {
+      "task_id": "atelier-a1-leaks",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-a1-leaks' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794677156.5581446,
+      "timestamp_str": "2026-11-14 20:25:56",
+      "agent": "claude:a1",
       "delivery": {
         "roots": [
           "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
