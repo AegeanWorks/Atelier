@@ -125,6 +125,7 @@ atelier/
 │   ├── evalRoutes.ts         <- eval HTTP routes
 │   ├── fork.ts               <- copy a conversation up to a message into a new one
 │   ├── hooks.ts              <- pre/post tool hook runner, exit code 2 vetoes a call
+│   ├── liveStream.ts         <- in-memory channel for live token deltas, never stored
 │   ├── hosts.ts              <- Host header allow-list that blocks DNS rebinding
 │   ├── images.ts             <- content-addressed image blobs with an integrity check
 │   ├── mcp.ts                <- MCP client hub over stdio, http and sse

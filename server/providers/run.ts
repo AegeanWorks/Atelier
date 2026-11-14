@@ -88,7 +88,7 @@ export async function collectProvider(
   providerId: string,
   request: ChatRequest,
   signal: AbortSignal,
-  options: { replay?: boolean; memo?: boolean; env?: NodeJS.ProcessEnv; adapter?: ProviderAdapter } = {},
+  options: { replay?: boolean; memo?: boolean; env?: NodeJS.ProcessEnv; adapter?: ProviderAdapter; onEvent?: (event: StreamEvent) => void } = {},
 ): Promise<RunResult> {
   const started = performance.now();
   const memory = options.memo ?? options.adapter === undefined;
@@ -102,6 +102,11 @@ export async function collectProvider(
     for await (const event of streamProvider(config, secrets, providerId, request, signal, options.env, options.adapter)) {
       events.push(event);
       if (event.type === "provider.failover") activeProvider = event.to;
+      try {
+        options.onEvent?.(event);
+      } catch {
+        // an observer must never break the request it is watching
+      }
     }
   } catch (error) {
     events.push(errorEvent(error));

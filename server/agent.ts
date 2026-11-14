@@ -6,6 +6,7 @@ import { appendRunStep, appendSessionEvent, createRun, markRun, updateRunStep, t
 import { requestApproval } from "./approvals.js";
 import { compactMessages, offloadToolOutput } from "./compaction.js";
 import { runHooks, recordHookResults } from "./hooks.js";
+import { publishLive } from "./liveStream.js";
 import { evaluateRules } from "./rules.js";
 import { scrubbedEnv } from "./shellEnv.js";
 import { extractImages } from "./images.js";
@@ -125,7 +126,12 @@ export async function runAgent(
       }
     }
     const request: ChatRequest = { model, messages: context.messages, tools };
-    const result = await collectProvider(handle, config, secrets, providerId, request, signal, options.adapter === undefined ? {} : { adapter: options.adapter });
+    const result = await collectProvider(handle, config, secrets, providerId, request, signal, {
+      ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
+      onEvent: (event) => {
+        if (event.type === "text-delta") publishLive(run.session_id, { type: "text.delta", runId: run.id, step: stepIndex, text: event.text });
+      },
+    });
     lastHash = result.requestHash;
     lastProvider = result.providerId;
     if (result.usage !== null || result.replayed) {

@@ -27,6 +27,7 @@ import { createUsageRoutes } from "./usageRoutes.js";
 import { createPlanRoutes } from "./planRoutes.js";
 import { loadConfig, loadSecrets, providerStatuses } from "./state.js";
 import { hostAllowed } from "./hosts.js";
+import { subscribeLive } from "./liveStream.js";
 
 export interface AppDeps {
   paths: AtelierPaths;
@@ -230,31 +231,43 @@ export function createApp(deps: AppDeps): Hono<{ Variables: { authMode: string }
     const once = c.req.query("once") === "1";
     return streamSSE(c, async (stream) => {
       let lastSeq = Number.isFinite(after) ? after : 0;
+      // Durable events and live deltas share one stream, so their writes are serialised.
+      let chain: Promise<void> = Promise.resolve();
+      const send = (job: () => Promise<void>): Promise<void> => (chain = chain.then(job).catch(() => undefined));
       const write = async (event: { seq: number; type: string; data: string }): Promise<void> => {
-        await stream.writeSSE({ id: String(event.seq), event: event.type, data: event.data });
+        await send(() => stream.writeSSE({ id: String(event.seq), event: event.type, data: event.data }));
         lastSeq = event.seq;
       };
-      for (const event of listEvents(deps.db, session.id, lastSeq)) await write(event);
-      if (once) return;
-      let closed = false;
-      stream.onAbort(() => {
-        closed = true;
+      // Live deltas carry no id, so a reconnect with Last-Event-ID still resumes from durable events only.
+      const stopLive = subscribeLive(session.id, (event) => {
+        void send(() => stream.writeSSE({ event: event.type, data: JSON.stringify(event) }));
       });
-      let idleTicks = 0;
-      while (!closed) {
-        await stream.sleep(EVENT_POLL_MS);
-        if (closed) break;
-        const fresh = listEvents(deps.db, session.id, lastSeq);
-        if (fresh.length > 0) {
-          idleTicks = 0;
-          for (const event of fresh) await write(event);
-        } else {
-          idleTicks += 1;
-          if (idleTicks * EVENT_POLL_MS >= EVENT_HEARTBEAT_MS) {
+      stream.onAbort(stopLive);
+      try {
+        for (const event of listEvents(deps.db, session.id, lastSeq)) await write(event);
+        if (once) return;
+        let closed = false;
+        stream.onAbort(() => {
+          closed = true;
+        });
+        let idleTicks = 0;
+        while (!closed) {
+          await stream.sleep(EVENT_POLL_MS);
+          if (closed) break;
+          const fresh = listEvents(deps.db, session.id, lastSeq);
+          if (fresh.length > 0) {
             idleTicks = 0;
-            await stream.writeSSE({ event: "heartbeat", data: "{}" });
+            for (const event of fresh) await write(event);
+          } else {
+            idleTicks += 1;
+            if (idleTicks * EVENT_POLL_MS >= EVENT_HEARTBEAT_MS) {
+              idleTicks = 0;
+              await send(() => stream.writeSSE({ event: "heartbeat", data: "{}" }));
+            }
           }
         }
+      } finally {
+        stopLive();
       }
     });
   });
