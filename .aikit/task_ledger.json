@@ -1,63 +1,17 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-usage-and-docs",
-    "last_phase": "resumed",
+    "task_id": "atelier-host-guard",
+    "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794661004.736267,
-    "owner": "claude:commit",
-    "started_by": "claude:commit",
+    "updated_at": 1794661506.8410127,
+    "owner": "claude:host",
+    "started_by": "claude:host",
     "continuations": [],
-    "completed_at": 1794661005.0869517
+    "completed_at": 1794661519.5429306
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-context-meter",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-context-meter' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794641518.1600237,
-      "timestamp_str": "2026-11-14 10:31:58",
-      "agent": "claude:context"
-    },
-    {
-      "task_id": "atelier-skill-scaffold",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: skill scaffolding: createSkill in server/skills.ts writing a SKILL.md template with wx so nothing is overwritten, POST /api/skills with 201, 409 SKILL_EXISTS and 400, and a skill-new built-in that creates it, refreshes the command list and opens the file in the Files panel",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794657048.5546584,
-      "timestamp_str": "2026-11-14 14:50:48",
-      "agent": "claude:scaffold",
-      "impact_assessment": {
-        "why": "Skills existed but writing the first one meant knowing the folder layout and frontmatter by heart",
-        "benefits": "One line from idea to an editable skill that is immediately a slash command",
-        "risks": "contract: one additive POST route and one error code mapped to 409; dependency: none; concurrency: exclusive create flag so two creates cannot clobber each other; state: one new file under .atelier/skills in the workspace",
-        "mitigation": "Name restricted to a plain folder name so no path escape, description one line and clipped so frontmatter cannot break, existing skills from either folder are never overwritten, tests first at integration, http and ui levels"
-      },
-      "plan_digest": "476b6611cf6bdaae33c2c60385fd63231463457074685f67b4bf7edae2e5c250"
-    },
-    {
-      "task_id": "atelier-skill-scaffold",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "[1/1] Skill scaffolding shipped: createSkill and POST /api/skills with 409 SKILL_EXISTS, skill-new built-in in src/slash.ts and App, README. 14 new tests (8 integration incl http statuses and path-escape and frontmatter-injection rejections, 5 ui, plus type fixes), tsc clean, 164 ui tests pass, 10/10 gates first run. No hot-path change. G-007: slash menu now 16 built-ins, scripts/ui-slash-shots.mjs re-run on the real server, 390/768/1440, no horizontal scroll, menu inside viewport; no new visual surface beyond a notice and the existing Files editor. The real-server create was not exercised in the project workspace to avoid writing a skill into it, the http path is covered against a temp workspace. checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794657183.178546,
-      "timestamp_str": "2026-11-14 14:53:03",
-      "agent": "claude:scaffold",
-      "checklists": "passed",
-      "handoff": {
-        "state": "10/10 gates, uncommitted",
-        "next": "headless control surface, optional skill delete or rename",
-        "open": "commit not authorized, empty [object Object]/ folder for the user to delete",
-        "evidence": "aikit fix atelier 10/10"
-      }
-    },
     {
       "task_id": "atelier-skill-scaffold",
       "phase": "suspended",
@@ -276,6 +230,57 @@
       "timestamp": 1794661005.0869536,
       "timestamp_str": "2026-11-14 15:56:45",
       "agent": "claude:commit",
+      "delivery": {
+        "roots": [
+          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-host-guard",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan: close a DNS-rebinding hole: the server issued a session cookie and a readable csrf cookie from an unauthenticated bootstrap route and never looked at the Host header, so a page on an attacker domain rebound to 127.0.0.1 could reach the API including the terminal. Add server/hosts.ts and a first middleware that answers 421 HOST_REJECTED for any Host that is not localhost, a localhost subdomain, an IP literal or an operator listed name, with the list from ATELIER_ALLOWED_HOSTS",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794661160.8621771,
+      "timestamp_str": "2026-11-14 15:59:20",
+      "agent": "claude:host",
+      "impact_assessment": {
+        "why": "A local tool that can run commands must not be drivable by a web page; cookie, token and csrf checks all pass for an attacker whose own domain resolves to loopback",
+        "benefits": "Closes a remote-command-execution path for anyone who browses the web while atelier runs, with no change for normal use",
+        "risks": "contract: requests with a DNS-name Host other than localhost are now refused, so a reverse proxy or custom name needs ATELIER_ALLOWED_HOSTS; dependency: none; concurrency: stateless middleware; state: none",
+        "mitigation": "Reject by default, IP literals and localhost always allowed so LAN use and the vite dev proxy keep working, list entries validated so a typo cannot widen access, 6 unit and 2 http tests first, a real-socket check with forged Host headers, a real-browser control run"
+      },
+      "plan_digest": "16e1fc25d32ef1cbba830b60a177fd0f83aa3ba2cd73d95cef9237443d164050"
+    },
+    {
+      "task_id": "atelier-host-guard",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "[1/1] Host guard shipped: server/hosts.ts hostAllowed and parseAllowedHosts, first middleware in createApp answering 421 HOST_REJECTED before any cookie is issued, ATELIER_ALLOWED_HOSTS wired through main and help, README and docs/FEATURES.md. 8 new tests (6 unit, 2 http) written first, existing 24 api tests still pass, tsc clean, 10/10 gates. Real-socket proof against the running server: Host 127.0.0.1 and localhost answer 200 with a session cookie, Host evil.example and 127.0.0.1.evil.example answer 421 with no cookie. Real-browser control run through the real server unchanged at 390/768/1440. Also fixed README tree drift: committing made 43 tracked server and src files visible to the README tree gate, entries and descriptions added. No UI change. checklists: passed",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794661506.8410127,
+      "timestamp_str": "2026-11-14 16:05:06",
+      "agent": "claude:host",
+      "checklists": "passed",
+      "handoff": {
+        "state": "10/10 gates",
+        "next": "strict delivery also needs a human reviewed UI task for src changes",
+        "open": "UI task review needs the user"
+      }
+    },
+    {
+      "task_id": "atelier-host-guard",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-host-guard' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794661519.542934,
+      "timestamp_str": "2026-11-14 16:05:19",
+      "agent": "claude:host",
       "delivery": {
         "roots": [
           "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
