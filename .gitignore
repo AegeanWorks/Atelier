@@ -31,3 +31,5 @@ evals/results/
 
 # Stray folder created by an old path-handling bug (the name is literal text)
 \[object Object\]/
+# AIKit transient state
+.aikit/reforge.reviews/
