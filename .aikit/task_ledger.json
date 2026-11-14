@@ -1,60 +1,17 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-a4-streaming",
+    "task_id": "atelier-a4-acp",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794677706.8776336,
-    "owner": "claude:a4",
-    "started_by": "claude:a4",
+    "updated_at": 1794680742.3017843,
+    "owner": "claude:acp",
+    "started_by": "claude:acp",
     "continuations": [],
-    "completed_at": 1794677714.3132348
+    "completed_at": 1794680752.4115095
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-skill-scaffold",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-skill-scaffold' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794661003.7889323,
-      "timestamp_str": "2026-11-14 15:56:43",
-      "agent": "claude:commit",
-      "delivery": {
-        "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-review-hardening",
-      "phase": "resumed",
-      "phase_num": 4,
-      "description": "Resumed 'atelier-review-hardening' after a pause",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794661004.0981767,
-      "timestamp_str": "2026-11-14 15:56:44",
-      "agent": "claude:commit"
-    },
-    {
-      "task_id": "atelier-review-hardening",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-review-hardening' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794661004.42793,
-      "timestamp_str": "2026-11-14 15:56:44",
-      "agent": "claude:commit",
-      "delivery": {
-        "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
-        ],
-        "forced": false
-      }
-    },
     {
       "task_id": "atelier-usage-and-docs",
       "phase": "resumed",
@@ -330,6 +287,55 @@
       "timestamp": 1794677714.3132377,
       "timestamp_str": "2026-11-14 20:35:14",
       "agent": "claude:a4",
+      "delivery": {
+        "roots": [
+          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-a4-acp",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan A milestone A4 second half: an Agent Client Protocol v1 agent as atelier acp, hand-rolled under server/acp (JSON-RPC line peer, pure mappings, run bridge) instead of the SDK whose licence is unverified, bridging sessions to conversations, turns to runs, live deltas to message chunks, tool results to tool-call updates and durable approvals to session/request_permission, with cancellation, stop reasons, image and workspace link prompts, and a clean exit; ADR-087",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794678235.8073459,
+      "timestamp_str": "2026-11-14 20:43:55",
+      "agent": "claude:acp",
+      "impact_assessment": {
+        "why": "Atelier was reachable only through its browser UI and run command while Kilo and Vibe can be launched by editors over ACP, and the read of the ACP v1 pages showed the minimal agent is small",
+        "benefits": "Editors that speak ACP can use atelier as their agent without an extension, with approvals handled in the editor",
+        "risks": "contract: a new command and protocol surface to keep current, src/types.ts RuleConfig decision type gains ask so the shared helper typechecks; dependency: none added; concurrency: one turn per session enforced, peer answers requests without blocking so cancel is processed during a turn, writes serialised by a single stream; state: sessions live in memory for the connection and conversations are ordinary stored ones",
+        "mitigation": "Eight peer tests, eight mapping and two message tests and sixteen agent tests written first, permission handling mutation-checked, real-process end to end over stdio confirming JSON-only stdout and exit 0, no claim of editor or live-model verification, unsupported features listed in the docs and ADR"
+      },
+      "plan_digest": "d4b58f8d16698c3c344b726cf8681cb20d340f7d4fef1296d80c4efcfc8a569a"
+    },
+    {
+      "task_id": "atelier-a4-acp",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794680742.3017843,
+      "timestamp_str": "2026-11-14 21:25:42",
+      "agent": "claude:acp",
+      "checklists": "passed",
+      "handoff": {
+        "next": "commit ACP slice, then A5 headless"
+      }
+    },
+    {
+      "task_id": "atelier-a4-acp",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-a4-acp' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794680752.411511,
+      "timestamp_str": "2026-11-14 21:25:52",
+      "agent": "claude:acp",
       "delivery": {
         "roots": [
           "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
