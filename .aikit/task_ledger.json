@@ -3,32 +3,15 @@
   "active_task": {
     "task_id": "atelier-a5-budget",
     "last_phase": "verification",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794683209.9919684,
     "owner": "claude:a5",
     "started_by": "claude:a5",
-    "continuations": []
+    "continuations": [],
+    "completed_at": 1794683222.2414749
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-a1-leaks",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan A milestone A1: close the cheap leaks found in the verified findings and pay the ADR debt: shellEnv module scrubbing secret-shaped and provider key variables from the agent bash tool and from MCP stdio servers (first start and restart) with a shellEnvPassthrough config list, isProtectedConfigPath so edits of .atelier .claude .agents AGENTS.md and CLAUDE.md are never auto-approved and headless --yes refuses them, and twelve retroactive ADRs 072 to 083 for this session's contract changes",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794676995.1584778,
-      "timestamp_str": "2026-11-14 20:23:15",
-      "agent": "claude:a1",
-      "impact_assessment": {
-        "why": "A real run showed the bash tool, terminal and hooks print fabricated provider keys, MCP servers inherit the whole environment even after a restart, and agent configuration can be rewritten with an ordinary approval; seven commits also lacked the ADRs that PRINCIPLE-004 R4 requires",
-        "benefits": "A prompt-injected command can no longer just print API keys, a prompt injection cannot silently plant a skill or instruction, and the decision register matches the code",
-        "risks": "contract: config gains shellEnvPassthrough and existing commands that read key or token variables lose them until listed, McpHub.open and ToolContext gain a parameter; dependency: none; concurrency: none, one config read per exec tool call; state: config.json schema field with a default so old files load",
-        "mitigation": "Fabricated values only, 21 tests written first and confirmed failing for the right reasons, a mutation test proved the MCP restart check can fail, hooks and terminal intentionally unchanged and tested, the README and FEATURES state it is not a sandbox, no UI file changed so no UI task is needed"
-      },
-      "plan_digest": "490b59078d113e1ddb36e83969c9cb0ea9613b6b5982997861628bc9079a8c03"
-    },
     {
       "task_id": "atelier-a1-leaks",
       "phase": "verification",
@@ -344,6 +327,22 @@
       "handoff": {
         "next": "A3 leftovers (AGENTS.md chain)",
         "open": "A2 live model and A6 UI review need the user"
+      }
+    },
+    {
+      "task_id": "atelier-a5-budget",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-a5-budget' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794683222.2414775,
+      "timestamp_str": "2026-11-14 22:07:02",
+      "agent": "claude:a5",
+      "delivery": {
+        "roots": [
+          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+        ],
+        "forced": false
       }
     }
   ]
