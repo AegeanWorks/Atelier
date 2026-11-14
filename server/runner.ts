@@ -29,6 +29,8 @@ export interface ExecuteOptions {
   adapter?: import("./providers/types.js").ProviderAdapter;
   /** Caps the model turns of this run below the profile's default. */
   maxSteps?: number;
+  /** Stops the run once its priced spend reaches this many US dollars. */
+  maxBudgetUsd?: number;
 }
 
 const inflight = new Set<Promise<void>>();
@@ -85,6 +87,7 @@ async function runToCompletion(handle: DbHandle, runId: string, options: Execute
     const outcome = await runAgent(handle, config, secrets, run, providerId, model, controller.signal, {
       ...(options.approve === undefined ? {} : { approve: options.approve }),
       ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
+      ...(options.maxBudgetUsd === undefined ? {} : { maxBudgetUsd: options.maxBudgetUsd }),
       ...(options.maxSteps === undefined ? {} : { profile: { ...FULL_PROFILE, maxSteps: options.maxSteps } }),
     });
     if (outcome.status === "finished") {

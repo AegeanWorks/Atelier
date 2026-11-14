@@ -4,7 +4,7 @@ export const HELP = `atelier ${VERSION} - local agent workspace
 
 Usage:
   atelier [options]
-  atelier run <prompt> [--mode plan|build] [--session <id> | --continue] [--image <file>]... [--max-turns <n>] [--output-format text|json|stream-json] [--yes] [--json]
+  atelier run <prompt> [--mode plan|build] [--session <id> | --continue] [--image <file>]... [--max-turns <n>] [--max-budget-usd <x>] [--output-format text|json|stream-json] [--yes] [--json]
   atelier sessions [--json]
   atelier acp
   atelier --check
@@ -19,6 +19,7 @@ Options:
   --continue, -c   continue the most recent conversation
   --image <file>   attach a png, jpeg, gif or webp image (repeatable, at most 4)
   --max-turns <n>  stop a run after n model turns (1 to 200; the default is 40)
+  --max-budget-usd <x>  stop a run once its priced spend reaches x US dollars (above 0, at most 1000); needs a priced model
   --output-format <f>  text (the default), json (one result object, same as --json) or stream-json (one JSON object per line: every session event as it happens, then a final result)
   --yes            approve edits and commands for a headless build run
   --check          print runtime and path checks, then exit
@@ -61,6 +62,7 @@ export interface Options {
   /** NaN when the value was not a number, so validateRun can name it. */
   maxTurns: number | null;
   outputFormat: string;
+  maxBudgetUsd: number | null;
 }
 
 export function parse(argv: string[]): Options {
@@ -82,6 +84,7 @@ export function parse(argv: string[]): Options {
     yes: false,
     maxTurns: null,
     outputFormat: "text",
+    maxBudgetUsd: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index] ?? "";
@@ -109,6 +112,10 @@ export function parse(argv: string[]): Options {
       options.maxTurns = Number(next);
       index += 1;
     } else if (arg.startsWith("--max-turns=")) options.maxTurns = Number(arg.slice("--max-turns=".length));
+    else if (arg === "--max-budget-usd" && next !== undefined) {
+      options.maxBudgetUsd = Number(next);
+      index += 1;
+    } else if (arg.startsWith("--max-budget-usd=")) options.maxBudgetUsd = Number(arg.slice("--max-budget-usd=".length));
     else if (arg === "--output-format" && next !== undefined) {
       options.outputFormat = next;
       index += 1;
@@ -172,6 +179,13 @@ export function validateRun(options: Options): ValidationError | null {
       what: `unknown --output-format '${options.outputFormat}'.`,
       why: "--output-format is text, json or stream-json.",
       fix: "pass `--output-format json` for one result object or `--output-format stream-json` for a live line-per-event stream.",
+    };
+  }
+  if (options.maxBudgetUsd !== null && !(Number.isFinite(options.maxBudgetUsd) && options.maxBudgetUsd > 0 && options.maxBudgetUsd <= 1000)) {
+    return {
+      what: "--max-budget-usd must be a number above 0 and at most 1000.",
+      why: "it caps what one run may spend, in US dollars.",
+      fix: "pass for example `--max-budget-usd 0.50`, or drop it for no cap.",
     };
   }
   if (options.maxTurns !== null && (!Number.isInteger(options.maxTurns) || options.maxTurns < 1 || options.maxTurns > 200)) {

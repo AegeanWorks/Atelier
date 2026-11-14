@@ -174,4 +174,48 @@ describe("headless runs", () => {
     expect(new Set(seen.map((event) => event.seq)).size).toBe(seen.length);
     expect(seen.every((event) => typeof event.data === "object" && event.data !== null)).toBe(true);
   });
+
+  function pricedHome(): string {
+    const home = tempDir("atelier-headless-home-");
+    const paths = ensureHome(home);
+    saveConfig(paths, {
+      ...loadConfig(paths),
+      providers: [{ id: "fixture", name: "Fixture", protocol: "openai-chat", baseUrl: "http://127.0.0.1:1/v1", defaultModel: "fixture-model", models: [{ id: "fixture-model", pricing: { input: 1000, output: 0 } }] }],
+      defaults: { provider: "fixture", model: "fixture-model" },
+    });
+    return home;
+  }
+
+  function reads(withUsage: boolean): FixtureProviderAdapter {
+    const step = (id: string) => ({
+      events: [
+        { type: "tool-call" as const, id, name: "read_file", input: { path: `${id}.txt` } },
+        ...(withUsage ? [{ type: "usage" as const, promptTokens: 100, completionTokens: 0 }] : []),
+        { type: "finish" as const, reason: "tool_calls" as const },
+      ],
+    });
+    return new FixtureProviderAdapter({
+      provider: "fixture",
+      models: [{ id: "fixture-model" }],
+      responses: [step("r1"), step("r2"), step("r3"), { events: [{ type: "text-delta", text: "late" }, { type: "finish", reason: "stop" }] }],
+    });
+  }
+
+  it("stops a run once its priced spend reaches --max-budget-usd", async () => {
+    const result = await runHeadless({ homeDir: pricedHome(), workspace: tempDir("atelier-headless-ws-"), prompt: "read things", maxBudgetUsd: 0.15, adapter: reads(true) });
+    expect(result.status).toBe("blocked");
+    expect(result.reason).toBe("budget reached");
+    expect(result.steps).toBeLessThan(6);
+  });
+
+  it("lets a run finish while it stays under the budget", async () => {
+    const result = await runHeadless({ homeDir: pricedHome(), workspace: tempDir("atelier-headless-ws-"), prompt: "hi", maxBudgetUsd: 5, adapter: answer("fine") });
+    expect(result.status).toBe("finished");
+  });
+
+  it("refuses to continue under a budget when the model has no price, since the cap could not be enforced", async () => {
+    const result = await runHeadless({ homeDir: homeWithFixture(), workspace: tempDir("atelier-headless-ws-"), prompt: "read things", maxBudgetUsd: 1, adapter: reads(true) });
+    expect(result.status).toBe("blocked");
+    expect(result.reason).toBe("budget unpriced");
+  });
 });

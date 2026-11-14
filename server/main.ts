@@ -179,6 +179,7 @@ async function runCli(options: Options): Promise<number> {
       images: options.images,
       autoApprove: options.yes,
       ...(options.maxTurns === null ? {} : { maxTurns: options.maxTurns }),
+      ...(options.maxBudgetUsd === null ? {} : { maxBudgetUsd: options.maxBudgetUsd }),
       ...(options.outputFormat === "stream-json" ? { onEvent: (event: { seq: number; type: string; data: unknown }) => console.log(JSON.stringify({ type: "event", seq: event.seq, event: event.type, data: event.data })) } : {}),
     });
     if (options.outputFormat === "stream-json") {

@@ -88,4 +88,15 @@ describe("CLI parsing", () => {
     expect(validateRun(parse(["run", "x", "--output-format=xml"]))?.what).toMatch(/--output-format/);
     expect(validateRun(parse(["run", "x", "--output-format", "stream-json"]))).toBeNull();
   });
+
+  it("parses and validates --max-budget-usd", () => {
+    expect(HELP).toContain("--max-budget-usd");
+    expect(parse(["run", "x", "--max-budget-usd", "0.5"]).maxBudgetUsd).toBe(0.5);
+    expect(parse(["run", "x", "--max-budget-usd=2"]).maxBudgetUsd).toBe(2);
+    expect(parse(["run", "x"]).maxBudgetUsd).toBeNull();
+    for (const bad of ["0", "-1", "abc", "Infinity", "1001"]) {
+      expect(validateRun(parse(["run", "x", `--max-budget-usd=${bad}`]))?.what, bad).toMatch(/--max-budget-usd/);
+    }
+    expect(validateRun(parse(["run", "x", "--max-budget-usd", "3"]))).toBeNull();
+  });
 });

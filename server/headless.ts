@@ -20,6 +20,7 @@ export interface HeadlessOptions {
   images?: string[];
   autoApprove?: boolean;
   maxTurns?: number;
+  maxBudgetUsd?: number;
   /** Called once per session event of this run, in order, while the run works and once more when it ends. */
   onEvent?: (event: { seq: number; type: string; data: unknown }) => void;
   adapter?: ProviderAdapter;
@@ -130,6 +131,7 @@ export async function runHeadless(options: HeadlessOptions): Promise<HeadlessRes
       await executeRun(handle, active.id, {
         ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
         ...(options.maxTurns === undefined ? {} : { maxSteps: options.maxTurns }),
+        ...(options.maxBudgetUsd === undefined ? {} : { maxBudgetUsd: options.maxBudgetUsd }),
         approve: (_call, resource, action, explicitAsk) => {
           // --yes approves what the run asks for, except edits of the agent's own configuration and calls a permission
           // rule said to ask about: those need a person.

@@ -1,4 +1,4 @@
-import type { DbHandle } from "./db.js";
+﻿import type { DbHandle } from "./db.js";
 import { appendMessage, createSession, listMessages } from "./db.js";
 import { collectProvider } from "./providers/run.js";
 import type { ChatMessage, ChatRequest, StreamEvent } from "./providers/types.js";
@@ -89,7 +89,7 @@ export async function runAgent(
   providerId: string,
   model: string,
   signal: AbortSignal,
-  options: { profile?: HarnessProfile; adapter?: ProviderAdapter; approve?: (call: { id: string; name: string; input: unknown }, resource: string, action: string, explicitAsk: boolean) => boolean | Promise<boolean> } = {},
+  options: { profile?: HarnessProfile; maxBudgetUsd?: number; adapter?: ProviderAdapter; approve?: (call: { id: string; name: string; input: unknown }, resource: string, action: string, explicitAsk: boolean) => boolean | Promise<boolean> } = {},
 ): Promise<AgentOutcome> {
   const profile = options.profile ?? FULL_PROFILE;
   const mode = run.profile_id === "plan" || profile.permissions === "plan-readonly" ? "plan" : "build";
@@ -110,6 +110,8 @@ export async function runAgent(
   let lastCompaction = "";
 
   try {
+  let spentUsd = 0;
+  let unpriced = false;
   for (let stepIndex = 0; stepIndex < profile.maxSteps; stepIndex += 1) {
     const step = appendRunStep(handle, run.id, "llm_request", "running", { providerId, model, step: stepIndex }, null);
     const system = messages[0]?.role === "system" ? messages[0] : null;
@@ -137,6 +139,8 @@ export async function runAgent(
     if (result.usage !== null || result.replayed) {
       const usage = result.usage ?? { promptTokens: 0, completionTokens: 0 };
       const price = priceStep(config, result.providerId, model, usage, result.replayed);
+      spentUsd += price.costUsd;
+      if (!price.priced) unpriced = true;
       appendSessionEvent(handle, run.session_id, "llm.usage", {
         runId: run.id,
         step: stepIndex,
@@ -162,6 +166,11 @@ export async function runAgent(
       if (!finish) return { status: "blocked", text: "", reason: "provider returned no finish event", requestHash: lastHash, providerId: lastProvider };
       if (result.text.length === 0) return { status: "blocked", text: "", reason: "provider returned empty text", requestHash: lastHash, providerId: lastProvider };
       return { status: "finished", text: result.text, reason: null, requestHash: lastHash, providerId: lastProvider };
+    }
+    // A final answer is never thrown away for its cost; the budget only stops a run that wants to keep going.
+    if (options.maxBudgetUsd !== undefined) {
+      if (unpriced) return { status: "blocked", text: "", reason: "budget unpriced", requestHash: lastHash, providerId: lastProvider };
+      if (spentUsd >= options.maxBudgetUsd) return { status: "blocked", text: "", reason: "budget reached", requestHash: lastHash, providerId: lastProvider };
     }
     messages.push({
       role: "assistant",
