@@ -127,6 +127,25 @@ async function run(options: Options): Promise<void> {
   }
 }
 
+async function acpCli(): Promise<number> {
+  // stdout belongs to the protocol: nothing here may print to it.
+  try {
+    const { serveAcp } = await import("./acp/agent.js");
+    const { ensureHome } = await import("./config.js");
+    const { openDatabase, recoverOnBoot } = await import("./db.js");
+    const db = openDatabase(ensureHome(resolveHome()));
+    try {
+      recoverOnBoot(db);
+      await serveAcp(process.stdin, process.stdout, { db, version: VERSION });
+    } finally {
+      db.close();
+    }
+    return 0;
+  } catch (error) {
+    return printReport(error);
+  }
+}
+
 async function sessionsCli(options: Options): Promise<number> {
   try {
     const { listHeadlessSessions } = await import("./headless.js");
@@ -197,9 +216,10 @@ async function main(): Promise<number> {
   }
   if (options.command !== null) {
     if (options.command === "sessions") return sessionsCli(options);
+    if (options.command === "acp") return acpCli();
     if (options.command !== "run") {
       console.error(`What: unknown command '${options.command}'.`);
-      console.error("Why: the commands are run and sessions.");
+      console.error("Why: the commands are run, sessions and acp.");
       console.error("Fix: run `atelier --help` to see the accepted commands.");
       return 2;
     }

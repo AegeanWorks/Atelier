@@ -60,4 +60,10 @@ describe("CLI parsing", () => {
     expect(parse(["run", "x"]).images).toEqual([]);
     expect(HELP).toContain("--image");
   });
+
+  it("documents and parses the acp command", () => {
+    expect(HELP).toContain("atelier acp");
+    expect(HELP).toMatch(/Agent Client Protocol/);
+    expect(parse(["acp"]).command).toBe("acp");
+  });
 });

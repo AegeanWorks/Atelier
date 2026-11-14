@@ -68,7 +68,7 @@ export interface RuleConfig {
   id: string;
   action: "exec" | "edit";
   match: string;
-  decision: "allow" | "deny";
+  decision: "allow" | "ask" | "deny";
 }
 
 export interface ConfigView {

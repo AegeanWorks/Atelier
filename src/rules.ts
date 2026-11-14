@@ -1,4 +1,4 @@
-import type { RuleConfig } from "./types";
+import type { RuleConfig } from "./types.js";
 
 // Mirrors the server: a command with these operators is never auto-allowed, so offering a rule for it would be misleading.
 const SHELL_CONTROL = /&&|\|\||[;|&<>`\n\r]|\$\(/;

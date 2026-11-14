@@ -6,6 +6,7 @@ Usage:
   atelier [options]
   atelier run <prompt> [--mode plan|build] [--session <id> | --continue] [--image <file>]... [--yes] [--json]
   atelier sessions [--json]
+  atelier acp
   atelier --check
   atelier --doctor [--json]
 
@@ -21,6 +22,9 @@ Options:
   --check          print runtime and path checks, then exit
   --doctor         print state and database diagnostics, then exit
   --json           machine-readable output for run, --check and --doctor
+
+acp speaks the Agent Client Protocol on stdin and stdout so an editor such as Zed can launch atelier as its agent;
+it prints nothing else on stdout and logs to stderr.
   --help, -h       show this help
   --version        print the version
 
