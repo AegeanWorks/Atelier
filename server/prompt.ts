@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+﻿import { existsSync, readFileSync } from "node:fs";
+import { dirname, join, relative, resolve } from "node:path";
 import { loadSkills } from "./skills.js";
 
 export const WORKSPACE_INSTRUCTIONS_FILES = ["AGENTS.md", "CLAUDE.md"];
@@ -29,15 +29,33 @@ export interface SystemPromptOptions {
   platform?: NodeJS.Platform;
 }
 
-function readInstructions(workspace: string, maxChars: number): { file: string; text: string } | null {
+interface InstructionFile {
+  file: string;
+  /** The folder holding it, relative to the repository root ("." for the root itself). */
+  folder: string;
+  /** True when it is the workspace folder's own file. */
+  own: boolean;
+  text: string;
+}
+
+/** The nearest folder at or above `workspace` that holds a `.git` entry (a folder, or a file in a worktree), or null. */
+function repositoryRoot(workspace: string): string | null {
+  let dir = resolve(workspace);
+  for (;;) {
+    if (existsSync(join(dir, ".git"))) return dir;
+    const parent = dirname(dir);
+    if (parent === dir) return null;
+    dir = parent;
+  }
+}
+
+function readOne(dir: string): { file: string; text: string } | null {
   for (const name of WORKSPACE_INSTRUCTIONS_FILES) {
-    const path = join(workspace, name);
+    const path = join(dir, name);
     if (!existsSync(path)) continue;
     try {
       const text = readFileSync(path, "utf8").trim();
-      if (text.length === 0) continue;
-      const bounded = text.length <= maxChars ? text : `${text.slice(0, maxChars)}\n… truncated at ${maxChars} characters`;
-      return { file: name, text: bounded };
+      if (text.length > 0) return { file: name, text };
     } catch {
       continue;
     }
@@ -45,13 +63,43 @@ function readInstructions(workspace: string, maxChars: number): { file: string; 
   return null;
 }
 
+/**
+ * The instruction files of the workspace and of every folder above it up to the repository root, outermost first.
+ * Outside a repository only the workspace itself is read, so an unrelated parent folder never steers a run. The
+ * `maxChars` budget is shared and spent nearest first, so the most specific rules are the last to be cut.
+ */
+function readInstructions(workspace: string, maxChars: number): InstructionFile[] {
+  const start = resolve(workspace);
+  const root = repositoryRoot(start);
+  const dirs: string[] = [];
+  for (let dir = start; ; dir = dirname(dir)) {
+    dirs.push(dir);
+    if (root === null || dir === root || dirname(dir) === dir) break;
+  }
+  const found: InstructionFile[] = [];
+  let remaining = maxChars;
+  for (const dir of dirs) {
+    if (remaining <= 0) break;
+    const one = readOne(dir);
+    if (one === null) continue;
+    const text = one.text.length <= remaining ? one.text : `${one.text.slice(0, remaining)}\nâ€¦ truncated at ${maxChars} characters`;
+    remaining -= one.text.length;
+    found.push({ file: one.file, own: dir === start, folder: root === null ? "." : relative(root, dir).split("\\").join("/") || ".", text });
+  }
+  return found.reverse();
+}
+
 export function buildSystemPrompt(workspace: string, options: SystemPromptOptions = {}): string {
   const maxChars = options.maxChars ?? INSTRUCTIONS_MAX_CHARS;
   const parts = [BASE_PROMPT];
   parts.push(`Workspace: ${workspace}\nPlatform: ${options.platform ?? process.platform}`);
   const instructions = readInstructions(workspace, maxChars);
-  if (instructions !== null) {
-    parts.push(`The workspace provides ${instructions.file} with project instructions. Follow it unless it conflicts with the safety rules above.\n\n<${instructions.file}>\n${instructions.text}\n</${instructions.file}>`);
+  const only = instructions[0];
+  if (instructions.length === 1 && only !== undefined && only.own) {
+    parts.push(`The workspace provides ${only.file} with project instructions. Follow it unless it conflicts with the safety rules above.\n\n<${only.file}>\n${only.text}\n</${only.file}>`);
+  } else if (instructions.length > 0) {
+    const blocks = instructions.map((entry) => `<${entry.file} path="${entry.folder}">\n${entry.text}\n</${entry.file}>`).join("\n\n");
+    parts.push(`The workspace and the folders above it up to the repository root provide project instructions, listed outermost first. Where they disagree, the nearest to the workspace wins. Follow them unless they conflict with the safety rules above.\n\n${blocks}`);
   }
   const skills = loadSkills(workspace);
   if (skills.length > 0) {
