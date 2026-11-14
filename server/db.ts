@@ -455,10 +455,16 @@ export function createSession(handle: DbHandle, title: string): SessionRow {
   return session;
 }
 
+/**
+ * Sessions a delegate call created for its helper run. They are internal: a run for a parent run is how they are told
+ * apart from ordinary conversations, and they stay readable by id so audit trails and the Task panel keep working.
+ */
+export const DELEGATE_SESSIONS_SQL = "SELECT session_id FROM runs WHERE parent_run_id IS NOT NULL";
+
 export function listSessions(handle: DbHandle, options: { archived?: boolean } = {}): SessionRow[] {
   const archived = options.archived === true ? 1 : 0;
   return handle.db
-    .prepare("SELECT id, title, created, updated, pinned, archived FROM sessions WHERE archived = ? ORDER BY pinned DESC, updated DESC")
+    .prepare(`SELECT id, title, created, updated, pinned, archived FROM sessions WHERE archived = ? AND id NOT IN (${DELEGATE_SESSIONS_SQL}) ORDER BY pinned DESC, updated DESC`)
     .all(archived) as SessionRow[];
 }
 

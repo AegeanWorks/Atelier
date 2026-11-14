@@ -5,7 +5,7 @@ import { forkSession } from "./fork.js";
 import { compactSession } from "./summarize.js";
 import { z } from "zod";
 import { AtelierError } from "./config.js";
-import { getSession, listEvents, listMessages, listSessions, type DbHandle } from "./db.js";
+import { DELEGATE_SESSIONS_SQL, getSession, listEvents, listMessages, listSessions, type DbHandle } from "./db.js";
 import { resumeRun, startSessionRun, stopSessionRun } from "./runner.js";
 import { getRun, listRunSteps, listRuns } from "./runs.js";
 import { auditRun } from "./audit.js";
@@ -172,10 +172,10 @@ export function createRunRoutes(deps: RunRouteDeps): Hono {
     if (query.length === 0) return c.json({ sessions: [], messages: [] });
     const like = `%${query}%`;
     const sessions = deps.db.db
-      .prepare("SELECT id, title, created, updated FROM sessions WHERE archived = 0 AND title LIKE ? ORDER BY updated DESC LIMIT 20")
+      .prepare(`SELECT id, title, created, updated FROM sessions WHERE archived = 0 AND title LIKE ? AND id NOT IN (${DELEGATE_SESSIONS_SQL}) ORDER BY updated DESC LIMIT 20`)
       .all(like);
     const messages = deps.db.db
-      .prepare("SELECT id, session_id, seq, role, text, created FROM messages WHERE text LIKE ? ORDER BY created DESC LIMIT 20")
+      .prepare(`SELECT id, session_id, seq, role, text, created FROM messages WHERE text LIKE ? AND session_id NOT IN (${DELEGATE_SESSIONS_SQL}) ORDER BY created DESC LIMIT 20`)
       .all(like);
     return c.json({ sessions, messages });
   });
