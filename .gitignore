@@ -6,4 +6,28 @@
 .aikit/*.log
 __pycache__/
 *.py[cod]
+
+# Node
 node_modules/
+dist/
+dist-server/
+coverage/
+shots/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+
+# Local runtime (never track a DB, token, trace or checkpoint)
+.atelier/
+.atelier-home/
+*.db
+*.db-wal
+*.db-shm
+*.bak
+*.corrupt-*
+tmp/
+.tmp_*
+evals/results/
+
+# Stray folder created by an old path-handling bug (the name is literal text)
+\[object Object\]/

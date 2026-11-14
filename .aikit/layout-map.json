@@ -1,3 +1,25 @@
 {
-  "controls": []
+  "controls": [
+    { "name": "app-shell", "role": "main" },
+    { "name": "new-conversation", "role": "button" },
+    { "name": "conversation-list", "role": "list" },
+    { "name": "composer", "role": "form" },
+    { "name": "send-button", "role": "button" },
+    { "name": "workspace-tabs", "role": "tablist" },
+    { "name": "statusbar", "role": "contentinfo" },
+    { "name": "open-palette", "role": "button" },
+    { "name": "command-palette", "role": "dialog" },
+    { "name": "terminal-drawer", "role": "region" },
+    { "name": "settings-panel", "role": "region" },
+    { "name": "provider-list", "role": "list" },
+    { "name": "add-provider", "role": "form" },
+    { "name": "provider-name", "role": "textbox" },
+    { "name": "provider-url", "role": "textbox" },
+    { "name": "save-roles", "role": "button" },
+    { "name": "stop-run", "role": "button" },
+    { "name": "files-panel", "role": "region" },
+    { "name": "git-panel", "role": "region" },
+    { "name": "terminal-panel", "role": "region" },
+    { "name": "evals-panel", "role": "region" }
+  ]
 }

@@ -16,8 +16,20 @@
     "vite",
     "typescript"
   ],
-  "gates": {},
-  "ui_required": false,
+  "gates": {
+    "agent-perf": "npm run test:agent-perf",
+    "agent-bench": "npm run test:agent-bench"
+  },
+  "ui_required": true,
   "mechanics_required": false,
-  "created": "2026-11-08"
+  "created": "2026-11-08",
+  "has_ui": true,
+  "ui_kind": "web",
+  "ui_evidence": [
+    "index.html",
+    "package.json",
+    "src/App.tsx"
+  ],
+  "ui_checked_at": "2026-11-14",
+  "ui_source": "manual"
 }

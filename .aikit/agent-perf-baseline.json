@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "createdAt": 1794250872930,
+  "budgets": {
+    "agentRunP95Ms": 150,
+    "toolDispatchP95Ms": 10,
+    "commitP95Ms": 5,
+    "sessionSwitchP95Ms": 80,
+    "compactionP50Ms": 5
+  },
+  "metrics": {
+    "agentRunP50Ms": 15.59,
+    "agentRunP95Ms": 21.85,
+    "toolDispatchP50Ms": 2.72,
+    "toolDispatchP95Ms": 4.4,
+    "commitP50Ms": 2.08,
+    "commitP95Ms": 4,
+    "sessionSwitchP50Ms": 1.63,
+    "sessionSwitchP95Ms": 3.13,
+    "compactionP50Ms": 0.39,
+    "compactionP95Ms": 0.97
+  }
+}

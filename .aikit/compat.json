@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "kind": "headless",
-  "has_ui": false,
+  "kind": "ui",
+  "has_ui": true,
   "commands": {
-    "inventory": "python inventory.py",
-    "scripted": "python demo.py --scripted"
+    "inventory": "node scripts/ui-inventory.mjs",
+    "scripted": "node scripts/dogfood.mjs"
   },
   "seed": {
     "flag": "--seed",
@@ -19,9 +19,9 @@
     "file": ".aikit/evidence.json"
   },
   "screenshots": {
-    "dir": "assets/screenshots",
-    "before": "",
-    "after": ""
+    "dir": "shots",
+    "before": "shots/atelier-before.png",
+    "after": "shots/atelier-after.png"
   },
   "hooks": {
     "layout_map": ".aikit/layout-map.json",
