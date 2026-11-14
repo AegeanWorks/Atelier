@@ -1,56 +1,17 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-a3-conventions",
+    "task_id": "atelier-a4-streaming",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794677438.664126,
-    "owner": "claude:a3",
-    "started_by": "claude:a3",
+    "updated_at": 1794677706.8776336,
+    "owner": "claude:a4",
+    "started_by": "claude:a4",
     "continuations": [],
-    "completed_at": 1794677446.5603213
+    "completed_at": 1794677714.3132348
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-usage-and-docs",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "[1/1] Delegated usage and README relief shipped: summarizeUsage takes delegated events and reports delegated requests and cost, readUsage finds child sessions through parent_run_id and skips them for the all-conversations view, last stays the conversation's own request, Usage panel shows of which sub-agents, feature notes moved verbatim to docs/FEATURES.md with the README down from 29793 to 20606 characters. 12 new tests (4 unit, 4 integration, 2 ui, plus fixtures), tsc clean, 160 ui tests pass, 10/10 gates first run. No hot path change beyond one extra read-only query on the usage endpoint. G-007: one extra text row in the Usage panel, not separately captured. checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794659752.2004614,
-      "timestamp_str": "2026-11-14 15:35:52",
-      "agent": "claude:review",
-      "checklists": "passed",
-      "handoff": {
-        "state": "10/10 gates and uncommitted",
-        "next": "ask the user to authorize a commit then complete both suspended tasks",
-        "open": "commit not authorized",
-        "evidence": "aikit fix atelier 10/10"
-      }
-    },
-    {
-      "task_id": "atelier-usage-and-docs",
-      "phase": "suspended",
-      "phase_num": 4,
-      "description": "Task 'atelier-usage-and-docs' suspended: Delegated usage and the README relief are built and verified (Phase 4 passed, 10/10 gates) but not delivered: commit delivery is not authorized because the host restricts git to explicit user requests and none was made (PRINCIPLE-018 R1). Resume to complete once the user asks for a commit.",
-      "status": "suspended",
-      "timestamp": 1794659752.5343845,
-      "timestamp_str": "2026-11-14 15:35:52",
-      "agent": "claude:review"
-    },
-    {
-      "task_id": "atelier-skill-scaffold",
-      "phase": "resumed",
-      "phase_num": 4,
-      "description": "Resumed 'atelier-skill-scaffold' after a pause",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794661003.4631226,
-      "timestamp_str": "2026-11-14 15:56:43",
-      "agent": "claude:commit"
-    },
     {
       "task_id": "atelier-skill-scaffold",
       "phase": "completed",
@@ -318,6 +279,57 @@
       "timestamp": 1794677446.560323,
       "timestamp_str": "2026-11-14 20:30:46",
       "agent": "claude:a3",
+      "delivery": {
+        "roots": [
+          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-a4-streaming",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan A milestone A4 first half: live token deltas on an in-memory per-session channel (server/liveStream.ts), an onEvent observer on collectProvider, the agent loop publishing text.delta, and the SSE endpoint forwarding them without an id and serialised with durable frames; ADR-086. The ACP agent and the UI drawing of deltas are separate tasks",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794677582.4483502,
+      "timestamp_str": "2026-11-14 20:33:02",
+      "agent": "claude:a4",
+      "impact_assessment": {
+        "why": "Provider output was collected whole so no client could show an answer as it formed, and it is the prerequisite for a good ACP agent",
+        "benefits": "Clients and an in-process ACP agent can show text as it is produced without the cost and replay problems of logging every token",
+        "risks": "contract: a new SSE event type text.delta and an onEvent option; dependency: none; concurrency: SSE writes from two sources are serialised through one promise chain and unsubscribed on abort; state: none, deltas are not persisted",
+        "mitigation": "Ten tests written first, a faulty subscriber and a client disconnect both covered, per-delta cost measured directly at 3.5 ns with no subscriber and 20 ns with one because whole-run P95 is too noisy to show it, no src file changed"
+      },
+      "plan_digest": "77970d3e934e91cf53bb776611a0e00a0dc998aa9e8263de7656c11ca39dc114"
+    },
+    {
+      "task_id": "atelier-a4-streaming",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "[1/1] A4 first half shipped: server/liveStream.ts, collectProvider onEvent, text.delta published from the agent loop, SSE forwarding without id serialised with durable frames and unsubscribed on abort, docs and ADR-086, README tree. 10 new tests written first (5 unit, 5 integration covering deltas adding up to the stored answer, nothing written to the event log, wire frames without ids, and a client disconnect), existing 24 api tests still pass, tsc clean, 10/10 gates first run. G-006: per-delta cost measured directly because whole-run P95 is too noisy on this machine: 3.5 ns with no subscriber, 20 ns with one subscriber, for answers that take hundreds of milliseconds to produce. No src file changed so no UI task; the UI does not draw deltas yet. checklists: passed",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794677706.8776336,
+      "timestamp_str": "2026-11-14 20:35:06",
+      "agent": "claude:a4",
+      "checklists": "passed",
+      "handoff": {
+        "state": "10/10 gates",
+        "next": "ACP agent over stdio on top of liveStream, or A2 when a model is available",
+        "open": "standing commit permission"
+      }
+    },
+    {
+      "task_id": "atelier-a4-streaming",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-a4-streaming' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794677714.3132377,
+      "timestamp_str": "2026-11-14 20:35:14",
+      "agent": "claude:a4",
       "delivery": {
         "roots": [
           "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
