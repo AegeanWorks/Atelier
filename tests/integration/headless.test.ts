@@ -160,4 +160,18 @@ describe("headless runs", () => {
     expect(result.status).toBe("blocked");
     expect(result.reason).toBe("step cap reached");
   });
+
+  it("reports each session event once, in order, while the run works", async () => {
+    const home = homeWithFixture();
+    const workspace = tempDir("atelier-headless-ws-");
+    const seen: Array<{ seq: number; type: string; data: unknown }> = [];
+    const result = await runHeadless({ homeDir: home, workspace, prompt: "summarise", adapter: answer("done"), onEvent: (event) => void seen.push(event) });
+    expect(result.status).toBe("finished");
+    const types = seen.map((event) => event.type);
+    expect(types).toContain("run.started");
+    expect(types[types.length - 1]).toBe("run.finished");
+    expect(seen.map((event) => event.seq)).toEqual([...seen.map((event) => event.seq)].sort((a, b) => a - b));
+    expect(new Set(seen.map((event) => event.seq)).size).toBe(seen.length);
+    expect(seen.every((event) => typeof event.data === "object" && event.data !== null)).toBe(true);
+  });
 });

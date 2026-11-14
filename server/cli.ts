@@ -4,7 +4,7 @@ export const HELP = `atelier ${VERSION} - local agent workspace
 
 Usage:
   atelier [options]
-  atelier run <prompt> [--mode plan|build] [--session <id> | --continue] [--image <file>]... [--max-turns <n>] [--yes] [--json]
+  atelier run <prompt> [--mode plan|build] [--session <id> | --continue] [--image <file>]... [--max-turns <n>] [--output-format text|json|stream-json] [--yes] [--json]
   atelier sessions [--json]
   atelier acp
   atelier --check
@@ -19,6 +19,7 @@ Options:
   --continue, -c   continue the most recent conversation
   --image <file>   attach a png, jpeg, gif or webp image (repeatable, at most 4)
   --max-turns <n>  stop a run after n model turns (1 to 200; the default is 40)
+  --output-format <f>  text (the default), json (one result object, same as --json) or stream-json (one JSON object per line: every session event as it happens, then a final result)
   --yes            approve edits and commands for a headless build run
   --check          print runtime and path checks, then exit
   --doctor         print state and database diagnostics, then exit
@@ -59,6 +60,7 @@ export interface Options {
   yes: boolean;
   /** NaN when the value was not a number, so validateRun can name it. */
   maxTurns: number | null;
+  outputFormat: string;
 }
 
 export function parse(argv: string[]): Options {
@@ -79,6 +81,7 @@ export function parse(argv: string[]): Options {
     images: [],
     yes: false,
     maxTurns: null,
+    outputFormat: "text",
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index] ?? "";
@@ -106,6 +109,10 @@ export function parse(argv: string[]): Options {
       options.maxTurns = Number(next);
       index += 1;
     } else if (arg.startsWith("--max-turns=")) options.maxTurns = Number(arg.slice("--max-turns=".length));
+    else if (arg === "--output-format" && next !== undefined) {
+      options.outputFormat = next;
+      index += 1;
+    } else if (arg.startsWith("--output-format=")) options.outputFormat = arg.slice("--output-format=".length);
     else if (arg === "--yes" || arg === "-y") options.yes = true;
     else if (arg === "--port" && next !== undefined) {
       options.port = next;
@@ -128,6 +135,7 @@ export function parse(argv: string[]): Options {
     else if (options.prompt === null) options.prompt = arg;
     else options.prompt = `${options.prompt} ${arg}`;
   }
+  if (options.json && options.outputFormat === "text") options.outputFormat = "json";
   return options;
 }
 
@@ -157,6 +165,13 @@ export function validateRun(options: Options): ValidationError | null {
       what: `unknown mode '${options.mode}'.`,
       why: "modes are plan (read-only) and build (writes need approval).",
       fix: "pass `--mode plan` or `--mode build`.",
+    };
+  }
+  if (options.outputFormat !== "text" && options.outputFormat !== "json" && options.outputFormat !== "stream-json") {
+    return {
+      what: `unknown --output-format '${options.outputFormat}'.`,
+      why: "--output-format is text, json or stream-json.",
+      fix: "pass `--output-format json` for one result object or `--output-format stream-json` for a live line-per-event stream.",
     };
   }
   if (options.maxTurns !== null && (!Number.isInteger(options.maxTurns) || options.maxTurns < 1 || options.maxTurns > 200)) {

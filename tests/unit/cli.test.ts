@@ -78,4 +78,14 @@ describe("CLI parsing", () => {
     }
     expect(validateRun(parse(["run", "x", "--max-turns", "3"]))).toBeNull();
   });
+
+  it("parses --output-format and keeps --json as its short form", () => {
+    expect(HELP).toContain("--output-format");
+    expect(parse(["run", "x"]).outputFormat).toBe("text");
+    expect(parse(["run", "x", "--json"]).outputFormat).toBe("json");
+    expect(parse(["run", "x", "--output-format", "stream-json"]).outputFormat).toBe("stream-json");
+    expect(parse(["run", "x", "--output-format=json"]).outputFormat).toBe("json");
+    expect(validateRun(parse(["run", "x", "--output-format=xml"]))?.what).toMatch(/--output-format/);
+    expect(validateRun(parse(["run", "x", "--output-format", "stream-json"]))).toBeNull();
+  });
 });

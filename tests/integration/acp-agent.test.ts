@@ -8,7 +8,7 @@ import { JsonRpcPeer, RpcError } from "../../server/acp/rpc";
 import { ensureHome } from "../../server/config";
 import { appendMessage, getSession, listMessages, openDatabase, type DbHandle } from "../../server/db";
 import { FixtureProviderAdapter } from "../../server/eval/fixtures";
-import { executeRun } from "../../server/runner";
+import { executeRun, stopSessionRun, whenRunsSettled } from "../../server/runner";
 import { createRun } from "../../server/runs";
 import { loadConfig, saveConfig } from "../../server/state";
 
@@ -21,7 +21,13 @@ function tempDir(prefix: string): string {
   dirs.push(dir);
   return dir;
 }
-afterEach(() => {
+afterEach(async () => {
+  // A run left waiting for an approval (for example by a failed test) would hold the teardown until its own timeout.
+  for (const handle of handles) {
+    const waiting = handle.db.prepare("SELECT DISTINCT session_id FROM runs WHERE status = 'running'").all() as Array<{ session_id: string }>;
+    for (const row of waiting) stopSessionRun(handle, row.session_id);
+  }
+  await whenRunsSettled();
   for (const handle of handles.splice(0)) handle.close();
   for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 });
@@ -43,6 +49,10 @@ interface Client {
   workspace: string;
   home: string;
   handle: DbHandle;
+  /** Close the client's end, as an editor does when it exits. */
+  end: () => void;
+  /** Resolves when the agent has shut down. */
+  done: Promise<void>;
 }
 
 function setup(adapter?: FixtureProviderAdapter): Client {
@@ -85,7 +95,7 @@ function setup(adapter?: FixtureProviderAdapter): Client {
     onClose: () => undefined,
   });
   client.start();
-  serveAcp(toAgent, fromAgent, {
+  const done = serveAcp(toAgent, fromAgent, {
     db: handle,
     version: "0.1.0",
     pollMs: 15,
@@ -110,6 +120,8 @@ function setup(adapter?: FixtureProviderAdapter): Client {
     workspace,
     home,
     handle,
+    end: () => toAgent.end(),
+    done,
   };
 }
 
@@ -306,6 +318,25 @@ describe("ACP agent: tools and permissions", () => {
     const result = (await turn) as { stopReason: string };
     expect(result.stopReason).toBe("cancelled");
     expect(existsSync(join(client.workspace, "out.txt"))).toBe(false);
+  });
+
+  it("settles its run before it reports that it has shut down, so the database can be closed safely", async () => {
+    const client = setup(writer("out.txt"));
+    const id = await started(client);
+    let asked: () => void = () => undefined;
+    const permissionAsked = new Promise<void>((resolve) => (asked = resolve));
+    client.permission.handler = () => {
+      asked();
+      return new Promise(() => undefined);
+    };
+    void client.call("session/prompt", { sessionId: id, prompt: prompt("write it") }).catch(() => undefined);
+    await permissionAsked;
+    client.end();
+    await client.done;
+    const leases = client.handle.db.prepare("SELECT COUNT(*) AS n FROM leases").get() as { n: number };
+    expect(leases.n).toBe(0);
+    const running = client.handle.db.prepare("SELECT COUNT(*) AS n FROM runs WHERE status = 'running'").get() as { n: number };
+    expect(running.n).toBe(0);
   });
 
   it("reports a read-only tool as one completed call with its output", async () => {

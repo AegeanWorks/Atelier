@@ -9,7 +9,7 @@ import { attachImages, saveImage } from "../images.js";
 import { subscribeLive } from "../liveStream.js";
 import { resolveApproval } from "../approvals.js";
 import { isProtectedConfigPath } from "../rules.js";
-import { startSessionRun, stopSessionRun } from "../runner.js";
+import { startSessionRun, stopSessionRun, whenRunsSettled } from "../runner.js";
 import { loadConfig, saveConfig } from "../state.js";
 import { blockMessage, convertPrompt, stopReasonFor, toolKind, toolTitle, type StopReason } from "./mapping.js";
 import { JsonRpcPeer, RPC_CODES, RpcError } from "./rpc.js";
@@ -252,7 +252,8 @@ export function serveAcp(input: Readable, output: Writable, deps: AcpDeps): Prom
       },
       onClose: () => {
         for (const id of sessions.keys()) stopSessionRun(db, id);
-        resolve();
+        // A stopped run is still unwinding (it releases its lease); the caller closes the database once this resolves.
+        void whenRunsSettled().then(resolve, resolve);
       },
     });
     peer.start();

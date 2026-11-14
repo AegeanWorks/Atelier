@@ -1,4 +1,4 @@
-import { AtelierError, ensureHome, resolveHome } from "./config.js";
+﻿import { AtelierError, ensureHome, resolveHome } from "./config.js";
 import { attachMentionedFiles } from "./attachments.js";
 import { attachImages, saveImageFile } from "./images.js";
 import { isProtectedConfigPath } from "./rules.js";
@@ -20,6 +20,8 @@ export interface HeadlessOptions {
   images?: string[];
   autoApprove?: boolean;
   maxTurns?: number;
+  /** Called once per session event of this run, in order, while the run works and once more when it ends. */
+  onEvent?: (event: { seq: number; type: string; data: unknown }) => void;
   adapter?: ProviderAdapter;
 }
 
@@ -101,7 +103,7 @@ export async function runHeadless(options: HeadlessOptions): Promise<HeadlessRes
         throw new AtelierError("HEADLESS_SESSION", "Session not found.", sessionId, "List sessions with `atelier --check`, or omit --session to start a new one.");
       }
     } else {
-      sessionId = createSession(handle, prompt.length > 60 ? `${prompt.slice(0, 57)}…` : prompt).id;
+      sessionId = createSession(handle, prompt.length > 60 ? `${prompt.slice(0, 57)}â€¦` : prompt).id;
     }
     appendMessage(handle, sessionId, "user", attachImages(paths, attachMentionedFiles(workspace, prompt), imageIds), null);
     const run = createRun(handle, sessionId, null, null, workspace);
@@ -109,21 +111,41 @@ export async function runHeadless(options: HeadlessOptions): Promise<HeadlessRes
     handle.db.prepare("UPDATE runs SET profile_id = ?, workspace = ? WHERE id = ?").run(mode, workspace, run.id);
     const active = getRun(handle, run.id) ?? run;
     const autoApprove = options.autoApprove === true;
-    await executeRun(handle, active.id, {
-      ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
-      ...(options.maxTurns === undefined ? {} : { maxSteps: options.maxTurns }),
-      approve: (_call, resource, action, explicitAsk) => {
-        // --yes approves what the run asks for, except edits of the agent's own configuration and calls a permission
-        // rule said to ask about: those need a person.
-        if (autoApprove) return !explicitAsk && !(action === "edit" && isProtectedConfigPath(resource));
-        throw new AtelierError(
-          "HEADLESS_APPROVAL",
-          "A tool needed approval, but headless runs have no approver.",
-          "Build mode pauses writes and commands for a human decision.",
-          "Re-run with `--yes` to approve edits and commands for this run, or use `--mode plan` for a read-only run.",
-        );
-      },
-    });
+    let lastSeq = listEvents(handle, sessionId).reduce((max, event) => Math.max(max, event.seq), 0);
+    const emitNew = (): void => {
+      if (options.onEvent === undefined) return;
+      for (const event of listEvents(handle, sessionId as string, lastSeq)) {
+        lastSeq = event.seq;
+        let data: unknown = {};
+        try {
+          data = JSON.parse(event.data);
+        } catch {
+          data = { raw: event.data };
+        }
+        options.onEvent({ seq: event.seq, type: event.type, data });
+      }
+    };
+    const watcher = options.onEvent === undefined ? null : setInterval(emitNew, 50);
+    try {
+      await executeRun(handle, active.id, {
+        ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
+        ...(options.maxTurns === undefined ? {} : { maxSteps: options.maxTurns }),
+        approve: (_call, resource, action, explicitAsk) => {
+          // --yes approves what the run asks for, except edits of the agent's own configuration and calls a permission
+          // rule said to ask about: those need a person.
+          if (autoApprove) return !explicitAsk && !(action === "edit" && isProtectedConfigPath(resource));
+          throw new AtelierError(
+            "HEADLESS_APPROVAL",
+            "A tool needed approval, but headless runs have no approver.",
+            "Build mode pauses writes and commands for a human decision.",
+            "Re-run with `--yes` to approve edits and commands for this run, or use `--mode plan` for a read-only run.",
+          );
+        },
+      });
+    } finally {
+      if (watcher !== null) clearInterval(watcher);
+      emitNew();
+    }
     const finished = getRun(handle, active.id) ?? active;
     const steps = listRunSteps(handle, finished.id);
     const tools = steps.filter((step) => step.kind === "tool").length;

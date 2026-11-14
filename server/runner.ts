@@ -31,7 +31,22 @@ export interface ExecuteOptions {
   maxSteps?: number;
 }
 
-export async function executeRun(handle: DbHandle, runId: string, options: ExecuteOptions = {}): Promise<void> {
+const inflight = new Set<Promise<void>>();
+
+/** Resolves when every run started in this process has finished unwinding, so a caller may close the database. */
+export async function whenRunsSettled(): Promise<void> {
+  while (inflight.size > 0) await Promise.allSettled([...inflight]);
+}
+
+export function executeRun(handle: DbHandle, runId: string, options: ExecuteOptions = {}): Promise<void> {
+  const running = runToCompletion(handle, runId, options);
+  inflight.add(running);
+  const forget = (): void => void inflight.delete(running);
+  running.then(forget, forget);
+  return running;
+}
+
+async function runToCompletion(handle: DbHandle, runId: string, options: ExecuteOptions): Promise<void> {
   const run = getRun(handle, runId);
   if (run === null || run.status === "finished" || run.status === "error") return;
   const owner = `${process.pid}:${randomUUID()}`;
