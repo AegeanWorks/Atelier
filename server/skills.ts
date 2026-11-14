@@ -9,7 +9,8 @@ export interface Skill {
   path: string;
 }
 
-const SOURCES = [".claude/skills", ".atelier/skills"];
+// Later entries win a name clash, so .atelier beats .agents, which beats .claude.
+const SOURCES = [".claude/skills", ".agents/skills", ".atelier/skills"];
 const MAX_SKILLS = 30;
 const MAX_BYTES = 50_000;
 const MAX_DESCRIPTION = 200;
@@ -72,7 +73,7 @@ export function createSkill(workspace: string, name: string, description?: strin
   return { name, description: clipped, path: `.atelier/skills/${name}/SKILL.md` };
 }
 
-/** Skills in the workspace: .claude/skills first, .atelier/skills wins on a name clash. */
+/** Skills in the workspace from .claude, .agents and .atelier skill folders; .atelier wins a name clash, then .agents. */
 export function loadSkills(workspace: string): Skill[] {
   const byName = new Map<string, Skill>();
   for (const source of SOURCES) {

@@ -592,3 +592,17 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: A delegate's spend was invisible in its parent conversation, and users could not see how full the context window was.
 - **Decision**: `GET /api/usage?session=` adds the usage of the conversation's delegate sessions to its totals and reports them separately as `delegated: { requests, costUsd }`; the all-conversations view does not add them again. It also returns `last` (the latest billed request) and `context: { providerId, model, usedTokens, windowTokens | null }`, with the window taken from the catalog or the provider's own model list. The status bar shows `ctx N%`, amber from 70% and red from 90% with a `/compact` hint, and a plain token count when the window is unknown. Usage events are read in order.
 - **Consequences**: Cost for a conversation is now the cost of everything it triggered. The meter reflects the latest request's prompt size, which already includes automatic compaction.
+
+### ADR-084: Skills are also read from .agents/skills
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: ADR-073 read skills from `.atelier/skills` and `.claude/skills`. Codex, Antigravity and Vibe use `.agents/skills`, so skills written for those tools did not appear in atelier.
+- **Decision**: `loadSkills` also reads `.agents/skills/<name>/SKILL.md`. When a name exists in more than one folder, `.atelier` wins over `.agents`, which wins over `.claude`. All three share the cap of 30 skills, and `/skill-new` refuses a name defined in any of them. ADR-073 is otherwise unchanged and is not edited.
+- **Consequences**: A repository can share one skills folder across tools. `.agents/` was already a protected configuration folder under ADR-078, so the agent still cannot add a skill there without a person approving it.
+
+### ADR-085: Permission rules gain an ask decision
+- **Date**: 2026-11-14
+- **Status**: Accepted
+- **Context**: ADR-076 had only allow and deny, so a broad allow rule such as `git *` could not exclude one dangerous subcommand. Claude Code, Kilo, Command Code and Antigravity all order rules deny, then ask, then allow.
+- **Decision**: A rule's `decision` may be `"ask"`. The order is deny, then ask, then allow. An ask rule matches the way a deny does (normalised paths, collapsed whitespace, case folded on Windows, chained commands included) because asking is the safe direction. A matched ask always reaches a person: the approval prompt names the rule, and the approver callback receives an `explicitAsk` flag so that headless `--yes` refuses the call. The `approve` callback type in `server/runner.ts` and `server/agent.ts` gains that fourth parameter.
+- **Consequences**: Existing `rules` files load unchanged. The Settings card and the client type still offer only allow and deny; ask rules are written in `config.json` or through `PUT /api/config` until the next UI batch. The callback signature change affects any caller that passes its own approver.

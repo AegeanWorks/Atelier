@@ -94,3 +94,31 @@ describe("evaluateRules", () => {
     expect(evaluateRules([rule("frozen", "edit", "dist/*", "deny")], "edit", "DIST/a.js").decision).toBe("deny");
   });
 });
+
+describe("ask rules", () => {
+  it("beat an allow that would otherwise cover the call, whatever the order", () => {
+    const rules = [rule("all-git", "exec", "git *", "allow"), rule("confirm-push", "exec", "git push*", "ask")];
+    expect(evaluateRules(rules, "exec", "git status")).toEqual({ decision: "allow", ruleId: "all-git" });
+    expect(evaluateRules(rules, "exec", "git push origin main")).toEqual({ decision: "ask", ruleId: "confirm-push" });
+    expect(evaluateRules([...rules].reverse(), "exec", "git push origin main")).toEqual({ decision: "ask", ruleId: "confirm-push" });
+  });
+
+  it("lose to a deny, so the order is deny, then ask, then allow", () => {
+    const rules = [rule("ask", "exec", "rm *", "ask"), rule("deny", "exec", "rm *", "deny"), rule("allow", "exec", "rm *", "allow")];
+    expect(evaluateRules(rules, "exec", "rm x")).toEqual({ decision: "deny", ruleId: "deny" });
+  });
+
+  it("apply to edit paths after normalisation and report the rule that asked", () => {
+    const rules = [rule("docs", "edit", "docs/*", "allow"), rule("changelog", "edit", "docs/CHANGELOG.md", "ask")];
+    expect(evaluateRules(rules, "edit", "docs/a.md").decision).toBe("allow");
+    expect(evaluateRules(rules, "edit", "./docs/CHANGELOG.md")).toEqual({ decision: "ask", ruleId: "changelog" });
+  });
+
+  it("match a chained command too, because asking is always safe", () => {
+    expect(evaluateRules([rule("p", "exec", "*git push*", "ask")], "exec", "npm test && git push")).toEqual({ decision: "ask", ruleId: "p" });
+  });
+
+  it("leave an unmatched call to the default prompt with no rule named", () => {
+    expect(evaluateRules([rule("p", "exec", "git push*", "ask")], "exec", "ls")).toEqual({ decision: "ask", ruleId: null });
+  });
+});

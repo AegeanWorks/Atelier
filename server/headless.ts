@@ -110,9 +110,10 @@ export async function runHeadless(options: HeadlessOptions): Promise<HeadlessRes
     const autoApprove = options.autoApprove === true;
     await executeRun(handle, active.id, {
       ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
-      approve: (_call, resource, action) => {
-        // --yes approves what the run asks for, except edits of the agent's own configuration: those need a person.
-        if (autoApprove) return !(action === "edit" && isProtectedConfigPath(resource));
+      approve: (_call, resource, action, explicitAsk) => {
+        // --yes approves what the run asks for, except edits of the agent's own configuration and calls a permission
+        // rule said to ask about: those need a person.
+        if (autoApprove) return !explicitAsk && !(action === "edit" && isProtectedConfigPath(resource));
         throw new AtelierError(
           "HEADLESS_APPROVAL",
           "A tool needed approval, but headless runs have no approver.",

@@ -78,7 +78,7 @@ export const ruleSchema = z.object({
   id: z.string().regex(/^[a-z0-9][a-z0-9_-]{0,40}$/, "rule id must be lowercase letters, digits, '-' or '_'"),
   action: z.enum(["exec", "edit"]),
   match: z.string().min(1).max(500),
-  decision: z.enum(["allow", "deny"]),
+  decision: z.enum(["allow", "ask", "deny"]),
 });
 
 const configSchema = z.object({

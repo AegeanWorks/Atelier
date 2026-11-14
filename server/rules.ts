@@ -7,7 +7,7 @@ export interface Rule {
   action: RuleAction;
   /** Literal text with * as a wildcard, matched against the whole command or path. */
   match: string;
-  decision: "allow" | "deny";
+  decision: "allow" | "ask" | "deny";
 }
 
 export interface RuleVerdict {
@@ -60,8 +60,8 @@ function climbsOut(path: string): boolean {
 }
 
 /**
- * Decide a tool call against the configured rules. A matching deny always wins; otherwise the first matching
- * allow wins, except that an allow never covers a command containing shell control operators or a path that
+ * Decide a tool call against the configured rules. The order is deny, then ask, then allow: a matching deny always
+ * wins, a matching ask beats an allow that would also cover the call, and otherwise the first matching allow wins, except that an allow never covers a command containing shell control operators or a path that
  * climbs out with `..`. Everything else is left to ask. These rules only decide whether to prompt: the hard
  * safety checks (secrets, paths outside the workspace, destructive commands) still run afterwards.
  */
@@ -72,6 +72,9 @@ export function evaluateRules(rules: Rule[], action: RuleAction, resource: strin
   const denyHit = (rule: Rule): boolean => matches(fold(rule.match, action), fold(resource, action));
   const deny = rules.find((rule) => rule.action === action && rule.decision === "deny" && (hit(rule) || denyHit(rule)));
   if (deny !== undefined) return { decision: "deny", ruleId: deny.id };
+  // Asking is the safe direction, so an ask rule matches the way a deny does, and a chained command cannot dodge it.
+  const ask = rules.find((rule) => rule.action === action && rule.decision === "ask" && (hit(rule) || denyHit(rule)));
+  if (ask !== undefined) return { decision: "ask", ruleId: ask.id };
   const allow = rules.find((rule) => rule.action === action && rule.decision === "allow" && hit(rule));
   if (allow === undefined) return { decision: "ask", ruleId: null };
   if (action === "exec" && SHELL_CONTROL.test(resource)) return { decision: "ask", ruleId: null };

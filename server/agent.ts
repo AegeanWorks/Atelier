@@ -88,7 +88,7 @@ export async function runAgent(
   providerId: string,
   model: string,
   signal: AbortSignal,
-  options: { profile?: HarnessProfile; adapter?: ProviderAdapter; approve?: (call: { id: string; name: string; input: unknown }, resource: string, action: string) => boolean | Promise<boolean> } = {},
+  options: { profile?: HarnessProfile; adapter?: ProviderAdapter; approve?: (call: { id: string; name: string; input: unknown }, resource: string, action: string, explicitAsk: boolean) => boolean | Promise<boolean> } = {},
 ): Promise<AgentOutcome> {
   const profile = options.profile ?? FULL_PROFILE;
   const mode = run.profile_id === "plan" || profile.permissions === "plan-readonly" ? "plan" : "build";
@@ -190,11 +190,14 @@ export async function runAgent(
       }
       let ruleDeny: string | null = null;
       let ruleAllowed = false;
+      let askedBy: string | null = null;
       if (approvalNeeded && hookVeto === null && !mcpAllowed && (action === "exec" || action === "edit")) {
         const verdict = evaluateRules(config.rules ?? [], action, resource);
         if (verdict.decision === "deny") {
           ruleDeny = `Denied by permission rule ${verdict.ruleId}.`;
           appendSessionEvent(handle, run.session_id, "access.decision", { runId: run.id, callId: call.id, tool: call.name, action, resource, decision: "deny", reason: `denied by rule ${verdict.ruleId}` });
+        } else if (verdict.decision === "ask" && verdict.ruleId !== null) {
+          askedBy = verdict.ruleId;
         } else if (verdict.decision === "allow") {
           ruleAllowed = true;
           appendSessionEvent(handle, run.session_id, "access.decision", { runId: run.id, callId: call.id, tool: call.name, action, resource, decision: "allow", reason: `allowed by rule ${verdict.ruleId}` });
@@ -202,10 +205,10 @@ export async function runAgent(
       }
       let denied = false;
       if (approvalNeeded && hookVeto === null && ruleDeny === null && !ruleAllowed) {
-        let reason = `${call.name} requires approval in build mode`;
+        let reason = askedBy === null ? `${call.name} requires approval in build mode` : `permission rule ${askedBy} asks before ${call.name} runs`;
         let allowed: boolean;
         if (options.approve !== undefined) {
-          allowed = await options.approve({ id: call.id, name: call.name, input: call.input }, resource, action ?? "edit");
+          allowed = await options.approve({ id: call.id, name: call.name, input: call.input }, resource, action ?? "edit", askedBy !== null);
         } else {
           const preview = action === "edit" ? previewForApproval(workspace, call.name, call.input) : null;
           const decision = await requestApproval(handle, run, call, action ?? "edit", resource, reason, signal, undefined, preview === null || preview.diff.length === 0 ? null : preview.diff);

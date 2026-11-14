@@ -23,7 +23,8 @@ const RUN_TIMEOUT_MS = 120_000;
 const LEASE_TTL_MS = 5000;
 
 export interface ExecuteOptions {
-  approve?: (call: { id: string; name: string; input: unknown }, resource: string, action: string) => boolean | Promise<boolean>;
+  /** `explicitAsk` is true when a permission rule said to ask: no automatic approver may say yes to that. */
+  approve?: (call: { id: string; name: string; input: unknown }, resource: string, action: string, explicitAsk: boolean) => boolean | Promise<boolean>;
   adapter?: import("./providers/types.js").ProviderAdapter;
 }
 
