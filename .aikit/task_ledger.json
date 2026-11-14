@@ -1,56 +1,17 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-a1-leaks",
+    "task_id": "atelier-a3-conventions",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794677144.704239,
-    "owner": "claude:a1",
-    "started_by": "claude:a1",
+    "updated_at": 1794677438.664126,
+    "owner": "claude:a3",
+    "started_by": "claude:a3",
     "continuations": [],
-    "completed_at": 1794677156.5581427
+    "completed_at": 1794677446.5603213
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-review-hardening",
-      "phase": "resumed",
-      "phase_num": 4,
-      "description": "Resumed 'atelier-review-hardening' after a pause",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794659600.7513473,
-      "timestamp_str": "2026-11-14 15:33:20",
-      "agent": "claude:review"
-    },
-    {
-      "task_id": "atelier-usage-and-docs",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: close two gaps from the review: a conversation's cost and token totals now include its delegated sub-agents with a delegated split shown in the Usage panel while the context meter stays on the conversation's own last request and the all-conversations view does not double count, and move the grown feature notes out of the README into docs/FEATURES.md",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794659601.0853224,
-      "timestamp_str": "2026-11-14 15:33:21",
-      "agent": "claude:review",
-      "impact_assessment": {
-        "why": "Delegate spend was invisible in the parent conversation so cost was under-reported, and the README had under 2k characters of headroom under its cap",
-        "benefits": "Honest cost figures and room in the README for future changes without losing any documentation",
-        "risks": "contract: additive delegated field on GET /api/usage and totals for a conversation now include sub-agents; dependency: none; concurrency: read-only aggregation; state: none",
-        "mitigation": "Child sessions found through parent_run_id so only real delegates count, counted once, excluded from the all-conversations view and from last, 12 tests first, the README text moved verbatim and linked"
-      },
-      "plan_digest": "510023b45fe921bf7bf7d44dccd6c3cd0a3c6f875461151f5b8ccf5636200980"
-    },
-    {
-      "task_id": "atelier-review-hardening",
-      "phase": "superseded",
-      "phase_num": 4,
-      "description": "Superseded by 'atelier-usage-and-docs' without --complete or --reset",
-      "status": "superseded",
-      "timestamp": 1794659601.0853224,
-      "timestamp_str": "2026-11-14 15:33:21",
-      "agent": "claude:review"
-    },
     {
       "task_id": "atelier-usage-and-docs",
       "phase": "verification",
@@ -306,6 +267,57 @@
       "timestamp": 1794677156.5581446,
       "timestamp_str": "2026-11-14 20:25:56",
       "agent": "claude:a1",
+      "delivery": {
+        "roots": [
+          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-a3-conventions",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan A milestone A3 server part: read .agents/skills with precedence atelier then agents then claude, and add an ask decision to permission rules ordered deny then ask then allow with an explicitAsk flag on the approver so headless --yes cannot satisfy it; ADRs 084 and 085",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794677303.441801,
+      "timestamp_str": "2026-11-14 20:28:23",
+      "agent": "claude:a3",
+      "impact_assessment": {
+        "why": "Skills written for Codex Antigravity and Vibe live in .agents/skills and did not appear, and a broad allow rule could not exclude one dangerous subcommand while four peers order rules deny ask allow",
+        "benefits": "Shared skill folders work across tools and users can pre-approve a command family except the risky member",
+        "risks": "contract: rules decision gains ask, the approve callback gains a fourth parameter, skills gain a third folder; dependency: none; concurrency: none; state: existing rules files load unchanged",
+        "mitigation": "Eleven tests written first with the end to end ones mutation-checked, Settings UI and client types deliberately untouched so no UI task is needed, documented limit that ask rules are config-only until the UI batch"
+      },
+      "plan_digest": "a7d6a2aecc405e680c284d42966c06b0c6d9b50f10eb52daa407bc879b1d1bf9"
+    },
+    {
+      "task_id": "atelier-a3-conventions",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "[1/1] A3 server part shipped: .agents/skills read with precedence atelier then agents then claude sharing the 30 skill cap, ask decision in rules ordered deny then ask then allow, explicitAsk on the approver so headless --yes refuses a call a rule said to ask about, approval reason names the rule, docs/FEATURES.md, ADRs 084 and 085. 16 new tests (5 skills folder integration, 5 ask unit, 6 ask end to end), the end to end ones mutation-checked by disabling the ask branch which turned the two key tests red and restoring turned them green, tsc clean, 10/10 gates first run. No src file changed so no UI task. Not done from A3: nested and ancestor AGENTS.md chain and Claude-style rule string import, deferred because the nested case needs on-demand loading design. checklists: passed",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794677438.664126,
+      "timestamp_str": "2026-11-14 20:30:38",
+      "agent": "claude:a3",
+      "checklists": "passed",
+      "handoff": {
+        "state": "10/10 gates",
+        "next": "A4 token streaming and ACP, or A2 when a model is available",
+        "open": "standing commit permission"
+      }
+    },
+    {
+      "task_id": "atelier-a3-conventions",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-a3-conventions' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794677446.560323,
+      "timestamp_str": "2026-11-14 20:30:46",
+      "agent": "claude:a3",
       "delivery": {
         "roots": [
           "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
