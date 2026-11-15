@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-accessibility-and-actions",
+    "task_id": "atelier-ui-active-selection-and-pareto",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794760010.7510293,
+    "updated_at": 1794761494.360759,
     "owner": "antigravity:1",
     "started_by": "antigravity:1",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794760019.10569,
-    "completed_head": "0bfb233b44adffbf4d92268958f50dc2301390eb",
-    "completed_tree": "6f9c01914eeaa9e66356f75a8ee30f7feb3b9f09"
+    "completed_at": 1794761500.4320133,
+    "completed_head": "0b3c179cd9760e14f74446937a5f8b6219b0c133",
+    "completed_tree": "a4e05875d08507a49f66eed9b06ae76ec435b324"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-first-run",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "12/12 gates passed. Before/after (shots/firstrun, 390/768/1440): before, Open Settings at 390 and 768 was a dead click (settingsVisibleAfterClick=false), after true at all three; button now full-contrast text with accent border, no clipping/overlap, contrast fine. Failing-first unit test added. checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794754754.1288996,
-      "timestamp_str": "2026-11-15 17:59:14",
-      "agent": "antigravity:1",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-first-run",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-first-run' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794754759.8586655,
-      "timestamp_str": "2026-11-15 17:59:19",
-      "agent": "antigravity:1",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-workspace-exit",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Workspace overlay (<=980px) has no way back to the conversation: add mobile-only back bar + Escape closes it; Evals empty state shows literal backticks: render as code. Failing-first unit tests; before/after scenario shots at 390/768/1440",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794754872.391523,
-      "timestamp_str": "2026-11-15 18:01:12",
-      "agent": "antigravity:1",
-      "impact_assessment": {
-        "why": "G-004 usable at 390/768 and G-008 nothing unreachable: nothing ever calls setWorkspaceOpen(false), so the full-screen workspace is a trap on narrow screens",
-        "benefits": "Narrow users can leave Settings/Files/etc; stale raw markup removed",
-        "risks": "contract: Escape also closes workspace; dependency: none; concurrency: none; state: workspaceOpen toggled",
-        "mitigation": "unit tests pin close button and Escape; desktop layout unchanged (bar is mobile-only); full gate run"
-      },
-      "plan_digest": "cb6c5ab8deeb3323b440fcb99e8e8b1822ed893395d91b29dcdfce346cfaca7c",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-workspace-exit",
       "phase": "phase 4",
@@ -392,6 +334,63 @@
       "status": "completed",
       "timestamp": 1794760019.1714838,
       "timestamp_str": "2026-11-15 19:26:59",
+      "agent": "antigravity:1",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-active-selection-and-pareto",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "Unify .file-item active selection across all panels, style pareto progress bar, and add loading states",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794760950.6729507,
+      "timestamp_str": "2026-11-15 19:42:30",
+      "agent": "antigravity:1",
+      "impact_assessment": {
+        "why": "Selected items in Git, Plans, Task, History, and Evals lacked active styling; pareto .pbar had missing CSS; compare and refresh buttons lacked loading feedback",
+        "benefits": "Consistent visual selection grammar across every panel, working Pareto chart bars, responsive loading feedback",
+        "risks": "Minimal presentation-only changes in src/",
+        "mitigation": "Verify existing tests continue to pass and add unit tests for active classes and pareto rendering"
+      },
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-active-selection-and-pareto",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "All 12 gates green; active selection styling across all panels, pareto progress bar, and loading feedback verified",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794761494.360759,
+      "timestamp_str": "2026-11-15 19:51:34",
+      "agent": "antigravity:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-active-selection-and-pareto",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-active-selection-and-pareto' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794761500.495101,
+      "timestamp_str": "2026-11-15 19:51:40",
       "agent": "antigravity:1",
       "delivery": {
         "roots": [
