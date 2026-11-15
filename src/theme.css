@@ -914,6 +914,17 @@ summary:focus-visible,
   font-size: var(--text-sm);
   padding: var(--space-3) var(--space-7);
   box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: background var(--ease), border-color var(--ease);
+}
+
+.jump-latest:hover {
+  background: var(--bg-card);
+  border-color: var(--accent);
+}
+
+.jump-latest:active {
+  transform: translateX(-50%) translateY(1px);
 }
 
 @media (hover: none), (pointer: coarse) {
@@ -1144,7 +1155,13 @@ summary:focus-visible,
   filter: brightness(1.07);
 }
 
-.send-button:active:not(:disabled) {
+.send-button:active:not(:disabled),
+.small-button:active:not(:disabled),
+.icon-button:active:not(:disabled),
+.mode-group button:active:not(:disabled),
+.workspace-tabs button:active:not(:disabled),
+.approval-approve:active:not(:disabled),
+.approval-deny:active:not(:disabled) {
   transform: translateY(1px);
 }
 
@@ -1615,6 +1632,7 @@ summary:focus-visible,
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    transform: none !important;
   }
 }
 .settings-panel {

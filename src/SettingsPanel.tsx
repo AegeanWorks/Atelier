@@ -538,7 +538,7 @@ export default function SettingsPanel(): React.JSX.Element {
       <div className="panel-card" data-testid="mcp-card">
         <h2>MCP servers</h2>
         <p>Servers the agent may expose as tools. A stdio server needs a command; http and sse servers need a URL.</p>
-        {(config?.mcpServers ?? []).length === 0 ? <p className="provider-meta">No MCP servers configured.</p> : null}
+        {(config?.mcpServers ?? []).length === 0 ? <p className="provider-meta" data-testid="mcp-empty">No MCP servers configured.</p> : null}
         <ul className="provider-list" data-testid="mcp-list">
           {(config?.mcpServers ?? []).map((server) => (
             <li className="provider-row mcp-row" key={server.id} data-testid="mcp-row">
@@ -595,7 +595,7 @@ export default function SettingsPanel(): React.JSX.Element {
       <div className="panel-card" data-testid="rules-card">
         <h2>Permission rules</h2>
         <p>Decide in advance what Build mode may do without asking. An allow rule skips the approval prompt for matching commands or paths; a deny rule refuses them even when you approve everything. * matches any text. A deny always wins, and an allow never covers a command that chains (&amp;&amp;, ;, |), redirects or substitutes, so those still ask. Secrets, paths outside the workspace and destructive commands stay blocked whatever the rules say.</p>
-        {(config?.rules ?? []).length === 0 ? <p className="provider-meta">No rules yet, so every edit and command asks.</p> : null}
+        {(config?.rules ?? []).length === 0 ? <p className="provider-meta" data-testid="rules-empty">No rules yet, so every edit and command asks.</p> : null}
         <ul className="provider-list" data-testid="rules-list">
           {(config?.rules ?? []).map((entry) => (
             <li className="provider-row mcp-row" key={entry.id} data-testid="rule-row">
@@ -645,7 +645,7 @@ export default function SettingsPanel(): React.JSX.Element {
       <div className="panel-card" data-testid="hooks-card">
         <h2>Hooks</h2>
         <p>Commands that run around the agent's tool calls, in the workspace. A pre_tool hook that exits with code 2 vetoes the call and its output is shown to the model; any other exit code only logs. Details reach the command as ATELIER_* environment variables.</p>
-        {(config?.hooks ?? []).length === 0 ? <p className="provider-meta">No hooks configured.</p> : null}
+        {(config?.hooks ?? []).length === 0 ? <p className="provider-meta" data-testid="hooks-empty">No hooks configured.</p> : null}
         <ul className="provider-list" data-testid="hooks-list">
           {(config?.hooks ?? []).map((entry) => (
             <li className="provider-row mcp-row" key={entry.id} data-testid="hook-row">
