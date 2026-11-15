@@ -93,7 +93,7 @@ export default function EvalsPanel(): React.JSX.Element {
         </div>
         <p>Fixture runs are paired to an immutable baseline; the test split is release-only.</p>
         <ul className="provider-list" data-testid="evals-runs">
-          {runs.length === 0 ? <li className="provider-row"><span className="provider-meta">No eval runs yet. Use `npm run eval`.</span></li> : null}
+          {runs.length === 0 ? <li className="provider-row"><span className="provider-meta">No eval runs yet. Use <code>npm run eval</code>.</span></li> : null}
           {runs.map((run) => (
             <li className="provider-row" key={run.id} data-testid="eval-run">
               <button type="button" className="file-item" onClick={() => void open(run.id)}>

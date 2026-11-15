@@ -1500,6 +1500,30 @@ summary:focus-visible,
   .mobile-only {
     display: inline-grid;
   }
+
+  .workspace {
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .workspace-back {
+    justify-self: start;
+    margin: var(--space-4) var(--space-4) 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: var(--bg-panel);
+    color: var(--text);
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    min-height: 40px;
+    align-items: center;
+    gap: var(--space-3);
+    grid-auto-flow: column;
+  }
+
+  .workspace-back:hover {
+    background: var(--bg-panel-strong);
+  }
 }
 
 @media (max-width: 560px) {

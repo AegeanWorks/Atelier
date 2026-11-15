@@ -586,6 +586,7 @@ export default function App(): React.JSX.Element {
         }
       } else if (event.key === "Escape") {
         setPaletteOpen(false);
+        setWorkspaceOpen(false);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -1513,6 +1514,9 @@ export default function App(): React.JSX.Element {
         </main>
 
         <section className="workspace" data-open={workspaceOpen} aria-label="Workspace" data-testid="workspace">
+          <button className="workspace-back mobile-only" type="button" onClick={() => setWorkspaceOpen(false)} data-testid="workspace-back">
+            <span aria-hidden="true">←</span> Back to conversation
+          </button>
           <div className="workspace-tabs" role="tablist" aria-label="Workspace panels" data-testid="workspace-tabs">
             {WORKSPACE_TABS.map((item) => (
               <button
