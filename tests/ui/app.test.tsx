@@ -487,6 +487,16 @@ describe("atelier shell", () => {
     await waitFor(() => expect(screen.queryByTestId("command-palette")).toBeNull());
   });
 
+  it("toggles the terminal drawer from keyboard and closes it on Escape", async () => {
+    render(<App />);
+    await screen.findByText("What are we building?");
+    fireEvent.keyDown(window, { key: "j", ctrlKey: true });
+    expect(await screen.findByTestId("terminal-drawer")).toBeTruthy();
+    expect(screen.getByText("pipe fallback · 30 s timeout")).toBeTruthy();
+    fireEvent.keyDown(window, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByTestId("terminal-drawer")).toBeNull());
+  });
+
   it("navigates the palette with the arrow keys and runs the selected command", async () => {
     render(<App />);
     await screen.findByText("What are we building?");

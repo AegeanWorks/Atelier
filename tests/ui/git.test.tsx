@@ -116,4 +116,14 @@ describe("git panel staging", () => {
     await waitFor(() => expect(callsTo("/api/git/commit")).toBe(1));
     expect((await screen.findByTestId("git-notice")).textContent).toContain("[main abc123] msg");
   });
+
+  it("submits the commit form on submit event", async () => {
+    render(<GitPanel />);
+    await rows();
+    fireEvent.change(screen.getByTestId("git-commit-message"), { target: { value: "feat: enter submit" } });
+    const form = screen.getByTestId("git-commit").closest("form")!;
+    fireEvent.submit(form);
+    await waitFor(() => expect(callsTo("/api/git/commit")).toBe(1));
+    expect((await screen.findByTestId("git-notice")).textContent).toContain("[main abc123] msg");
+  });
 });

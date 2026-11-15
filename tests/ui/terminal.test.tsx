@@ -68,6 +68,23 @@ describe("terminal panel", () => {
     expect(screen.getByTestId("terminal-history-count").textContent).toContain("1 command");
   });
 
+  it("disables run when input is empty, and disables stop when not running", () => {
+    render(<TerminalPanel />);
+    const runBtn = screen.getByTestId("terminal-run") as HTMLButtonElement;
+    const stopBtn = screen.getByTestId("terminal-stop") as HTMLButtonElement;
+    const clearBtn = screen.getByTestId("terminal-clear") as HTMLButtonElement;
+    expect(runBtn.disabled).toBe(true);
+    expect(stopBtn.disabled).toBe(true);
+    expect(clearBtn.disabled).toBe(true);
+
+    const input = screen.getByTestId("terminal-input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "   " } });
+    expect(runBtn.disabled).toBe(true);
+
+    fireEvent.change(input, { target: { value: "echo hello" } });
+    expect(runBtn.disabled).toBe(false);
+  });
+
   it("keeps the scrollback across a remount", async () => {
     const first = render(<TerminalPanel />);
     await runCommand("persist");
