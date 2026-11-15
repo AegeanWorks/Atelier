@@ -22,14 +22,19 @@ export default function HistoryPanel({ refreshTick }: { refreshTick: number }): 
   const [busy, setBusy] = useState(false);
 
   async function refresh(): Promise<void> {
-    const data = await api<{ checkpoints: CheckpointEntry[] }>("/api/checkpoints");
-    setEntries(data.checkpoints);
-    setSelected((current) =>
-      current !== null && data.checkpoints.some((entry) => entry.commit === current.commit && entry.path === current.path)
-        ? current
-        : data.checkpoints[0] ?? null,
-    );
-    setError(null);
+    setBusy(true);
+    try {
+      const data = await api<{ checkpoints: CheckpointEntry[] }>("/api/checkpoints");
+      setEntries(data.checkpoints);
+      setSelected((current) =>
+        current !== null && data.checkpoints.some((entry) => entry.commit === current.commit && entry.path === current.path)
+          ? current
+          : data.checkpoints[0] ?? null,
+      );
+      setError(null);
+    } finally {
+      setBusy(false);
+    }
   }
 
   useEffect(() => {
@@ -77,7 +82,9 @@ export default function HistoryPanel({ refreshTick }: { refreshTick: number }): 
       <div className="panel-card">
         <div className="file-head">
           <h2>Checkpoints</h2>
-          <button className="small-button" type="button" onClick={() => void refresh()} data-testid="history-refresh">Refresh</button>
+          <button className="small-button" type="button" onClick={() => void refresh().catch((caught) => setError(messageOf(caught)))} disabled={busy} data-testid="history-refresh">
+            {busy ? "Refreshing…" : "Refresh"}
+          </button>
         </div>
         {entries.length === 0 ? (
           <p className="provider-meta" data-testid="history-empty">No checkpoints yet. Edits and deletes create them.</p>

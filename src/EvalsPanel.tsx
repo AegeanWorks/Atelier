@@ -46,18 +46,24 @@ export default function EvalsPanel(): React.JSX.Element {
   const [baseline, setBaseline] = useState("");
   const [comparison, setComparison] = useState<CompareResult | null>(null);
   const [comparing, setComparing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function refresh(): Promise<void> {
-    const [runData, baselineData] = await Promise.all([
-      api<{ runs: EvalRun[] }>("/api/evals/runs"),
-      api<{ baselines: Baseline[] }>("/api/evals/baselines"),
-    ]);
-    setRuns(runData.runs);
-    setBaselines(baselineData.baselines);
-    setCandidate((current) => current || runData.runs[0]?.id || "");
-    setBaseline((current) => current || baselineData.baselines[0]?.label || "");
-    setError(null);
+    setRefreshing(true);
+    try {
+      const [runData, baselineData] = await Promise.all([
+        api<{ runs: EvalRun[] }>("/api/evals/runs"),
+        api<{ baselines: Baseline[] }>("/api/evals/baselines"),
+      ]);
+      setRuns(runData.runs);
+      setBaselines(baselineData.baselines);
+      setCandidate((current) => current || runData.runs[0]?.id || "");
+      setBaseline((current) => current || baselineData.baselines[0]?.label || "");
+      setError(null);
+    } finally {
+      setRefreshing(false);
+    }
   }
 
   async function open(id: string): Promise<void> {
@@ -93,11 +99,13 @@ export default function EvalsPanel(): React.JSX.Element {
       <div className="panel-card">
         <div className="file-head">
           <h2>Harness runs</h2>
-          <button className="small-button" type="button" onClick={() => void refresh()} data-testid="evals-refresh">Refresh</button>
+          <button className="small-button" type="button" onClick={() => void refresh().catch((caught) => setError(messageOf(caught)))} disabled={refreshing} data-testid="evals-refresh">
+            {refreshing ? "Refreshing…" : "Refresh"}
+          </button>
         </div>
         <p>Fixture runs are paired to an immutable baseline; the test split is release-only.</p>
         <ul className="provider-list" data-testid="evals-runs">
-          {runs.length === 0 ? <li className="provider-row"><span className="provider-meta">No eval runs yet. Use <code>npm run eval</code>.</span></li> : null}
+          {runs.length === 0 ? <li className="provider-row" data-testid="evals-empty"><span className="provider-meta">No eval runs yet. Use <code>npm run eval</code>.</span></li> : null}
           {runs.map((run) => (
             <li className="provider-row" key={run.id} data-testid="eval-run">
               <button

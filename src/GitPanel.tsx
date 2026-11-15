@@ -41,8 +41,13 @@ export default function GitPanel(): React.JSX.Element {
   const [busy, setBusy] = useState(false);
 
   async function refresh(): Promise<void> {
-    const data = await api<GitStatus>("/api/git/status");
-    setStatus(data);
+    setBusy(true);
+    try {
+      const data = await api<GitStatus>("/api/git/status");
+      setStatus(data);
+    } finally {
+      setBusy(false);
+    }
   }
 
   useEffect(() => {
@@ -129,7 +134,9 @@ export default function GitPanel(): React.JSX.Element {
       <div className="panel-card">
         <div className="file-head">
           <h2>Git · {status?.branch ?? "unknown"}</h2>
-          <button className="small-button" type="button" onClick={() => void refresh()} data-testid="git-refresh">Refresh</button>
+          <button className="small-button" type="button" onClick={() => void refresh().catch((caught) => setError(messageOf(caught)))} disabled={busy} data-testid="git-refresh">
+            {busy ? "Refreshing…" : "Refresh"}
+          </button>
           <button className="small-button" type="button" onClick={() => void stageAll()} disabled={busy || worktreeCount === 0} data-testid="git-stage-all">
             Stage all
           </button>

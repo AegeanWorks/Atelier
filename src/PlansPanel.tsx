@@ -27,6 +27,7 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
   const [revisions, setRevisions] = useState<PlanRevision[]>([]);
   const [revisionPreview, setRevisionPreview] = useState<PlanRevision | null>(null);
   const [revisionTick, setRevisionTick] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function refresh(): Promise<void> {
@@ -35,10 +36,15 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
       setSelectedId(null);
       return;
     }
-    const data = await api<{ plans: Plan[] }>(`/api/plans?session=${encodeURIComponent(sessionId)}`);
-    setPlans(data.plans);
-    setSelectedId((current) => (current !== null && data.plans.some((plan) => plan.id === current) ? current : data.plans[0]?.id ?? null));
-    setError(null);
+    setRefreshing(true);
+    try {
+      const data = await api<{ plans: Plan[] }>(`/api/plans?session=${encodeURIComponent(sessionId)}`);
+      setPlans(data.plans);
+      setSelectedId((current) => (current !== null && data.plans.some((plan) => plan.id === current) ? current : data.plans[0]?.id ?? null));
+      setError(null);
+    } finally {
+      setRefreshing(false);
+    }
   }
 
   useEffect(() => {
@@ -145,7 +151,9 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
       <div className="panel-card">
         <div className="file-head">
           <h2>Plans</h2>
-          <button className="small-button" type="button" onClick={() => void refresh()} data-testid="plans-refresh">Refresh</button>
+          <button className="small-button" type="button" onClick={() => void refresh().catch((caught) => setError(messageOf(caught)))} disabled={refreshing} data-testid="plans-refresh">
+            {refreshing ? "Refreshing…" : "Refresh"}
+          </button>
         </div>
         {sessionId === null ? (
           <p className="provider-meta">Select a conversation to manage its plans.</p>

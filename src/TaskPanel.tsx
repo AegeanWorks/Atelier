@@ -92,7 +92,9 @@ export default function TaskPanel({ sessionId, refreshTick }: { sessionId: strin
       <div className="panel-card">
         <div className="file-head">
           <h2>Runs</h2>
-          <button className="small-button" type="button" onClick={refresh} data-testid="task-refresh">Refresh</button>
+          <button className="small-button" type="button" onClick={refresh} disabled={busy} data-testid="task-refresh">
+            {busy ? "Refreshing…" : "Refresh"}
+          </button>
         </div>
         {sessionId === null ? (
           <p className="provider-meta">Select a conversation to inspect its runs.</p>

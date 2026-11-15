@@ -72,7 +72,7 @@ export default function UsagePanel({ sessionId }: { sessionId: string | null }):
           <li><span>cost (estimated)</span><span data-testid="usage-global-cost">{money(global?.costUsd ?? 0)}</span></li>
         </ul>
         <ul className="provider-list" data-testid="usage-models">
-          {(global?.byModel ?? []).length === 0 ? <li className="provider-row"><span className="provider-meta">No provider usage recorded yet.</span></li> : null}
+          {(global?.byModel ?? []).length === 0 ? <li className="provider-row" data-testid="usage-empty"><span className="provider-meta">No provider usage recorded yet.</span></li> : null}
           {(global?.byModel ?? []).map((entry) => (
             <li className="provider-row" key={`${entry.providerId}/${entry.model}`} data-testid="usage-model">
               <span>{entry.model}</span>
