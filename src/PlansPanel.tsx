@@ -152,7 +152,7 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
             {plans.map((plan) => (
               <li className="provider-row" key={plan.id}>
                 <button
-                  className="file-item"
+                  className={selectedId === plan.id ? "file-item active" : "file-item"}
                   type="button"
                   onClick={() => {
                     setSelectedId(plan.id);

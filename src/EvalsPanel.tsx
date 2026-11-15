@@ -45,6 +45,7 @@ export default function EvalsPanel(): React.JSX.Element {
   const [candidate, setCandidate] = useState("");
   const [baseline, setBaseline] = useState("");
   const [comparison, setComparison] = useState<CompareResult | null>(null);
+  const [comparing, setComparing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function refresh(): Promise<void> {
@@ -69,7 +70,8 @@ export default function EvalsPanel(): React.JSX.Element {
   }
 
   async function compare(): Promise<void> {
-    if (candidate.length === 0) return;
+    if (candidate.length === 0 || baseline.length === 0 || comparing) return;
+    setComparing(true);
     try {
       const query = new URLSearchParams({ candidate });
       if (baseline.length > 0) query.set("baseline", baseline);
@@ -77,6 +79,8 @@ export default function EvalsPanel(): React.JSX.Element {
       setError(null);
     } catch (caught) {
       setError(messageOf(caught));
+    } finally {
+      setComparing(false);
     }
   }
 
@@ -96,7 +100,11 @@ export default function EvalsPanel(): React.JSX.Element {
           {runs.length === 0 ? <li className="provider-row"><span className="provider-meta">No eval runs yet. Use <code>npm run eval</code>.</span></li> : null}
           {runs.map((run) => (
             <li className="provider-row" key={run.id} data-testid="eval-run">
-              <button type="button" className="file-item" onClick={() => void open(run.id)}>
+              <button
+                type="button"
+                className={detail?.run.id === run.id ? "file-item active" : "file-item"}
+                onClick={() => void open(run.id)}
+              >
                 {run.suite} · {run.split} · {run.profile.id ?? "profile"}
               </button>
               <span className={run.metrics.integrity === "clean" ? "key-badge key-set" : "key-badge key-missing"}>
@@ -144,10 +152,10 @@ export default function EvalsPanel(): React.JSX.Element {
           className="small-button"
           type="button"
           onClick={() => void compare()}
-          disabled={candidate.length === 0 || baseline.length === 0}
+          disabled={candidate.length === 0 || baseline.length === 0 || comparing}
           data-testid="eval-compare-run"
         >
-          Compare
+          {comparing ? "Comparing…" : "Compare"}
         </button>
         {comparison !== null ? (
           <div data-testid="eval-compare">

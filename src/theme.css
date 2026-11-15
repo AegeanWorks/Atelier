@@ -2045,6 +2045,23 @@ p.provider-meta,
   color: var(--text-faint);
 }
 
+.pbar {
+  flex: 1;
+  height: 4px;
+  min-width: 60px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-panel-strong);
+  overflow: hidden;
+  align-self: center;
+}
+
+.pbar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--ease);
+}
+
 .todo-bar {
   flex: 1;
   height: 3px;

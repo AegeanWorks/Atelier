@@ -102,7 +102,12 @@ export default function TaskPanel({ sessionId, refreshTick }: { sessionId: strin
           <ul className="provider-list" data-testid="run-list">
             {runs.map((run) => (
               <li className="provider-row" key={run.id}>
-                <button className="file-item" type="button" onClick={() => setSelectedId(run.id)} data-testid="run-item">
+                <button
+                  className={selectedId === run.id ? "file-item active" : "file-item"}
+                  type="button"
+                  onClick={() => setSelectedId(run.id)}
+                  data-testid="run-item"
+                >
                   {run.profile_id ?? "run"} · {run.id.slice(0, 12)}
                 </button>
                 <span className={statusClass(run.status)}>{run.status}</span>

@@ -353,5 +353,31 @@
     "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
     "final_snapshot_entries": 38,
     "surface_digest": "7d076d825d29689f7ed6102828430ab97be44604be0db231a9aebb1c979419cb"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/EvalsPanel.tsx",
+      "src/GitPanel.tsx",
+      "src/HistoryPanel.tsx",
+      "src/PlansPanel.tsx",
+      "src/TaskPanel.tsx",
+      "src/UsagePanel.tsx",
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "6ad42268f36d4dfa46919485227b17e38256e996",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794760983.9159012,
+    "finished_at": 1794761250.4158523,
+    "strikes": 0,
+    "reviewer": "",
+    "allowed_removals": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "d0d6427bf895ae3a495fea0b167c166a881dc7a95c904ca78f6bf1a1b4d89dfa"
   }
 ]

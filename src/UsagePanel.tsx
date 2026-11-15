@@ -14,16 +14,24 @@ function money(value: number): string {
 export default function UsagePanel({ sessionId }: { sessionId: string | null }): React.JSX.Element {
   const [session, setSession] = useState<UsageSummary | null>(null);
   const [global, setGlobal] = useState<UsageSummary | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function refresh(): Promise<void> {
-    const [sessionUsage, globalUsage] = await Promise.all([
-      sessionId === null ? Promise.resolve(null) : api<UsageSummary>(`/api/usage?session=${encodeURIComponent(sessionId)}`),
-      api<UsageSummary>("/api/usage"),
-    ]);
-    setSession(sessionUsage);
-    setGlobal(globalUsage);
-    setError(null);
+    setRefreshing(true);
+    try {
+      const [sessionUsage, globalUsage] = await Promise.all([
+        sessionId === null ? Promise.resolve(null) : api<UsageSummary>(`/api/usage?session=${encodeURIComponent(sessionId)}`),
+        api<UsageSummary>("/api/usage"),
+      ]);
+      setSession(sessionUsage);
+      setGlobal(globalUsage);
+      setError(null);
+    } catch (caught) {
+      setError(messageOf(caught));
+    } finally {
+      setRefreshing(false);
+    }
   }
 
   useEffect(() => {
@@ -35,7 +43,7 @@ export default function UsagePanel({ sessionId }: { sessionId: string | null }):
       <div className="panel-card">
         <div className="file-head">
           <h2>This conversation</h2>
-          <button className="small-button" type="button" onClick={() => void refresh()} data-testid="usage-refresh">Refresh</button>
+          <button className="small-button" type="button" onClick={() => void refresh()} disabled={refreshing} data-testid="usage-refresh">{refreshing ? "Refreshing…" : "Refresh"}</button>
         </div>
         {sessionId === null ? (
           <p className="provider-meta">Select a conversation to see its usage.</p>

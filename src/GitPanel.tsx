@@ -139,7 +139,12 @@ export default function GitPanel(): React.JSX.Element {
         <ul className="file-tree" data-testid="git-status">
           {changes.map((change) => (
             <li key={change.path} className="git-change">
-              <button type="button" className="file-item" onClick={() => void showDiff(change)} data-testid="git-file">
+              <button
+                type="button"
+                className={selected === change.path ? "file-item active" : "file-item"}
+                onClick={() => void showDiff(change)}
+                data-testid="git-file"
+              >
                 <span className="git-code" title="index / worktree">
                   {codeLetter(change.index)}{codeLetter(change.worktree)}
                 </span> {change.path}

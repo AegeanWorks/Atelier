@@ -85,7 +85,12 @@ export default function HistoryPanel({ refreshTick }: { refreshTick: number }): 
           <ul className="provider-list" data-testid="checkpoint-list">
             {entries.map((entry) => (
               <li className="provider-row" key={`${entry.commit}:${entry.path}`}>
-                <button className="file-item" type="button" onClick={() => { setSelected(entry); setMessage(null); }} data-testid="checkpoint-item">
+                <button
+                  className={selected?.commit === entry.commit && selected?.path === entry.path ? "file-item active" : "file-item"}
+                  type="button"
+                  onClick={() => { setSelected(entry); setMessage(null); }}
+                  data-testid="checkpoint-item"
+                >
                   {entry.path}
                 </button>
                 <span className="provider-meta">{entry.commit.slice(0, 8)}</span>
