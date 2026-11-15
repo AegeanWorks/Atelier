@@ -94,6 +94,7 @@ describe("plans panel", () => {
   it("requires a confirming click before deleting a plan", async () => {
     render(<PlansPanel sessionId="ses_1" refreshTick={0} />);
     await screen.findByTestId("plan-detail");
+    expect(screen.getByTestId("plan-item").classList.contains("active")).toBe(true);
     const deleteCalls = () => fetchMock.mock.calls.filter(([url, init]) => url === "/api/plans/plan_1" && init?.method === "DELETE").length;
     fireEvent.click(screen.getByTestId("plan-delete"));
     expect(deleteCalls()).toBe(0);

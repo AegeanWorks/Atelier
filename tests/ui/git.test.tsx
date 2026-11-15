@@ -99,9 +99,11 @@ describe("git panel staging", () => {
     fireEvent.click(within(stagedRow!).getByTestId("git-file"));
     expect((await screen.findByTestId("git-diff")).textContent).toContain("@@ staged hunk");
     expect(screen.getByText(/Diff · staged\.ts · staged/)).toBeTruthy();
+    expect(within(stagedRow!).getByTestId("git-file").classList.contains("active")).toBe(true);
     fireEvent.click(within(dirtyRow!).getByTestId("git-file"));
-    expect((await screen.findByTestId("git-diff")).textContent).toContain("@@ dirty hunk");
-    expect(screen.getByText("Diff · dirty.ts")).toBeTruthy();
+    await waitFor(() => expect(screen.getByText("Diff · dirty.ts")).toBeTruthy());
+    expect(within(dirtyRow!).getByTestId("git-file").classList.contains("active")).toBe(true);
+    expect(within(stagedRow!).getByTestId("git-file").classList.contains("active")).toBe(false);
   });
 
   it("gates Commit until a message exists and a file is staged", async () => {

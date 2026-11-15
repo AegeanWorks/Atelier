@@ -71,4 +71,25 @@ describe("evals compare card", () => {
     expect((screen.getByTestId("eval-candidate") as HTMLSelectElement).disabled).toBe(true);
     expect((screen.getByTestId("eval-compare-run") as HTMLButtonElement).disabled).toBe(true);
   });
+
+  it("renders pareto chart with styled progress bar and highlights the active run", async () => {
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
+      if (url === "/api/evals/runs/eval_1") {
+        return new Response(JSON.stringify({
+          run: { id: "eval_1", suite: "harness", split: "validation", model: "fixture", profile: { id: "build" }, status: "finished", created: 1, metrics: { mean: 0.82 } },
+          results: [],
+        }), { status: 200 });
+      }
+      return baseFetch(input);
+    });
+    render(<EvalsPanel />);
+    const pareto = await screen.findByTestId("eval-pareto");
+    expect(pareto.querySelector(".pbar i")).toBeTruthy();
+
+    const runBtn = screen.getByRole("button", { name: /harness · validation/ });
+    expect(runBtn.classList.contains("active")).toBe(false);
+    runBtn.click();
+    await waitFor(() => expect(runBtn.classList.contains("active")).toBe(true));
+  });
 });
