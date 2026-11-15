@@ -30,4 +30,16 @@ describe("alwaysAllowRule", () => {
     const second = alwaysAllowRule(call("exec", "npm run build"), existing);
     expect(second?.id).not.toBe("always-x");
   });
+
+  it("offers nothing for a protected configuration path, which no rule can auto-approve", () => {
+    for (const path of [".claude/settings.json", ".atelier/commands/x.md", "docs/AGENTS.md", "CLAUDE.md", ".agents/skills/s/SKILL.md"]) {
+      expect(alwaysAllowRule(call("edit", path), []), path).toBeNull();
+    }
+    expect(alwaysAllowRule(call("edit", "docs/readme.md"), [])).not.toBeNull();
+  });
+
+  it("offers nothing when a permission rule is the reason for asking, since an allow cannot override an ask", () => {
+    expect(alwaysAllowRule({ action: "exec", resource: "git push origin main", reason: "permission rule no-push asks before bash runs" }, [])).toBeNull();
+    expect(alwaysAllowRule({ action: "exec", resource: "git status", reason: "bash requires approval in build mode" }, [])).not.toBeNull();
+  });
 });

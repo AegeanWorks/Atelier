@@ -174,7 +174,8 @@ atelier/
 │   ├── images.ts             <- image file checks and base64 reading
 │   ├── main.tsx              <- React entry point
 │   ├── mention.ts            <- @ mention parsing and ranking
-│   ├── rules.ts              <- builds the Always allow rule from an approval
+│   ├── live.ts               <- folds live text deltas into the reply being written
+│   ├── rules.ts              <- builds the Always allow rule from an approval and owns the protected-path check
 │   ├── slash.ts              <- built-in slash commands and prompt templates
 │   ├── terminalStore.ts      <- bounded persisted terminal history
 │   ├── theme.css          <- every color and spacing token

@@ -8,7 +8,6 @@ import { createSession, getSession, listEvents, type DbHandle } from "../db.js";
 import { attachImages, saveImage } from "../images.js";
 import { subscribeLive } from "../liveStream.js";
 import { resolveApproval } from "../approvals.js";
-import { isProtectedConfigPath } from "../rules.js";
 import { startSessionRun, stopSessionRun, whenRunsSettled } from "../runner.js";
 import { loadConfig, saveConfig } from "../state.js";
 import { blockMessage, convertPrompt, stopReasonFor, toolKind, toolTitle, type StopReason } from "./mapping.js";
@@ -157,7 +156,7 @@ export function serveAcp(input: Readable, output: Writable, deps: AcpDeps): Prom
       announced.add(callId);
       update(sessionId, { sessionUpdate: "tool_call", toolCallId: callId, title, kind, status: "pending", content: preview === null ? [] : textOf(`\`\`\`diff\n${preview}\n\`\`\``) });
       const config = loadConfig(db.paths);
-      const always = isProtectedConfigPath(resource) || reason.startsWith("permission rule") ? null : alwaysAllowRule({ action, resource }, config.rules);
+      const always = alwaysAllowRule({ action, resource, reason }, config.rules);
       const options = [
         { optionId: "allow", name: "Allow", kind: "allow_once" },
         ...(always === null ? [] : [{ optionId: "always", name: "Always allow this", kind: "allow_always" }]),
