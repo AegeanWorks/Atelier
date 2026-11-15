@@ -18,7 +18,9 @@
   ],
   "gates": {
     "agent-perf": "npm run test:agent-perf",
-    "agent-bench": "npm run test:agent-bench"
+    "agent-bench": "npm run test:agent-bench",
+    "a11y": "npm run test:a11y",
+    "browser": "npm run test:browser"
   },
   "ui_required": true,
   "mechanics_required": false,
