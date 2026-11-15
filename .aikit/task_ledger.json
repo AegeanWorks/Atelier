@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-activity-slash-and-desktop-refinement",
+    "task_id": "atelier-ui-unified-desktop-architecture",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794771100.1390047,
+    "updated_at": 1794772549.71989,
     "owner": "unidentified",
     "started_by": "unidentified",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794771103.7909713,
-    "completed_head": "fad8740d2d0b2487c8891013e1e09b6f1d203d5e",
-    "completed_tree": "5b6933c2273e583cef5f5ff4cdc067bca75bb7de"
+    "completed_at": 1794772553.8637526,
+    "completed_head": "925dd530a5e5186d4054eeac71b6cd78b60225c0",
+    "completed_tree": "6a6deec2747c5ef790e94e28585c19c0104b59cd"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-panels-and-details-polish",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "Phase 4 verification passed: all 12 gates green (test, lint, typecheck, build, agent-perf, agent-bench, a11y, browser, hygiene, guidelines, secrets, compat); panel lists, metrics and git changes reviewed at 390/768/1440px",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794767029.7278485,
-      "timestamp_str": "2026-11-15 21:23:49",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-panels-and-details-polish",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-panels-and-details-polish' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794767037.8045084,
-      "timestamp_str": "2026-11-15 21:23:57",
-      "agent": "unidentified",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-aesthetic-refinements",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Aesthetic refinement of sidebar list items, search filter layout, panel headers, markdown inline code and statusbar",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794767307.5218582,
-      "timestamp_str": "2026-11-15 21:28:27",
-      "agent": "unidentified",
-      "impact_assessment": {
-        "why": "Elevate visual elegance, reduce sidebar clutter, refine panel headers and align typography with modern sleek developer tools",
-        "benefits": "Crisper visual rhythm, reduced visual weight, sleek sidebar navigation, modern code styling and elegant statusbar",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and CSS refinements only)",
-        "mitigation": "Constrain changes to theme.css within diff line limits, verify with full test suite, screenshots and Phase 4 gates"
-      },
-      "plan_digest": "e86d90220ec47b9cd1310cc3fec5744c9faedfb198238e4bedb36ac99def8263",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-aesthetic-refinements",
       "phase": "phase 4",
@@ -394,6 +336,64 @@
       "status": "completed",
       "timestamp": 1794771103.856965,
       "timestamp_str": "2026-11-15 22:31:43",
+      "agent": "unidentified",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-unified-desktop-architecture",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Unify top header bar across all 3 columns at 50px, rebalance workspace width, and debulk composer and message flow",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794771418.219229,
+      "timestamp_str": "2026-11-15 22:36:58",
+      "agent": "unidentified",
+      "impact_assessment": {
+        "why": "Eliminate visual bulk and jagged layout misalignment across the 3 desktop columns",
+        "benefits": "Perfect horizontal header alignment at 50px across rail, conversation and workspace, refined 380px workspace pane, sleek floating composer and serene visual rhythm",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and CSS refinements only)",
+        "mitigation": "Constrain changes to theme.css within diff line limits (<=300 lines), verify with full test suite, screenshots and Phase 4 gates"
+      },
+      "plan_digest": "f2c6f01a3a34c1613459dacd72895a9936302c5fc8376a5c70b140dd3739c92f",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-unified-desktop-architecture",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "Unified desktop header heights at 50px across all 3 columns, rebalanced workspace width to 380px, and streamlined composer/messages padding",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794772549.71989,
+      "timestamp_str": "2026-11-15 22:55:49",
+      "agent": "unidentified",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-unified-desktop-architecture",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-unified-desktop-architecture' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794772553.9317381,
+      "timestamp_str": "2026-11-15 22:55:53",
       "agent": "unidentified",
       "delivery": {
         "roots": [
