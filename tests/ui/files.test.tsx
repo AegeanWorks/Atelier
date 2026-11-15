@@ -54,6 +54,21 @@ async function openFile(): Promise<void> {
 }
 
 describe("file panel safety", () => {
+  it("refreshes the workspace file tree when Refresh is clicked", async () => {
+    render(<FilesPanel />);
+    await screen.findByRole("button", { name: /notes\.md/ });
+    const callsBefore = fetchMock.mock.calls.filter(([url]) => url === "/api/workspace/tree").length;
+    expect(callsBefore).toBeGreaterThanOrEqual(1);
+    const refreshBtn = screen.getByTestId("files-refresh");
+    expect(refreshBtn).toBeTruthy();
+    expect(refreshBtn.textContent).toBe("Refresh");
+    fireEvent.click(refreshBtn);
+    await waitFor(() => {
+      const callsAfter = fetchMock.mock.calls.filter(([url]) => url === "/api/workspace/tree").length;
+      expect(callsAfter).toBe(callsBefore + 1);
+    });
+  });
+
   it("requires a second click before deleting a file", async () => {
     await openFile();
     fireEvent.click(screen.getByTestId("delete-file"));
