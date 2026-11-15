@@ -3,8 +3,8 @@
   "active_task": {
     "task_id": "atelier-ui-first-run",
     "last_phase": "phase 4",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794754754.1288996,
     "owner": "antigravity:1",
     "started_by": "antigravity:1",
@@ -14,27 +14,11 @@
         "name": "atelier",
         "path": "projects/atelier"
       }
-    ]
+    ],
+    "completed_at": 1794754759.8271601,
+    "completed_head": "e4d16160c61a5e55983fd928f11c7a4c156226fe"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-focus-ring",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794742233.2029653,
-      "timestamp_str": "2026-11-15 14:30:33",
-      "agent": "claude:ui",
-      "checklists": "passed",
-      "handoff": {
-        "state": "focus ring fix reviewed by the agent under G-010",
-        "next": "finish then commit",
-        "open": "History cards touch with no gap and Firefox and WebKit are not tested",
-        "evidence": "computed outline went from auto 1px rgb 16 16 16 to solid 2px accent for the link and the diff summary at 390 768 and 1440, the before shots showed an almost invisible dark rectangle and the after shots a clear accent ring in the same style as other controls, skip link dark text on accent is legible, 27 of 32 stock panel pairs are pixel identical and the other 5 differ only by live data since the same tree run twice also differs on 3 of them"
-      }
-    },
     {
       "task_id": "atelier-ui-focus-ring",
       "phase": "completed",
@@ -363,6 +347,22 @@
           "path": "projects/atelier"
         }
       ]
+    },
+    {
+      "task_id": "atelier-ui-first-run",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-first-run' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794754759.8586655,
+      "timestamp_str": "2026-11-15 17:59:19",
+      "agent": "antigravity:1",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
     }
   ]
 }
