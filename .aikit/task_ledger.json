@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-chat-and-approvals-polish",
+    "task_id": "atelier-ui-sidebar-editor-and-alerts-polish",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794769692.751116,
+    "updated_at": 1794770357.3509562,
     "owner": "unidentified",
     "started_by": "unidentified",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794769696.9310186,
-    "completed_head": "07c9a1cbbf61a2466c4af5f4eec28c12ad37e8cf",
-    "completed_tree": "6f47f576b8b64057fba7e9303cea9b0f368de789"
+    "completed_at": 1794770361.711409,
+    "completed_head": "a3ab78c1dec834435a721b156670fedd279a4c8c",
+    "completed_tree": "d51802be9b9c645e08155bf39fd69ba46704a134"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-refresh-feedback-and-panel-empty",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[1/1] Verified all 12 Phase 4 gates passed with unified Refresh button loading states and semantic empty testids across evals and usage panels",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794764843.0772007,
-      "timestamp_str": "2026-11-15 20:47:23",
-      "agent": "antigravity:1",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-refresh-feedback-and-panel-empty",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-refresh-feedback-and-panel-empty' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794764850.0064142,
-      "timestamp_str": "2026-11-15 20:47:30",
-      "agent": "antigravity:1",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-sleek-polish",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Sleek modern UI overhaul across workspace tabs, banners, empty state cards, rail, header and composer",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794765263.52477,
-      "timestamp_str": "2026-11-15 20:54:23",
-      "agent": "unidentified",
-      "impact_assessment": {
-        "why": "Transform Atelier UI from basic and flat into a sleek, modern, aesthetically elevated interface adhering to G-008",
-        "benefits": "Polished visual depth, cohesive tab and card styling, tactile feedback, sleek micro-interactions and improved ergonomics",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and styling polish only, zero internal engine or backend modifications)",
-        "mitigation": "Constrain all edits to theme.css and presentational components, verify with full screenshot suite and Phase 4 gates"
-      },
-      "plan_digest": "07bad2bf70a318dc90ed0d9020daaf75fac355d72f2f90b0c02867d44dcc14c6",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-sleek-polish",
       "phase": "phase 4",
@@ -394,6 +336,64 @@
       "status": "completed",
       "timestamp": 1794769697.0870972,
       "timestamp_str": "2026-11-15 22:08:17",
+      "agent": "unidentified",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-sidebar-editor-and-alerts-polish",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Polish sidebar brand and new-conversation button, files editor, git legend, and alert ribbons",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794769806.0182962,
+      "timestamp_str": "2026-11-15 22:10:06",
+      "agent": "unidentified",
+      "impact_assessment": {
+        "why": "Elevate sidebar polish, file editor typography and compact alert banners",
+        "benefits": "Crisper branding, modern compact new-conversation button, sleek monospace code editor, clean git legend and elegant banners",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and CSS refinements only)",
+        "mitigation": "Constrain changes to theme.css within diff line limits (<=300 lines), verify with full test suite, screenshots and Phase 4 gates"
+      },
+      "plan_digest": "930cf9281423fb0f8645faf8e9eed5e32486877d87bf0170060e54ee760d18f3",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-sidebar-editor-and-alerts-polish",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "All 12 Phase 4 gates passed, sidebar brand, new conversation, files editor, git legend, and alert banners polished",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794770357.3509562,
+      "timestamp_str": "2026-11-15 22:19:17",
+      "agent": "unidentified",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-sidebar-editor-and-alerts-polish",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-sidebar-editor-and-alerts-polish' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794770361.828843,
+      "timestamp_str": "2026-11-15 22:19:21",
       "agent": "unidentified",
       "delivery": {
         "roots": [
