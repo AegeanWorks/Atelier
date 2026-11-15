@@ -90,6 +90,24 @@
   scrollbar-color: var(--border-strong) transparent;
 }
 
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-pill);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-faint);
+}
+
 html,
 body,
 #root {
@@ -649,6 +667,7 @@ summary:focus-visible,
 
 .quick-card:hover {
   border-color: var(--border-strong);
+  background: var(--bg-panel-strong);
   color: var(--text);
 }
 
@@ -773,6 +792,11 @@ summary:focus-visible,
   color: var(--text);
 }
 
+.code-copy.copied {
+  color: var(--ok);
+  border-color: color-mix(in srgb, var(--ok) 35%, transparent);
+}
+
 .code-block pre {
   margin: 0;
   padding: var(--space-5) var(--space-6);
@@ -816,6 +840,11 @@ summary:focus-visible,
 .message-action:hover {
   background: var(--bg-panel-strong);
   color: var(--text);
+}
+
+.message-action.copied {
+  color: var(--ok);
+  opacity: 1;
 }
 
 .working {
@@ -1346,7 +1375,8 @@ summary:focus-visible,
 }
 
 .palette li button:hover,
-.palette li button[data-active="true"] {
+.palette li button[data-active="true"],
+.palette li button[aria-selected="true"] {
   background: var(--bg-panel-strong);
   color: var(--text);
 }
@@ -2291,7 +2321,8 @@ pre.diff-view {
 }
 
 .slash-menu li button:hover,
-.slash-menu li button[data-active="true"] {
+.slash-menu li button[data-active="true"],
+.slash-menu li[aria-selected="true"] button {
   background: var(--bg-panel-strong);
   color: var(--text);
 }

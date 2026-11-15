@@ -219,7 +219,7 @@ export default function Markdown({ text, onCopyCode, copiedCode = null }: Markdo
                 {onCopyCode === undefined ? null : (
                   <button
                     type="button"
-                    className="code-copy"
+                    className={copiedCode === block.text ? "code-copy copied" : "code-copy"}
                     onClick={() => onCopyCode(block.text)}
                     data-testid="copy-code"
                   >

@@ -1310,7 +1310,7 @@ export default function App(): React.JSX.Element {
                     <span>{message.role} · seq {message.seq}</span>
                     <button
                       type="button"
-                      className="message-action"
+                      className={copiedId === message.id ? "message-action copied" : "message-action"}
                       aria-label="Copy message"
                       data-testid="copy-message"
                       onClick={() => void copyMessage(message)}
