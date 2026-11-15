@@ -1512,7 +1512,7 @@ export default function App(): React.JSX.Element {
                 }}
               />
               <button className="icon-button" type="button" aria-label="Attach image" title="Attach an image (or paste one)" data-testid="attach-image" onClick={() => imageInputRef.current?.click()}>
-                ▣
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
               </button>
               <button
                 className="icon-button"
@@ -1523,10 +1523,11 @@ export default function App(): React.JSX.Element {
                 data-testid="toggle-terminal"
                 onClick={() => setTerminalOpen((open) => !open)}
               >
-                &gt;_
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
               </button>
               <button className="send-button" type="submit" disabled={(draft.trim().length === 0 && pendingImages.length === 0) || sending || runStatus === "running"} title={runStatus === "running" ? "Stop the current run before sending another message" : "Send"} data-testid="send-button">
-                {sending ? "Sending…" : "Send"}
+                <span className="send-icon" aria-hidden="true">↑</span>
+                <span>{sending ? "Sending…" : "Send"}</span>
               </button>
             </div>
           </form>
