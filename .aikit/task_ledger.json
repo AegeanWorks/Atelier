@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-polish",
+    "task_id": "atelier-ui-first-run",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1794754015.3685272,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1794754754.1288996,
     "owner": "antigravity:1",
     "started_by": "antigravity:1",
     "continuations": [],
@@ -14,45 +14,9 @@
         "name": "atelier",
         "path": "projects/atelier"
       }
-    ],
-    "completed_at": 1794754015.8090696,
-    "completed_head": "bb7239b9ff1ad70d3bee6ce3257811b3b17cf76e"
+    ]
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-space-margin",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-space-margin' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794741998.0039651,
-      "timestamp_str": "2026-11-15 14:26:38",
-      "agent": "claude:ui",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-focus-ring",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: links and diff summaries get the app focus ring",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794742232.751065,
-      "timestamp_str": "2026-11-15 14:30:32",
-      "agent": "claude:ui",
-      "impact_assessment": {
-        "why": "G-004 asks for keyboard gates and G-008 for one visual grammar with a visible focus state, and links and the diff summary showed the browser default near-black ring on a near-black theme",
-        "benefits": "A keyboard user can see where focus is on every focusable element",
-        "risks": "contract: UI only, 1 file 2 lines; dependency: none; concurrency: none; state: none",
-        "mitigation": "Computed outline measured before and after at three widths, focused states screenshotted and zoomed, all panels compared"
-      },
-      "plan_digest": "c0ee01ff7463a8126bbc4a865046c8a2c1c8ab95bbfe42c8e2b11b8c18d5ea56"
-    },
     {
       "task_id": "atelier-ui-focus-ring",
       "phase": "verification",
@@ -357,6 +321,48 @@
         ],
         "forced": false
       }
+    },
+    {
+      "task_id": "atelier-ui-first-run",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] First-run hint: Open Settings must open the workspace on narrow widths (currently a dead click) and read as the primary action (accent border, full-contrast text); failing-first test; before/after shots incl. narrow after-click scenario",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794754281.4352596,
+      "timestamp_str": "2026-11-15 17:51:21",
+      "agent": "antigravity:1",
+      "impact_assessment": {
+        "why": "G-008 one obvious primary action; on 390/768 the hint button changes a tab that is off-canvas, so nothing visible happens",
+        "benefits": "First-run users on narrow screens reach Settings; the hint action is legible",
+        "risks": "contract: none; dependency: none; concurrency: none; state: workspaceOpen set on click",
+        "mitigation": "unit test pins data-open; tokens only; full gate run"
+      },
+      "plan_digest": "f4d0b3be33693b53fd17b9648ffb189b24a8d1ac84c2ce19bd7d177215077358",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-first-run",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "12/12 gates passed. Before/after (shots/firstrun, 390/768/1440): before, Open Settings at 390 and 768 was a dead click (settingsVisibleAfterClick=false), after true at all three; button now full-contrast text with accent border, no clipping/overlap, contrast fine. Failing-first unit test added. checklists: passed",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794754754.1288996,
+      "timestamp_str": "2026-11-15 17:59:14",
+      "agent": "antigravity:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
     }
   ]
 }
