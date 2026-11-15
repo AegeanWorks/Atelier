@@ -1757,7 +1757,12 @@ p.provider-meta,
   }
 }
 .files-panel,
-.git-panel {
+.git-panel,
+.history-panel,
+.plans-panel,
+.usage-panel,
+.evals-panel,
+.task-panel {
   display: grid;
   gap: var(--space-5);
 }

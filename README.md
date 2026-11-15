@@ -85,6 +85,7 @@ npm run bench:agent       # repeated agent tasks with Wilson/bootstrap/McNemar r
 ```text
 atelier/
 ├── .gitignore               <- transient state, builds and local DBs excluded
+├── .gitattributes
 ├── assets/
 ├── docs/
 ├── evals/

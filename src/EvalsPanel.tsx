@@ -161,16 +161,18 @@ export default function EvalsPanel(): React.JSX.Element {
         ) : null}
       </div>
 
-      <div className="panel-card" data-testid="eval-pareto">
-        <h2>Pareto: mean vs p95</h2>
-        {runs.map((run) => (
-          <div className="git-change" key={run.id}>
-            <span className="provider-meta">{run.id.slice(0, 18)}</span>
-            <div className="pbar"><i style={{ width: `${Math.round((run.metrics.mean ?? 0) * 100)}%` }} /></div>
-            <span className="provider-meta">mean {run.metrics.mean?.toFixed(2) ?? "?"} · p95 {run.metrics.p95Ms ?? 0} ms</span>
-          </div>
-        ))}
-      </div>
+      {runs.length > 0 ? (
+        <div className="panel-card" data-testid="eval-pareto">
+          <h2>Pareto: mean vs p95</h2>
+          {runs.map((run) => (
+            <div className="git-change" key={run.id}>
+              <span className="provider-meta">{run.id.slice(0, 18)}</span>
+              <div className="pbar"><i style={{ width: `${Math.round((run.metrics.mean ?? 0) * 100)}%` }} /></div>
+              <span className="provider-meta">mean {run.metrics.mean?.toFixed(2) ?? "?"} · p95 {run.metrics.p95Ms ?? 0} ms</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
 
       {detail !== null ? (
         <div className="panel-card" data-testid="eval-detail">
