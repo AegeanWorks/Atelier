@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-feedback-and-scrollbars",
+    "task_id": "atelier-ui-active-states-and-settings-empty",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794763023.2794733,
+    "updated_at": 1794764143.5093548,
     "owner": "antigravity:1",
     "started_by": "antigravity:1",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794763027.298237,
-    "completed_head": "17fa204c9a42c8a2f815ed66fc1e4fbdc71bd316",
-    "completed_tree": "7d43541b08c2ea27e77026f26d074d1cf24e561a"
+    "completed_at": 1794764147.8778923,
+    "completed_head": "c525eb1a55b889845513cd767faf31c8c2d97863",
+    "completed_tree": "3cb418431655ce9df1d638c216578d4bf1837dba"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-files-panel",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "12/12 gates passed. Before/after shots at 390/768/1440 (dark+light) viewed: FilesPanel now includes standard file-head Refresh button matching all other workspace panels; file tree bottom clipping fixed with padding and contain overscroll. Unit test added in files.test.tsx. checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794756907.998044,
-      "timestamp_str": "2026-11-15 18:35:07",
-      "agent": "antigravity:1",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-files-panel",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-files-panel' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794756908.5065064,
-      "timestamp_str": "2026-11-15 18:35:08",
-      "agent": "antigravity:1",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-confirm-destructive",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Destructive action confirmations: require two-step confirmation (tinted + confirmed) before deleting plans in PlansPanel and removing providers in SettingsPanel, aligning with G-008 and existing Files/MCP/Conversations grammar; unit tests for both; before/after shots at 390/768/1440",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794757427.6277044,
-      "timestamp_str": "2026-11-15 18:43:47",
-      "agent": "antigravity:1",
-      "impact_assessment": {
-        "why": "G-008 destructive actions must be tinted and confirmed: deleting plans and providers were immediate single-click actions without confirmation, risking accidental data loss",
-        "benefits": "Consistent destructive safety grammar across all panels (Files, Settings, Plans, Rail); prevents accidental deletion of plans and provider configurations",
-        "risks": "contract: plan-delete and provider-delete now require two clicks; dependency: none; concurrency: none; state: confirmingDelete and providerConfirm local state",
-        "mitigation": "unit tests verify safety requirement (first click arms, second click dispatches); full 12-gate verification"
-      },
-      "plan_digest": "3022caa4235dff8f909a50a663a41eddd1dfd7d220db62bc12eb662c69940312",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-confirm-destructive",
       "phase": "phase 4",
@@ -391,6 +333,64 @@
       "status": "completed",
       "timestamp": 1794763027.4139576,
       "timestamp_str": "2026-11-15 20:17:07",
+      "agent": "antigravity:1",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-active-states-and-settings-empty",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Add responsive active-press feedback across buttons, style jump-latest floating pill interactions, and add testable empty states to settings cards",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794763203.8525558,
+      "timestamp_str": "2026-11-15 20:20:03",
+      "agent": "antigravity:1",
+      "impact_assessment": {
+        "why": "Buttons lacked consistent tactile pressed-state micro-interactions matching send-button, jump-latest pill had no hover/active styling, and settings cards lacked testable empty-state elements",
+        "benefits": "Tactile and cohesive micro-interactions across all controls, accessible reduced-motion support, polished floating jump pill, and consistent testable empty states across settings cards",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and styling only)",
+        "mitigation": "Preserved all existing DOM structures and verified all 12 Phase 4 gates and UI tests"
+      },
+      "plan_digest": "ffe6de8533ac0f053387a00854421f015285adc363285549cbf56c12940625c9",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-active-states-and-settings-empty",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[1/1] Verified all 12 Phase 4 gates passed with button active press micro-interactions, jump-latest pill styling, and settings empty states",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794764143.5093548,
+      "timestamp_str": "2026-11-15 20:35:43",
+      "agent": "antigravity:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-active-states-and-settings-empty",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-active-states-and-settings-empty' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794764147.9501898,
+      "timestamp_str": "2026-11-15 20:35:47",
       "agent": "antigravity:1",
       "delivery": {
         "roots": [
