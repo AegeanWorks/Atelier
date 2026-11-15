@@ -1,67 +1,18 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-a5-mcp-version",
+    "task_id": "atelier-a6-logic",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794737244.0617344,
-    "owner": "claude:a5",
-    "started_by": "claude:a5",
+    "updated_at": 1794737563.9988406,
+    "owner": "claude:a6",
+    "started_by": "claude:a6",
     "continuations": [],
-    "completed_at": 1794737249.3160646,
-    "completed_head": "be0193364ab1f50f1856389841067446c7cd4e8f"
+    "completed_at": 1794737571.654644,
+    "completed_head": "9d58d2259beafd8a74d26399f217a2577d8e1529"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-a5-max-turns",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794681617.1213448,
-      "timestamp_str": "2026-11-14 21:40:17",
-      "agent": "claude:a5",
-      "checklists": "passed",
-      "handoff": {
-        "next": "stream-json output, max-budget-usd"
-      }
-    },
-    {
-      "task_id": "atelier-a5-max-turns",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-a5-max-turns' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794681623.0725982,
-      "timestamp_str": "2026-11-14 21:40:23",
-      "agent": "claude:a5",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-a5-stream-json",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: atelier run --output-format text|json|stream-json; stream-json prints each session event then a result line (G-009)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794681709.77149,
-      "timestamp_str": "2026-11-14 21:41:49",
-      "agent": "claude:a5",
-      "impact_assessment": {
-        "why": "G-009: the agent needs a live machine-readable view of a headless run",
-        "benefits": "An agent or script can follow a run as JSON Lines and parse one final result",
-        "risks": "contract: new flag, --json unchanged; dependency: headless polls listEvents every 50ms on its own handle; concurrency: poll plus final drain, no duplicates by seq; state: none",
-        "mitigation": "seq-ordered once-only test, mutation-checked, real-process check"
-      },
-      "plan_digest": "380ba5ca974fb93347718d502c34496175b3be6310ddca9cf754de84fd75104f"
-    },
     {
       "task_id": "atelier-a5-stream-json",
       "phase": "verification",
@@ -337,6 +288,56 @@
       "timestamp": 1794737249.3360257,
       "timestamp_str": "2026-11-15 13:07:29",
       "agent": "claude:a5",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-a6-logic",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan: shared protected-path guard for Always allow and a pure live-text reducer, ahead of the UI task",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794737423.1226635,
+      "timestamp_str": "2026-11-15 13:10:23",
+      "agent": "claude:a6",
+      "impact_assessment": {
+        "why": "The dock offered Always allow for protected paths and rule-ask calls, and the UI could not draw live token deltas",
+        "benefits": "One implementation of the protected-path rule for server, ACP and UI, and tested logic for the UI task to wire",
+        "risks": "contract: alwaysAllowRule gains an optional reason and returns null in two more cases; dependency: server/rules.ts re-exports from src/rules.ts; concurrency: none; state: none",
+        "mitigation": "Existing protected-path and ACP tests stay green, mutation-checked new tests"
+      },
+      "plan_digest": "467877101cdce3cf608750407d63950f15ff6daa093169398df50458a0a34750"
+    },
+    {
+      "task_id": "atelier-a6-logic",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794737563.9988406,
+      "timestamp_str": "2026-11-15 13:12:43",
+      "agent": "claude:a6",
+      "checklists": "passed",
+      "handoff": {
+        "next": "open the bounded UI task to wire both into the dock and transcript, finish needs the user",
+        "evidence": "fix gate 10/10, mutation-checked protected-path guard and step reducer"
+      }
+    },
+    {
+      "task_id": "atelier-a6-logic",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-a6-logic' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794737571.6746519,
+      "timestamp_str": "2026-11-15 13:12:51",
+      "agent": "claude:a6",
       "delivery": {
         "roots": [
           "."
