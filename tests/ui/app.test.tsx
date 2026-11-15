@@ -225,6 +225,7 @@ describe("atelier shell", () => {
     await screen.findByText("What are we building?");
     fireEvent.click(screen.getByTestId("new-conversation"));
     await screen.findByTestId("conversation-list");
+    expect(screen.getByTestId("conversation-rename")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Rename New conversation" }));
     const input = (await screen.findByTestId("rename-input")) as HTMLInputElement;
     fireEvent.change(input, { target: { value: "Fix the parser" } });
@@ -495,6 +496,19 @@ describe("atelier shell", () => {
     expect(screen.getByText("pipe fallback · 30 s timeout")).toBeTruthy();
     fireEvent.keyDown(window, { key: "Escape" });
     await waitFor(() => expect(screen.queryByTestId("terminal-drawer")).toBeNull());
+  });
+
+  it("toggles terminal drawer via toggle-terminal button and manages aria-expanded", async () => {
+    render(<App />);
+    await screen.findByText("What are we building?");
+    const toggleBtn = screen.getByTestId("toggle-terminal");
+    expect(toggleBtn.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(toggleBtn);
+    expect(await screen.findByTestId("terminal-drawer")).toBeTruthy();
+    expect(toggleBtn.getAttribute("aria-expanded")).toBe("true");
+    fireEvent.click(toggleBtn);
+    await waitFor(() => expect(screen.queryByTestId("terminal-drawer")).toBeNull());
+    expect(toggleBtn.getAttribute("aria-expanded")).toBe("false");
   });
 
   it("navigates the palette with the arrow keys and runs the selected command", async () => {
