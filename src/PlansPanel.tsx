@@ -20,6 +20,7 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [editing, setEditing] = useState(false);
+  const [creating, setCreating] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editBody, setEditBody] = useState("");
@@ -74,6 +75,7 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
 
   async function create(): Promise<void> {
     if (sessionId === null || body.trim().length === 0) return;
+    setCreating(true);
     try {
       await api<{ plan: Plan }>("/api/plans", {
         method: "POST",
@@ -85,6 +87,8 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
       setRevisionTick((tick) => tick + 1);
     } catch (caught) {
       setError(messageOf(caught));
+    } finally {
+      setCreating(false);
     }
   }
 
@@ -146,7 +150,7 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
         {sessionId === null ? (
           <p className="provider-meta">Select a conversation to manage its plans.</p>
         ) : plans.length === 0 ? (
-          <p className="provider-meta">No plans yet. A plan-mode run saves one automatically, or create one below.</p>
+          <p className="provider-meta" data-testid="plans-empty">No plans yet. A plan-mode run saves one automatically, or create one below.</p>
         ) : (
           <ul className="provider-list" data-testid="plan-list">
             {plans.map((plan) => (
@@ -187,8 +191,8 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
             data-testid="plan-body-input"
             rows={5}
           />
-          <button className="small-button" type="button" onClick={() => void create()} disabled={body.trim().length === 0} data-testid="plan-create">
-            Create plan
+          <button className="small-button" type="button" onClick={() => void create()} disabled={creating || body.trim().length === 0} data-testid="plan-create">
+            {creating ? "Creating…" : "Create plan"}
           </button>
         </div>
       ) : null}

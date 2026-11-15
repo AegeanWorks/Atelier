@@ -32,6 +32,7 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [saving, setSaving] = useState(false);
   const saveRef = useRef<() => boolean>(() => false);
 
   const dirty = current !== null && draft !== current.content;
@@ -75,6 +76,7 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
 
   async function save(): Promise<void> {
     if (current === null || draft === current.content) return;
+    setSaving(true);
     try {
       const data = await api<WorkspaceFile>("/api/workspace/file", {
         method: "PUT",
@@ -86,6 +88,8 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
       await refresh();
     } catch (caught) {
       setError(messageOf(caught));
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -135,6 +139,11 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
           <button className="small-button" type="button" onClick={() => void create()} data-testid="create-file">Create</button>
         </div>
         <ul className="file-tree" data-testid="file-tree">
+          {entries.length === 0 ? (
+            <li className="file-empty" data-testid="files-empty">
+              <span className="provider-meta">No files in workspace.</span>
+            </li>
+          ) : null}
           {entries.map((entry) => (
             <li key={entry.path} style={{ paddingLeft: `${entry.path.split("/").length * 8}px` }}>
               <button
@@ -155,7 +164,7 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
         <div className="panel-card">
           <div className="file-head">
             <h2>{current.path}</h2>
-            <button className="small-button" type="button" onClick={() => void save()} disabled={!dirty} title="Save (Cmd/Ctrl+S)" data-testid="save-file">Save</button>
+            <button className="small-button" type="button" onClick={() => void save()} disabled={!dirty || saving} title="Save (Cmd/Ctrl+S)" data-testid="save-file">{saving ? "Saving…" : "Save"}</button>
             <button
               className="small-button danger"
               type="button"

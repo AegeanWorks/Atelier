@@ -110,7 +110,7 @@ export default function HistoryPanel({ refreshTick }: { refreshTick: number }): 
           <p className="provider-meta">{selected.message}</p>
           <p className="provider-meta">{new Date(selected.createdAt).toLocaleString()}</p>
           <div className="file-create">
-            <button className="small-button" type="button" onClick={() => void restoreFile()} disabled={busy} data-testid="checkpoint-restore">Restore file</button>
+            <button className="small-button" type="button" onClick={() => void restoreFile()} disabled={busy} data-testid="checkpoint-restore">{busy ? "Restoring…" : "Restore file"}</button>
           </div>
         </div>
       ) : null}
@@ -132,7 +132,7 @@ export default function HistoryPanel({ refreshTick }: { refreshTick: number }): 
         {pending ? (
           <div className="file-create">
             <button className="small-button" type="button" onClick={() => void restoreDir()} disabled={busy} data-testid="history-confirm-dir">
-              Confirm restore {dir.length > 0 ? dir : "workspace root"}
+              {busy ? "Restoring…" : `Confirm restore ${dir.length > 0 ? dir : "workspace root"}`}
             </button>
             <button className="small-button" type="button" onClick={() => setPending(false)} data-testid="history-cancel-dir">Cancel</button>
           </div>

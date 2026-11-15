@@ -135,7 +135,7 @@ export default function GitPanel(): React.JSX.Element {
           </button>
         </div>
         <p className="git-legend">index · worktree · {stagedCount} staged of {changes.length} change(s)</p>
-        {status === null || changes.length === 0 ? <p>No working-tree changes.</p> : null}
+        {status === null || changes.length === 0 ? <p className="provider-meta" data-testid="git-empty">No working-tree changes.</p> : null}
         <ul className="file-tree" data-testid="git-status">
           {changes.map((change) => (
             <li key={change.path} className="git-change">

@@ -1839,6 +1839,11 @@ p.provider-meta,
   overscroll-behavior: contain;
 }
 
+.file-empty {
+  list-style: none;
+  padding: var(--space-3) var(--space-4);
+}
+
 .file-item {
   width: 100%;
   border: 0;
@@ -1901,7 +1906,7 @@ p.provider-meta,
   tab-size: 2;
 }
 
-.diff-view {
+pre.diff-view {
   margin: 0;
   max-height: 42vh;
   overflow: auto;

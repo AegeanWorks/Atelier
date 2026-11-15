@@ -170,7 +170,7 @@ export default function PreviewPanel(): React.JSX.Element {
       </div>
       {src === null ? (
         <div className="panel-card panel-gap">
-          <p>Enter a loopback URL and load it, or press Detect to find a running dev server.</p>
+          <p className="provider-meta" data-testid="preview-empty">Enter a loopback URL and load it, or press Detect to find a running dev server.</p>
         </div>
       ) : (
         <iframe

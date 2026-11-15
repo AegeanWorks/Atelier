@@ -125,7 +125,7 @@ export default function RailConversations({
       </div>
       <div className="rail-section rail-list-section">
         {visible.length === 0 ? (
-          <p className="rail-empty">
+          <p className="rail-empty" data-testid="rail-empty">
             {trimmed.length > 0
               ? `No conversation title matches "${trimmed}".`
               : archived
