@@ -1809,7 +1809,8 @@ p.provider-meta,
 
 .file-create input,
 .file-head input,
-.git-panel input {
+.git-panel input,
+.history-dir {
   flex: 1;
   min-width: 0;
   border: 1px solid var(--border);

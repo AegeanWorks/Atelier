@@ -113,6 +113,7 @@ export default function HistoryPanel({ refreshTick }: { refreshTick: number }): 
       <div className="panel-card">
         <h2>Restore directory</h2>
         <input
+          className="history-dir"
           value={dir}
           onChange={(event) => {
             setDir(event.target.value);
