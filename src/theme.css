@@ -1312,10 +1312,13 @@ summary:focus-visible,
 
 .panel-list {
   display: grid;
-  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bg-input) 65%, transparent);
+  overflow: hidden;
 }
 
 .panel-list li {
@@ -1323,12 +1326,28 @@ summary:focus-visible,
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-3) var(--space-5);
   color: var(--text-muted);
   font-family: var(--mono);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  background: transparent;
+  transition: background var(--ease);
+}
+
+.panel-list li:last-child {
+  border-bottom: 0;
+}
+
+.panel-list li:hover {
+  background: var(--bg-panel);
+}
+
+.panel-list li span:last-child {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .statusbar {
@@ -1995,10 +2014,12 @@ p.provider-meta,
   text-align: left;
   padding: var(--space-2) var(--space-3);
   font-family: var(--mono);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
+  line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: background var(--ease), color var(--ease);
 }
 
 .file-item:hover:not(:disabled),
@@ -2015,15 +2036,31 @@ p.provider-meta,
 .git-change {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-xs);
+  transition: background var(--ease);
+}
+
+.git-change:hover {
+  background: var(--bg-panel);
+}
+
+.git-change .small-button {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  min-height: 24px;
 }
 
 .git-code {
   display: inline-block;
-  min-width: 20px;
+  min-width: 22px;
   letter-spacing: 0.08em;
   color: var(--warn);
   font-family: var(--mono);
   font-weight: 700;
+  font-size: var(--text-xs);
 }
 
 .git-legend {
