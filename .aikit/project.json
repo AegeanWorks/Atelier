@@ -28,10 +28,12 @@
   "has_ui": true,
   "ui_kind": "web",
   "ui_evidence": [
+    ".aikit/compat.json",
     "index.html",
     "package.json",
-    "src/App.tsx"
+    "shots/atelier-after.png",
+    "shots/atelier-before.png"
   ],
   "ui_checked_at": "2026-11-15",
-  "ui_source": "manual"
+  "ui_source": "detected"
 }

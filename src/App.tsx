@@ -1198,7 +1198,7 @@ export default function App(): React.JSX.Element {
             >
               ⤓
             </button>
-            <button className="icon-button" type="button" aria-label="⌘K command palette" onClick={() => setPaletteOpen(true)} data-testid="open-palette">
+            <button className="icon-button mobile-only" type="button" aria-label="⌘K command palette" onClick={() => setPaletteOpen(true)} data-testid="open-palette">
               ⌘K
             </button>
           </header>
