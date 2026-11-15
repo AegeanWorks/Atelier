@@ -219,21 +219,21 @@ summary:focus-visible,
 }
 
 .brand {
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  font-weight: 750;
+  letter-spacing: -0.01em;
   font-size: var(--text-base);
 }
 
 .brand-mark {
   display: inline-grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-xs);
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: var(--on-accent);
   font-weight: 900;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
@@ -266,13 +266,14 @@ summary:focus-visible,
   align-items: center;
   justify-content: center;
   gap: var(--space-4);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-2) var(--space-5);
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-strong));
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   background: color-mix(in srgb, var(--accent) 14%, transparent);
   color: var(--text);
   font-weight: 650;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
+  height: 32px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
@@ -1544,10 +1545,11 @@ summary:focus-visible,
   margin: var(--space-5) var(--space-8);
   border: 1px solid color-mix(in srgb, var(--bad) 45%, transparent);
   background: var(--bad-soft);
-  border-radius: var(--radius-md);
-  padding: var(--space-5) var(--space-6);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4) var(--space-5);
   color: var(--text);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-4);
@@ -1977,10 +1979,11 @@ p.provider-meta,
 .banner-ok {
   border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent);
   background: color-mix(in srgb, var(--ok) 8%, transparent);
-  border-radius: var(--radius-md);
-  padding: var(--space-5) var(--space-6);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4) var(--space-5);
   color: var(--text);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .banner-ok.inline {
@@ -2140,6 +2143,10 @@ p.provider-meta,
 
 .git-legend {
   margin: var(--space-1) 0 var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  background: color-mix(in srgb, var(--bg-input) 60%, transparent);
+  border-radius: var(--radius-xs);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
   color: var(--text-faint);
   font-family: var(--mono);
   font-size: var(--text-xs);
@@ -2150,14 +2157,20 @@ p.provider-meta,
   min-height: 300px;
   resize: vertical;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: var(--bg-input);
   color: var(--text);
-  padding: var(--space-5) var(--space-6);
+  padding: var(--space-4) var(--space-5);
   font-family: var(--mono);
-  font-size: var(--text-sm);
-  line-height: 1.55;
+  font-size: var(--text-xs);
+  line-height: 1.5;
   tab-size: 2;
+  transition: border-color var(--ease);
+}
+
+.editor:focus {
+  border-color: var(--accent);
+  outline: none;
 }
 
 pre.diff-view {
