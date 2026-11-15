@@ -1,68 +1,18 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-focus-ring",
+    "task_id": "atelier-ui-card-gap",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794742233.2029653,
+    "updated_at": 1794742641.8534505,
     "owner": "claude:ui",
     "started_by": "claude:ui",
     "continuations": [],
-    "completed_at": 1794742460.5011137,
-    "completed_head": "45f25ae1e50fa3af0708f9a05730ffd97a3ceb90"
+    "completed_at": 1794742833.741714,
+    "completed_head": "c26972a6c7b6224de8d7ce32c82ff1dfe1dd364b"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-a11y-gates",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794739683.5544884,
-      "timestamp_str": "2026-11-15 13:48:03",
-      "agent": "claude:ui",
-      "checklists": "passed",
-      "handoff": {
-        "next": "tokenise type and spacing in a bounded UI task",
-        "evidence": "check shows 12 of 12 gates including a11y and browser"
-      }
-    },
-    {
-      "task_id": "atelier-a11y-gates",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-a11y-gates' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794739688.336709,
-      "timestamp_str": "2026-11-15 13:48:08",
-      "agent": "claude:ui",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-type-scale",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: one type scale in theme.css, every font-size becomes a token",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794739917.268154,
-      "timestamp_str": "2026-11-15 13:51:57",
-      "agent": "claude:ui",
-      "impact_assessment": {
-        "why": "G-008 asks for type from theme tokens and the file used 15 raw sizes between 9.5 and 22 px",
-        "benefits": "Six sizes to reason about and one place to change them",
-        "risks": "contract: UI only, 1 file 89 lines; dependency: none; concurrency: none; state: none",
-        "mitigation": "Sizes move by at most one pixel, every panel at three widths plus the live and approval states compared pixel by pixel and by eye"
-      },
-      "plan_digest": "4ce81d73c83f410a77838d675d22a2159278be5d5de1effc0cf60064da0bab64"
-    },
     {
       "task_id": "atelier-ui-type-scale",
       "phase": "verification",
@@ -343,6 +293,58 @@
       "status": "completed",
       "timestamp": 1794742460.5229585,
       "timestamp_str": "2026-11-15 14:34:20",
+      "agent": "claude:ui",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-card-gap",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan: stack cards with the shared gap in every panel and drop the empty Pareto card",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794742641.5860283,
+      "timestamp_str": "2026-11-15 14:37:21",
+      "agent": "claude:ui",
+      "impact_assessment": {
+        "why": "G-008 asks for calm consistent spacing and no unused chrome; History Plans Usage and Evals stacked their cards with no gap and Evals showed an empty card holding only a title",
+        "benefits": "Every panel stacks cards the same way and Evals shows nothing until it has runs",
+        "risks": "contract: UI only, 2 files 29 lines; dependency: none; concurrency: none; state: none",
+        "mitigation": "Contact sheet of all nine panels before and after at 390 plus every pair compared and the wider layouts checked, 162 UI tests pass"
+      },
+      "plan_digest": "2bedfcfbadc0b0d76e8f7fd69a9dd0a34abc23523a1cca784cf060939d59a50e"
+    },
+    {
+      "task_id": "atelier-ui-card-gap",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794742641.8534505,
+      "timestamp_str": "2026-11-15 14:37:21",
+      "agent": "claude:ui",
+      "checklists": "passed",
+      "handoff": {
+        "state": "card gap and Pareto change reviewed by the agent under G-010",
+        "next": "finish then commit",
+        "open": "Firefox and WebKit are not tested and the Evals panel with data was not screenshotted",
+        "evidence": "contact sheets of all nine panels at 390 before and after show History Plans Usage and Evals now separated by the same gap as Git and Settings and no empty Pareto card, the pixel diff changed only those four panels at three widths plus Git which lists live working tree data and 1 pixel noise and the known flaky conversation shot, Plans at 1440 checked, 162 UI and token tests pass"
+      }
+    },
+    {
+      "task_id": "atelier-ui-card-gap",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-card-gap' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794742833.761902,
+      "timestamp_str": "2026-11-15 14:40:33",
       "agent": "claude:ui",
       "delivery": {
         "roots": [
