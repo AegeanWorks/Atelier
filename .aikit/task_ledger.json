@@ -1,68 +1,18 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-a3-agents-chain",
+    "task_id": "atelier-a3-imports",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794684154.8042839,
+    "updated_at": 1794736497.6602733,
     "owner": "claude:a3",
     "started_by": "claude:a3",
     "continuations": [],
-    "completed_at": 1794684161.168332
+    "completed_at": 1794736515.661092,
+    "completed_head": "82e40549ce90446cec6976e2104429da6a5d05f2"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-a3-conventions",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "[1/1] A3 server part shipped: .agents/skills read with precedence atelier then agents then claude sharing the 30 skill cap, ask decision in rules ordered deny then ask then allow, explicitAsk on the approver so headless --yes refuses a call a rule said to ask about, approval reason names the rule, docs/FEATURES.md, ADRs 084 and 085. 16 new tests (5 skills folder integration, 5 ask unit, 6 ask end to end), the end to end ones mutation-checked by disabling the ask branch which turned the two key tests red and restoring turned them green, tsc clean, 10/10 gates first run. No src file changed so no UI task. Not done from A3: nested and ancestor AGENTS.md chain and Claude-style rule string import, deferred because the nested case needs on-demand loading design. checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794677438.664126,
-      "timestamp_str": "2026-11-14 20:30:38",
-      "agent": "claude:a3",
-      "checklists": "passed",
-      "handoff": {
-        "state": "10/10 gates",
-        "next": "A4 token streaming and ACP, or A2 when a model is available",
-        "open": "standing commit permission"
-      }
-    },
-    {
-      "task_id": "atelier-a3-conventions",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-a3-conventions' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794677446.560323,
-      "timestamp_str": "2026-11-14 20:30:46",
-      "agent": "claude:a3",
-      "delivery": {
-        "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-a4-streaming",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan A milestone A4 first half: live token deltas on an in-memory per-session channel (server/liveStream.ts), an onEvent observer on collectProvider, the agent loop publishing text.delta, and the SSE endpoint forwarding them without an id and serialised with durable frames; ADR-086. The ACP agent and the UI drawing of deltas are separate tasks",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794677582.4483502,
-      "timestamp_str": "2026-11-14 20:33:02",
-      "agent": "claude:a4",
-      "impact_assessment": {
-        "why": "Provider output was collected whole so no client could show an answer as it formed, and it is the prerequisite for a good ACP agent",
-        "benefits": "Clients and an in-process ACP agent can show text as it is produced without the cost and replay problems of logging every token",
-        "risks": "contract: a new SSE event type text.delta and an onEvent option; dependency: none; concurrency: SSE writes from two sources are serialised through one promise chain and unsubscribed on abort; state: none, deltas are not persisted",
-        "mitigation": "Ten tests written first, a faulty subscriber and a client disconnect both covered, per-delta cost measured directly at 3.5 ns with no subscriber and 20 ns with one because whole-run P95 is too noisy to show it, no src file changed"
-      },
-      "plan_digest": "77970d3e934e91cf53bb776611a0e00a0dc998aa9e8263de7656c11ca39dc114"
-    },
     {
       "task_id": "atelier-a4-streaming",
       "phase": "verification",
@@ -91,7 +41,7 @@
       "agent": "claude:a4",
       "delivery": {
         "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+          "."
         ],
         "forced": false
       }
@@ -140,7 +90,7 @@
       "agent": "claude:acp",
       "delivery": {
         "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+          "."
         ],
         "forced": false
       }
@@ -189,7 +139,7 @@
       "agent": "claude:a5",
       "delivery": {
         "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+          "."
         ],
         "forced": false
       }
@@ -239,7 +189,7 @@
       "agent": "claude:a5",
       "delivery": {
         "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+          "."
         ],
         "forced": false
       }
@@ -289,7 +239,7 @@
       "agent": "claude:a5",
       "delivery": {
         "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+          "."
         ],
         "forced": false
       }
@@ -339,7 +289,57 @@
       "agent": "claude:a3",
       "delivery": {
         "roots": [
-          "C:\\Users\\Yunus-Emre\\Desktop\\portable_agent_kit\\projects\\atelier"
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-a3-imports",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan: @relative/path lines in AGENTS.md/CLAUDE.md inline the file, confined to the repository",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794734089.9607267,
+      "timestamp_str": "2026-11-15 12:14:49",
+      "agent": "claude:a3",
+      "impact_assessment": {
+        "why": "Claude-style memory files split rules across files with @path imports; atelier showed the raw line",
+        "benefits": "Existing CLAUDE.md files that use imports work unchanged",
+        "risks": "contract: only lines that are solely @path change; dependency: none; concurrency: none; state: prompt size bounded by the shared budget",
+        "mitigation": "realpath confinement to the repo root, depth 3, cycle guard, 64 KB cap, mutation-checked tests"
+      },
+      "plan_digest": "05041b5f8430023ef1211cde254184f1b8dc72cbcc67e8c64c58205fe6c5017e"
+    },
+    {
+      "task_id": "atelier-a3-imports",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794736497.6602733,
+      "timestamp_str": "2026-11-15 12:54:57",
+      "agent": "claude:a3",
+      "checklists": "passed",
+      "handoff": {
+        "next": "A2 or A6 need the user, otherwise G-009 config CLI",
+        "evidence": "import expansion costs nothing when no file has an import line (realpath lazy), fix gate 10/10 at 26 percent load, agent-perf flickers 1 in 4 on the unchanged baseline too, under 100 percent external load from two tge processes both baseline and candidate failed perf gates alike"
+      }
+    },
+    {
+      "task_id": "atelier-a3-imports",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-a3-imports' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794736515.6832337,
+      "timestamp_str": "2026-11-15 12:55:15",
+      "agent": "claude:a3",
+      "delivery": {
+        "roots": [
+          "."
         ],
         "forced": false
       }
