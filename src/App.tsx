@@ -1256,8 +1256,10 @@ export default function App(): React.JSX.Element {
 
           {needsProvider ? (
             <div className="banner-hint" role="status" data-testid="provider-notice">
-              <strong>No provider key yet</strong>
-              <div>Add a provider and its key in Settings, or set the key in the atelier environment, before sending a message.</div>
+              <div className="banner-copy">
+                <strong>No provider key yet</strong>
+                <div>Add a provider and its key in Settings, or set the key in the atelier environment, before sending a message.</div>
+              </div>
               <button className="small-button" type="button" onClick={() => { setTab("settings"); setWorkspaceOpen(true); }} data-testid="provider-settings">
                 Open Settings
               </button>
