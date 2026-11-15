@@ -126,7 +126,10 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
   return (
     <div className="files-panel" data-testid="files-panel">
       <div className="panel-card">
-        <h2>Files</h2>
+        <div className="file-head">
+          <h2>Files</h2>
+          <button className="small-button" type="button" onClick={() => void refresh()} data-testid="files-refresh">Refresh</button>
+        </div>
         <div className="file-create">
           <input value={newPath} onChange={(event) => setNewPath(event.target.value)} placeholder="new/file.ts" aria-label="New file path" data-testid="new-file" />
           <button className="small-button" type="button" onClick={() => void create()} data-testid="create-file">Create</button>
