@@ -148,6 +148,14 @@ describe("atelier shell", () => {
     expect(await screen.findByTestId("settings-panel")).toBeTruthy();
   });
 
+  it("slides the workspace into view when the first-run hint opens Settings", async () => {
+    render(<App />);
+    await screen.findByTestId("provider-notice");
+    expect(screen.getByTestId("workspace").getAttribute("data-open")).toBe("false");
+    fireEvent.click(screen.getByTestId("provider-settings"));
+    expect(screen.getByTestId("workspace").getAttribute("data-open")).toBe("true");
+  });
+
   it("explains a no_model block in actionable words", async () => {
     render(<App />);
     await screen.findByText("What are we building?");
