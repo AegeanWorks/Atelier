@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-terminal-polish",
+    "task_id": "atelier-ui-accessibility-and-actions",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794759171.7440584,
+    "updated_at": 1794760010.7510293,
     "owner": "antigravity:1",
     "started_by": "antigravity:1",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794759176.4542596,
-    "completed_head": "37d1f87b26b0d99861f17490261ad255275fa051",
-    "completed_tree": "43c74d5313bd659297bea43259ac6340533d1970"
+    "completed_at": 1794760019.10569,
+    "completed_head": "0bfb233b44adffbf4d92268958f50dc2301390eb",
+    "completed_tree": "6f9c01914eeaa9e66356f75a8ee30f7feb3b9f09"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-polish",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "12/12 gates passed (test 603/603, lint, typecheck, build, a11y, browser, compat); ui finish --reviewed; checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794754015.3685272,
-      "timestamp_str": "2026-11-15 17:46:55",
-      "agent": "antigravity:1",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-polish",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-polish' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794754015.843706,
-      "timestamp_str": "2026-11-15 17:46:55",
-      "agent": "antigravity:1",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-first-run",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] First-run hint: Open Settings must open the workspace on narrow widths (currently a dead click) and read as the primary action (accent border, full-contrast text); failing-first test; before/after shots incl. narrow after-click scenario",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794754281.4352596,
-      "timestamp_str": "2026-11-15 17:51:21",
-      "agent": "antigravity:1",
-      "impact_assessment": {
-        "why": "G-008 one obvious primary action; on 390/768 the hint button changes a tab that is off-canvas, so nothing visible happens",
-        "benefits": "First-run users on narrow screens reach Settings; the hint action is legible",
-        "risks": "contract: none; dependency: none; concurrency: none; state: workspaceOpen set on click",
-        "mitigation": "unit test pins data-open; tokens only; full gate run"
-      },
-      "plan_digest": "f4d0b3be33693b53fd17b9648ffb189b24a8d1ac84c2ce19bd7d177215077358",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-first-run",
       "phase": "phase 4",
@@ -393,6 +335,63 @@
       "status": "completed",
       "timestamp": 1794759176.5335653,
       "timestamp_str": "2026-11-15 19:12:56",
+      "agent": "antigravity:1",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-accessibility-and-actions",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "Add missing test IDs, aria-expanded states, task list dismissal, and action gating",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794759320.24835,
+      "timestamp_str": "2026-11-15 19:15:20",
+      "agent": "antigravity:1",
+      "impact_assessment": {
+        "why": "Ensure consistent test IDs and ARIA states for drawer triggers, allow users to dismiss task lists, and gate empty eval comparisons",
+        "benefits": "Better accessibility for screen readers, keyboard discoverability via shortcut tooltips, cleaner UX for task list dismissal",
+        "risks": "Minimal presentation-only changes",
+        "mitigation": "Verify existing tests continue to pass and add unit tests for new attributes"
+      },
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-accessibility-and-actions",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "All 12 gates green; test IDs, ARIA expanded states, task list dismissal, and eval gating verified",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794760010.7510293,
+      "timestamp_str": "2026-11-15 19:26:50",
+      "agent": "antigravity:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-accessibility-and-actions",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-accessibility-and-actions' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794760019.1714838,
+      "timestamp_str": "2026-11-15 19:26:59",
       "agent": "antigravity:1",
       "delivery": {
         "roots": [
