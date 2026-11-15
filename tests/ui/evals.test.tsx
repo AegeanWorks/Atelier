@@ -64,6 +64,7 @@ describe("evals compare card", () => {
     render(<EvalsPanel />);
     expect(await screen.findByText("No baselines yet")).toBeTruthy();
     expect(screen.getByText("No harness runs yet")).toBeTruthy();
+    expect(await screen.findByTestId("evals-empty")).toBeTruthy();
     const hint = (await screen.findByText(/No eval runs yet/)).querySelector("code");
     expect(hint?.textContent).toBe("npm run eval");
     expect(document.body.textContent).not.toContain("`");

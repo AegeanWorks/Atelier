@@ -104,4 +104,16 @@ describe("usage panel", () => {
     await screen.findByTestId("usage-session-requests");
     expect(screen.queryByTestId("usage-session-delegated")).toBeNull();
   });
+
+  it("renders empty state when no model usage is recorded", async () => {
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
+      if (url === "/api/usage") return new Response(JSON.stringify({ ...globalUsage, byModel: [] }), { status: 200 });
+      if (url === "/api/usage?session=ses_1") return new Response(JSON.stringify(sessionUsage), { status: 200 });
+      return new Response(JSON.stringify({ error: { code: "NOT_FOUND" } }), { status: 404 });
+    });
+    render(<UsagePanel sessionId="ses_1" />);
+    const empty = await screen.findByTestId("usage-empty");
+    expect(empty.textContent).toContain("No provider usage recorded yet.");
+  });
 });
