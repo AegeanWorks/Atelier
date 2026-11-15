@@ -27,6 +27,7 @@ try {
   browser = await launchBrowser();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
+  const overflow = [];
   page.on("console", (message) => {
     if (message.type() === "error") errors.push(message.text());
   });
@@ -51,7 +52,24 @@ try {
     const path = join(out, `atelier-${viewport.name}-dark.png`);
     await page.screenshot({ path, fullPage: true });
     console.log(`shot ${viewport.name} ${path}`);
+
+    // Every workspace panel is part of the pair, so a change to one of them is always visible before and after.
+    if (viewport.width < 1000) {
+      await page.getByLabel("Open workspace").click();
+      await page.waitForSelector('[data-testid="workspace-tabs"]', { state: "visible", timeout: 10_000 });
+    }
+    const tabs = await page.getByTestId("workspace-tabs").getByRole("tab").allInnerTexts();
+    for (const name of tabs) {
+      await page.getByRole("tab", { name: name.trim(), exact: true }).click();
+      await page.waitForTimeout(200);
+      const file = join(out, `atelier-tab-${name.trim().toLowerCase()}-${viewport.name}.png`);
+      await page.screenshot({ path: file, fullPage: true });
+      const wide = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      if (wide > 1) overflow.push(`${name.trim()} at ${viewport.width}px scrolls sideways by ${wide}px`);
+      console.log(`shot tab ${name.trim()} ${viewport.name}`);
+    }
   }
+  if (overflow.length > 0) throw new Error(`horizontal overflow: ${overflow.join(" | ")}`);
   if (errors.length > 0) throw new Error(`console errors: ${errors.slice(0, 3).join(" | ")}`);
   console.log(`OK: screenshots complete${label.length === 0 ? "" : ` in shots/${label}`}`);
   process.exitCode = 0;
