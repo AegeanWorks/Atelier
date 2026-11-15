@@ -25,8 +25,8 @@
   --radius-lg: 16px;
   --control: 30px;
   --ease: 140ms ease;
-  --glow-a: rgba(36, 54, 104, 0.55);
-  --glow-b: rgba(20, 44, 70, 0.5);
+  --glow-a: rgba(99, 102, 241, 0.06);
+  --glow-b: rgba(56, 225, 198, 0.03);
   --scrim: rgba(0, 0, 0, 0.5);
   --font: ui-sans-serif, system-ui, "Segoe UI", Roboto, Inter, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
@@ -116,7 +116,10 @@ body,
 }
 
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(1000px 400px at 80% -10%, var(--glow-a) 0%, transparent 60%),
+    radial-gradient(800px 300px at 10% -5%, var(--glow-b) 0%, transparent 60%),
+    var(--bg);
   color: var(--text);
   font-family: var(--font);
   font-size: var(--text-base);
