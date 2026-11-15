@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-rail-conversations-density",
+    "task_id": "atelier-ui-flush-surfaces-and-ergonomics",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794779003.6185412,
+    "updated_at": 1794780586.9019415,
     "owner": "unidentified",
     "started_by": "unidentified",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794779008.1344264,
-    "completed_head": "753474fcbc5533f6626beea56ea15a0fb727eff4",
-    "completed_tree": "c4d69c59ca99e6e80505891d5719166917a37bbb"
+    "completed_at": 1794780591.5844226,
+    "completed_head": "5160b12dd2c47a5f35dd151cac64d013c06de8cc",
+    "completed_tree": "35dbaf2d8e9674f609a385c80de1dd9a30bcb0d3"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-unified-desktop-architecture",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "Unified desktop header heights at 50px across all 3 columns, rebalanced workspace width to 380px, and streamlined composer/messages padding",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794772549.71989,
-      "timestamp_str": "2026-11-15 22:55:49",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-unified-desktop-architecture",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-unified-desktop-architecture' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794772553.9317381,
-      "timestamp_str": "2026-11-15 22:55:53",
-      "agent": "unidentified",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-obsidian-palette-and-tabstrip",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Transform dark mode to obsidian neutral palette, fix tabstrip single-line fit, and de-nest panel cards",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794772838.5352268,
-      "timestamp_str": "2026-11-15 23:00:38",
-      "agent": "unidentified",
-      "impact_assessment": {
-        "why": "Eliminate muddy navy blue wash and radial glows, prevent workspace tabs from wrapping into two rows, and remove claustrophobic card-inside-card border nesting",
-        "benefits": "Sharp, modern Linear/Zed aesthetic with crisp high-contrast darks, aligned top bar across all 3 panes, and clean flat panel hierarchy",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none",
-        "mitigation": "Keep strict WCAG AA contrast for text and text-muted against obsidian backgrounds and verify all UI candidate screenshots and tests"
-      },
-      "plan_digest": "206cb1ba731b41979a44ee2b9d729cd111886e4435d9af17373c5c224ccb72b5",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-obsidian-palette-and-tabstrip",
       "phase": "phase 4",
@@ -394,6 +336,65 @@
       "timestamp_str": "2026-11-16 00:43:28",
       "agent": "unidentified",
       "head": "753474fcbc5533f6626beea56ea15a0fb727eff4",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-flush-surfaces-and-ergonomics",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/2] Flush workspace surface architecture, tabstrip underline, git row single-action, and ghost CTA",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794779826.2036037,
+      "timestamp_str": "2026-11-16 00:57:06",
+      "agent": "unidentified",
+      "impact_assessment": {
+        "why": "Eliminate card-in-a-card inception, fix 10px tab font, de-clutter git staging rows, and calm rail CTA",
+        "benefits": "Flush inspector panels, readable 11px tabs with accent underline, 2x wider git paths without dual buttons, refined ghost rail CTA",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none",
+        "mitigation": "Preserve all test IDs and button disabled states in DOM for test suite"
+      },
+      "plan_digest": "6cf5fa69b8c5424411ee9da64a75f13e667cbed6af76cffb2f9c67155ea7d0d9",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-flush-surfaces-and-ergonomics",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 2/2] Verified flush workspace panels, tabstrip indicator, and git row ergonomics pass all 12 gates",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794780586.9019415,
+      "timestamp_str": "2026-11-16 01:09:46",
+      "agent": "unidentified",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-flush-surfaces-and-ergonomics",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-flush-surfaces-and-ergonomics' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794780591.6519656,
+      "timestamp_str": "2026-11-16 01:09:51",
+      "agent": "unidentified",
+      "head": "5160b12dd2c47a5f35dd151cac64d013c06de8cc",
       "delivery": {
         "roots": [
           "."
