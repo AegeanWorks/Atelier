@@ -1,41 +1,59 @@
 #!/usr/bin/env node
-import { launchBrowser, startUi, stopUi } from "./browser.mjs";
+// G-004: the interface renders and does not scroll sideways in Chromium, Firefox and WebKit at 390, 768 and 1440 px.
+import { ENGINES, launchEngine, startUi, stopUi } from "./browser.mjs";
+
+const WIDTHS = [
+  { width: 390, height: 844 },
+  { width: 768, height: 1024 },
+  { width: 1440, height: 900 },
+];
+
+async function checkEngine(engine, base) {
+  const browser = await launchEngine(engine);
+  try {
+    const page = await browser.newPage({ viewport: WIDTHS[2] });
+    const errors = [];
+    page.on("console", (message) => {
+      if (message.type() === "error") errors.push(message.text());
+    });
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.goto(base, { waitUntil: "domcontentloaded", timeout: 20_000 });
+    await page.waitForSelector('[data-testid="app-shell"]', { timeout: 10_000 });
+    const rootChildren = await page.evaluate(() => document.querySelector("#root")?.children.length ?? 0);
+    if (rootChildren === 0) throw new Error("#root rendered no children");
+    await page.getByTestId("new-conversation").click();
+    await page.waitForSelector('[data-testid="conversation-list"]', { timeout: 10_000 });
+    for (const size of WIDTHS) {
+      await page.setViewportSize(size);
+      const wide = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      if (wide > 1) throw new Error(`horizontal overflow of ${wide}px at ${size.width} px`);
+    }
+    if (errors.length > 0) throw new Error(`console errors: ${errors.slice(0, 3).join(" | ")}`);
+  } finally {
+    await browser.close();
+  }
+}
 
 let ui;
-let browser;
+const failures = [];
 try {
   ui = await startUi();
-  browser = await launchBrowser();
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  const errors = [];
-  page.on("console", (message) => {
-    if (message.type() === "error") errors.push(message.text());
-  });
-  page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto(ui.base, { waitUntil: "domcontentloaded", timeout: 20_000 });
-  await page.waitForSelector('[data-testid="app-shell"]', { timeout: 10_000 });
-  const rootChildren = await page.evaluate(() => document.querySelector("#root")?.children.length ?? 0);
-  if (rootChildren === 0) throw new Error("#root rendered no children");
-  if (errors.length > 0) throw new Error(`console errors: ${errors.slice(0, 3).join(" | ")}`);
-
-  await page.getByTestId("new-conversation").click();
-  await page.waitForSelector('[data-testid="conversation-list"]', { timeout: 10_000 });
-
-  await page.setViewportSize({ width: 390, height: 844 });
-  const narrowOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
-  if (narrowOverflow) throw new Error("horizontal overflow at 390 px");
-
-  console.log("PASS browser: app shell rendered in Chromium");
-  console.log("PASS browser: new conversation reached the durable API");
-  console.log("PASS browser: 390 px has no horizontal overflow");
+  for (const engine of ENGINES) {
+    try {
+      await checkEngine(engine, ui.base);
+      console.log(`PASS browser: ${engine} rendered the shell, reached the API and has no sideways scroll at 390, 768 and 1440 px`);
+    } catch (error) {
+      failures.push(`${engine}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  if (failures.length > 0) throw new Error(failures.join(" || "));
   console.log("OK: browser smoke complete");
   process.exitCode = 0;
 } catch (error) {
   console.error("What: the browser smoke test failed.");
   console.error(`Why: ${error instanceof Error ? error.message : String(error)}`);
-  console.error("Fix: run `npm run test:browser` after `npm install`; set EDGE_PATH if needed.");
+  console.error("Fix: run `npm run build`, install a missing engine with `node node_modules/playwright-core/cli.js install firefox webkit`, set EDGE_PATH if needed, then retry.");
   process.exitCode = 1;
 } finally {
-  await browser?.close();
   await stopUi(ui);
 }
