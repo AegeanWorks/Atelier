@@ -1599,11 +1599,11 @@ summary:focus-visible,
 }
 
 .banner-info {
-  margin: var(--space-5) clamp(var(--space-7), 5vw, var(--space-10)) 0;
+  margin: var(--space-4) clamp(var(--space-6), 4vw, var(--space-8)) 0;
   border: 1px solid color-mix(in srgb, var(--accent-2) 35%, var(--border));
   background: color-mix(in srgb, var(--accent-2) 10%, var(--bg-raised));
-  border-radius: var(--radius);
-  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-5);
   color: var(--text);
   font-size: var(--text-sm);
   display: flex;
@@ -1619,11 +1619,11 @@ summary:focus-visible,
 }
 
 .banner-hint {
-  margin: var(--space-5) clamp(var(--space-7), 5vw, var(--space-10)) 0;
+  margin: var(--space-4) clamp(var(--space-6), 4vw, var(--space-8)) 0;
   border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
   background: color-mix(in srgb, var(--accent) 9%, var(--bg-raised));
-  border-radius: var(--radius);
-  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-5);
   color: var(--text);
   font-size: var(--text-sm);
   display: flex;
