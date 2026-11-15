@@ -45,13 +45,16 @@ try {
   await page.screenshot({ path: after, fullPage: true });
   console.log(`shot ${stateName("after")} ${after}`);
 
-  for (const viewport of viewports) {
+  for (const theme of ["dark", "light"]) for (const viewport of viewports) {
+    const tag = theme === "dark" ? "" : "-light";
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto(ui.base, { waitUntil: "domcontentloaded", timeout: 20_000 });
+    await page.evaluate((value) => localStorage.setItem("atelier.theme", value), theme);
+    await page.reload({ waitUntil: "domcontentloaded" });
     await page.waitForSelector('[data-testid="app-shell"]', { timeout: 10_000 });
-    const path = join(out, `atelier-${viewport.name}-dark.png`);
+    const path = join(out, `atelier-${viewport.name}-${theme}.png`);
     await page.screenshot({ path, fullPage: true });
-    console.log(`shot ${viewport.name} ${path}`);
+    console.log(`shot ${viewport.name} ${theme} ${path}`);
 
     // Every workspace panel is part of the pair, so a change to one of them is always visible before and after.
     if (viewport.width < 1000) {
@@ -62,10 +65,10 @@ try {
     for (const name of tabs) {
       await page.getByRole("tab", { name: name.trim(), exact: true }).click();
       await page.waitForTimeout(200);
-      const file = join(out, `atelier-tab-${name.trim().toLowerCase()}-${viewport.name}.png`);
+      const file = join(out, `atelier-tab-${name.trim().toLowerCase()}-${viewport.name}${tag}.png`);
       await page.screenshot({ path: file, fullPage: true });
       const wide = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-      if (wide > 1) overflow.push(`${name.trim()} at ${viewport.width}px scrolls sideways by ${wide}px`);
+      if (wide > 1) overflow.push(`${name.trim()} (${theme}) at ${viewport.width}px scrolls sideways by ${wide}px`);
       console.log(`shot tab ${name.trim()} ${viewport.name}`);
     }
   }
