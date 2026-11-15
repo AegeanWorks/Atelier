@@ -287,5 +287,26 @@
     "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
     "final_snapshot_entries": 38,
     "surface_digest": "f95d7063d9cf4413870ca3f7c0e7e9357bb30124f2db5e88160efc39b1742fee"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/PlansPanel.tsx",
+      "src/SettingsPanel.tsx"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "44751d9181d7ceea19bab42736a3510e815b79d2",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794757464.3157334,
+    "finished_at": 1794757757.8529186,
+    "strikes": 0,
+    "reviewer": "",
+    "allowed_removals": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "92eb6488a46f1dfed65d67b96d7708faffb21a8cb92872ab2e0493ef19891f88"
   }
 ]

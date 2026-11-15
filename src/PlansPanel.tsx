@@ -20,6 +20,7 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [editing, setEditing] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editBody, setEditBody] = useState("");
   const [revisions, setRevisions] = useState<PlanRevision[]>([]);
@@ -42,6 +43,10 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
   useEffect(() => {
     void refresh().catch((caught) => setError(messageOf(caught)));
   }, [sessionId, refreshTick]);
+
+  useEffect(() => {
+    setConfirmingDelete(false);
+  }, [selectedId, editing]);
 
   useEffect(() => {
     if (selectedId === null) {
@@ -225,7 +230,21 @@ export default function PlansPanel({ sessionId, refreshTick }: { sessionId: stri
                 <button className="small-button" type="button" onClick={() => void setStatus("active")} data-testid="plan-activate">Activate</button>
                 <button className="small-button" type="button" onClick={() => void setStatus("done")} data-testid="plan-done">Mark done</button>
                 <button className="small-button" type="button" onClick={() => void setStatus("archived")} data-testid="plan-archive">Archive</button>
-                <button className="small-button danger" type="button" onClick={() => void remove()} data-testid="plan-delete">Delete</button>
+                <button
+                  className="small-button danger"
+                  type="button"
+                  onClick={() => {
+                    if (confirmingDelete) {
+                      void remove();
+                      setConfirmingDelete(false);
+                    } else {
+                      setConfirmingDelete(true);
+                    }
+                  }}
+                  data-testid={confirmingDelete ? "plan-delete-confirm" : "plan-delete"}
+                >
+                  {confirmingDelete ? "Delete?" : "Delete"}
+                </button>
               </div>
             </>
           )}

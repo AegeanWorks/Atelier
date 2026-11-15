@@ -45,6 +45,7 @@ export default function SettingsPanel(): React.JSX.Element {
   const [rule, setRule] = useState({ name: "", action: "exec" as RuleConfig["action"], match: "", decision: "allow" as RuleConfig["decision"] });
   const [ruleBusy, setRuleBusy] = useState(false);
   const [ruleConfirm, setRuleConfirm] = useState<string | null>(null);
+  const [providerConfirm, setProviderConfirm] = useState<string | null>(null);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [edit, setEdit] = useState({ name: "", protocol: "openai-chat" as Protocol, baseUrl: "", apiKey: "", clearKey: false });
@@ -130,6 +131,7 @@ export default function SettingsPanel(): React.JSX.Element {
   }
 
   function startEdit(provider: ProviderStatus): void {
+    setProviderConfirm(null);
     setEditingId(provider.id);
     setEdit({ name: provider.name, protocol: provider.protocol, baseUrl: provider.baseUrl, apiKey: "", clearKey: false });
     setError(null);
@@ -434,8 +436,13 @@ export default function SettingsPanel(): React.JSX.Element {
               <button className="small-button" type="button" onClick={() => startEdit(provider)} data-testid={`edit-provider-${provider.id}`}>
                 Edit
               </button>
-              <button className="small-button danger" type="button" onClick={() => void removeProvider(provider)} data-testid={`delete-provider-${provider.id}`}>
-                Remove
+              <button
+                className="small-button danger"
+                type="button"
+                onClick={() => (providerConfirm === provider.id ? void removeProvider(provider) : setProviderConfirm(provider.id))}
+                data-testid={providerConfirm === provider.id ? `delete-provider-confirm-${provider.id}` : `delete-provider-${provider.id}`}
+              >
+                {providerConfirm === provider.id ? "Remove?" : "Remove"}
               </button>
               </>
               )}
