@@ -1,87 +1,24 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-a11y-contrast-gate",
-    "last_phase": "verification",
+    "task_id": "atelier-ui-polish",
+    "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794744033.6218238,
-    "owner": "claude:ui",
-    "started_by": "claude:ui",
+    "updated_at": 1794754015.3685272,
+    "owner": "antigravity:1",
+    "started_by": "antigravity:1",
     "continuations": [],
-    "completed_at": 1794744034.9177897,
-    "completed_head": "40ab2f73e7da17aff21cab632f63d0e5301114ac"
+    "workspaces": [
+      {
+        "name": "atelier",
+        "path": "projects/atelier"
+      }
+    ],
+    "completed_at": 1794754015.8090696,
+    "completed_head": "bb7239b9ff1ad70d3bee6ce3257811b3b17cf76e"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-space-padding",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794741049.32361,
-      "timestamp_str": "2026-11-15 14:10:49",
-      "agent": "claude:ui",
-      "checklists": "passed",
-      "handoff": {
-        "state": "padding tokenised and reviewed by the agent under G-010",
-        "next": "finish then commit then margin and colours",
-        "open": "History cards touch with no gap which predates this change",
-        "evidence": "160 values tokenised none raw remain, guard test passes, 38 pairs have identical dimensions with up to 10.6 percent of pixels differing, I inspected Settings and History at 390 and saw cards inset 2 px more and fields about 2 px looser with no clipping or overlap and unchanged contrast"
-      }
-    },
-    {
-      "task_id": "atelier-ui-space-padding",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-space-padding' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794741404.40089,
-      "timestamp_str": "2026-11-15 14:16:44",
-      "agent": "claude:ui",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-space-margin",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[3/3] Plan: spacing scale applied to every margin and one theme-aware on-accent text colour",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794741639.6685328,
-      "timestamp_str": "2026-11-15 14:20:39",
-      "agent": "claude:ui",
-      "impact_assessment": {
-        "why": "G-008 asks for spacing and colours from theme tokens and the sheet set 31 margins and 3 text colours by hand, one of them white on a light accent",
-        "benefits": "Margins follow the scale and text on an accent surface reads well in both themes",
-        "risks": "contract: UI only, 1 file 47 lines; dependency: tokens from the earlier steps; concurrency: none; state: none",
-        "mitigation": "Guard test for undefined variables, panels and states at three widths plus light theme pairs, zoomed comparison of the affected controls"
-      }
-    },
-    {
-      "task_id": "atelier-ui-space-margin",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794741640.1056232,
-      "timestamp_str": "2026-11-15 14:20:40",
-      "agent": "claude:ui",
-      "checklists": "passed",
-      "handoff": {
-        "state": "margin and on-accent tokenised and reviewed by the agent under G-010",
-        "next": "finish then commit",
-        "open": "History cards touch with no gap and disabled Send text is fainter on the light theme",
-        "evidence": "no raw margin or text hex remains, guard test passes, 38 dark pairs and 9 light pairs have identical dimensions with at most 3.5 percent of pixels differing, a zoomed before and after montage showed Add provider and the brand mark go from dark to white text on the light theme with contrast about 4.0 to 4.8 to 1 and the dark theme send button unchanged, nothing clipped or overlapping"
-      }
-    },
     {
       "task_id": "atelier-ui-space-margin",
       "phase": "completed",
@@ -346,6 +283,74 @@
       "timestamp": 1794744034.9440765,
       "timestamp_str": "2026-11-15 15:00:34",
       "agent": "claude:ui",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-polish",
+      "phase": "phase 1",
+      "phase_num": 1,
+      "description": "Plan [1/1] audit UI at 390/768/1440 vs G-007/G-008/G-010, fix concrete defects",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794753481.955034,
+      "timestamp_str": "2026-11-15 17:38:01",
+      "agent": "antigravity:1",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-polish",
+      "phase": "phase 3",
+      "phase_num": 3,
+      "description": "G-008 duplicate control: header \u2318K palette button hidden when rail visible (>980px; mobile-only class). before/after shots/ at desktop+narrow viewed: desktop header no longer duplicates rail Command palette, no clipping/overlap/contrast change; narrow keeps \u2318K (rail hidden), unchanged. npm test 603/603.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794753718.702654,
+      "timestamp_str": "2026-11-15 17:41:58",
+      "agent": "antigravity:1",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-polish",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "12/12 gates passed (test 603/603, lint, typecheck, build, a11y, browser, compat); ui finish --reviewed; checklists: passed",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794754015.3685272,
+      "timestamp_str": "2026-11-15 17:46:55",
+      "agent": "antigravity:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-polish",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-polish' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794754015.843706,
+      "timestamp_str": "2026-11-15 17:46:55",
+      "agent": "antigravity:1",
       "delivery": {
         "roots": [
           "."
