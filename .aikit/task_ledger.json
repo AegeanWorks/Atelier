@@ -1,68 +1,18 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-light-contrast",
+    "task_id": "atelier-a11y-contrast-gate",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794743662.2184734,
+    "updated_at": 1794744033.6218238,
     "owner": "claude:ui",
     "started_by": "claude:ui",
     "continuations": [],
-    "completed_at": 1794743857.0889673,
-    "completed_head": "84ce2fcd8518f12c3c8d0176c756a883282895b6"
+    "completed_at": 1794744034.9177897,
+    "completed_head": "40ab2f73e7da17aff21cab632f63d0e5301114ac"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-space-gap",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794740686.4380019,
-      "timestamp_str": "2026-11-15 14:04:46",
-      "agent": "claude:ui",
-      "checklists": "passed",
-      "handoff": {
-        "state": "gap and radius tokenised and reviewed by the agent under G-010",
-        "next": "finish then commit then padding and then margin and colours",
-        "evidence": "my first attempt skipped defining new tokens because the sheet already had a different --space-1 to 5 and the before and after pair showed the Settings form 14 px looser per field so I reverted and added a test for undefined variables then redid it with the old scale renumbered, final pairs differ by at most 4.6 percent of pixels with identical dimensions and the Settings pair at 390 shows the same density within 1 px per field, 66 spacing and 19 radius values tokenised none raw remain"
-      }
-    },
-    {
-      "task_id": "atelier-ui-space-gap",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-space-gap' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794740891.260577,
-      "timestamp_str": "2026-11-15 14:08:11",
-      "agent": "claude:ui",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-space-padding",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[2/3] Plan: spacing scale applied to every padding declaration",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794741049.0163078,
-      "timestamp_str": "2026-11-15 14:10:49",
-      "agent": "claude:ui",
-      "impact_assessment": {
-        "why": "G-008 asks for spacing from theme tokens and the sheet set 99 paddings by hand",
-        "benefits": "Padding follows the same scale as gap",
-        "risks": "contract: UI only, 1 file 176 lines; dependency: tokens from the previous step; concurrency: none; state: none",
-        "mitigation": "Guard test for undefined variables, every panel at three widths plus states compared pixel by pixel and by eye"
-      }
-    },
     {
       "task_id": "atelier-ui-space-padding",
       "phase": "verification",
@@ -345,6 +295,56 @@
       "status": "completed",
       "timestamp": 1794743857.109719,
       "timestamp_str": "2026-11-15 14:57:37",
+      "agent": "claude:ui",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-a11y-contrast-gate",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan: the accessibility gate measures contrast itself in both themes on every panel, and ui-shots covers the light theme",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794743869.2726235,
+      "timestamp_str": "2026-11-15 14:57:49",
+      "agent": "claude:ui",
+      "impact_assessment": {
+        "why": "axe evaluated 11 of about 365 text elements for contrast and left the rest incomplete, so the gate said nothing about the light theme",
+        "benefits": "A real contrast regression in either theme fails the gate set",
+        "risks": "contract: the a11y gate scans 18 states and fails on any text pair under 4.5 to 1 or 3 to 1 for large text; dependency: Chromium; concurrency: none; state: none",
+        "mitigation": "Gradient backed text is skipped and said so, disabled controls are exempt as WCAG allows, a mutation of the light muted colour is caught"
+      },
+      "plan_digest": "04a51d80e876d757eb790fd186f6a0964d39da7c76d271cebfbe95525888e7d9"
+    },
+    {
+      "task_id": "atelier-a11y-contrast-gate",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794744033.6218238,
+      "timestamp_str": "2026-11-15 15:00:33",
+      "agent": "claude:ui",
+      "checklists": "passed",
+      "handoff": {
+        "next": "A2 needs a live model and states with data are only covered by screenshot review",
+        "evidence": "the a11y gate runs 18 scans in 12 seconds and passes, it failed on two real light theme pairs before the fix and caught a mutated muted colour at 1.09 to 1, 12 of 12 gates"
+      }
+    },
+    {
+      "task_id": "atelier-a11y-contrast-gate",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-a11y-contrast-gate' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794744034.9440765,
+      "timestamp_str": "2026-11-15 15:00:34",
       "agent": "claude:ui",
       "delivery": {
         "roots": [
