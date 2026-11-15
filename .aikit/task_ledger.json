@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-panels-and-details-polish",
+    "task_id": "atelier-ui-aesthetic-refinements",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794767029.7278485,
+    "updated_at": 1794767998.466122,
     "owner": "unidentified",
     "started_by": "unidentified",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794767037.7325668,
-    "completed_head": "bacd01fb068d69258b4f22459dc28bc48f3d10d3",
-    "completed_tree": "1b8fb2907afdddc23248b8cdb9ff0ff6fba54b2c"
+    "completed_at": 1794768002.2804601,
+    "completed_head": "a1e862ba10554328d6b156a6275b158576b9cd96",
+    "completed_tree": "61dfe688dba7070b584dfc3d65879ce1690c1765"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-active-selection-and-pareto",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "All 12 gates green; active selection styling across all panels, pareto progress bar, and loading feedback verified",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794761494.360759,
-      "timestamp_str": "2026-11-15 19:51:34",
-      "agent": "antigravity:1",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-active-selection-and-pareto",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-active-selection-and-pareto' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794761500.495101,
-      "timestamp_str": "2026-11-15 19:51:40",
-      "agent": "antigravity:1",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-empty-states-and-feedback",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Standardize empty state typography across panels, separate pre.diff-view styling from details.diff-view, and provide interactive loading feedback on save and restore actions",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794761885.7673495,
-      "timestamp_str": "2026-11-15 19:58:05",
-      "agent": "antigravity:1",
-      "impact_assessment": {
-        "why": "Empty states in Git, Files, and Preview panels lacked consistent typography and testability, diff pre styling collided with details summary, and asynchronous actions lacked visual loading feedback",
-        "benefits": "Consistent aesthetic typography across all panels, resolved diff view layout collision in approvals, testable empty states, and responsive visual action feedback",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and UI feedback only)",
-        "mitigation": "Preserved all existing DOM structures and verified all 12 Phase 4 gates and UI tests"
-      },
-      "plan_digest": "964c7a0d5f2929d5343712ee3fd25c6b50e2eaa0af28d03b1d22f7d83bd1544b",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-empty-states-and-feedback",
       "phase": "phase 4",
@@ -394,6 +336,64 @@
       "status": "completed",
       "timestamp": 1794767037.8045084,
       "timestamp_str": "2026-11-15 21:23:57",
+      "agent": "unidentified",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-aesthetic-refinements",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Aesthetic refinement of sidebar list items, search filter layout, panel headers, markdown inline code and statusbar",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794767307.5218582,
+      "timestamp_str": "2026-11-15 21:28:27",
+      "agent": "unidentified",
+      "impact_assessment": {
+        "why": "Elevate visual elegance, reduce sidebar clutter, refine panel headers and align typography with modern sleek developer tools",
+        "benefits": "Crisper visual rhythm, reduced visual weight, sleek sidebar navigation, modern code styling and elegant statusbar",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and CSS refinements only)",
+        "mitigation": "Constrain changes to theme.css within diff line limits, verify with full test suite, screenshots and Phase 4 gates"
+      },
+      "plan_digest": "e86d90220ec47b9cd1310cc3fec5744c9faedfb198238e4bedb36ac99def8263",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-aesthetic-refinements",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "All 12 Phase 4 gates passed, sidebar items, search layout, and panel inputs refined",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794767998.466122,
+      "timestamp_str": "2026-11-15 21:39:58",
+      "agent": "unidentified",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-aesthetic-refinements",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-aesthetic-refinements' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794768002.3463192,
+      "timestamp_str": "2026-11-15 21:40:02",
       "agent": "unidentified",
       "delivery": {
         "roots": [
