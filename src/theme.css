@@ -11,6 +11,7 @@
   --text-muted: #93a1c0;
   --text-faint: #8b98b8;
   --accent: #7c8cff;
+  --accent-text: var(--accent);
   --accent-2: #38e1c6;
   --accent-soft: rgba(124, 140, 255, 0.14);
   --ok: #4ade80;
@@ -67,8 +68,9 @@
   --border-strong: rgba(15, 23, 42, 0.22);
   --text: #101725;
   --text-muted: #50607d;
-  --text-faint: #5f6e89;
+  --text-faint: #566480;
   --accent: #5264ee;
+  --accent-text: #4152d6;
   --accent-2: #0f9f8a;
   --accent-soft: rgba(82, 100, 238, 0.12);
   --on-accent: #ffffff;
@@ -1425,7 +1427,7 @@ summary:focus-visible,
 }
 
 .banner-hint strong {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .sr-only {
@@ -2075,7 +2077,7 @@ p.provider-meta,
 }
 
 .todo-item[data-status="in_progress"] .todo-mark {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .todo-item[data-status="completed"] {

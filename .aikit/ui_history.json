@@ -162,5 +162,25 @@
     "final_snapshot_digest": "e54831ae8d3d106b4853814003d881910e9016a33abb9a0a5fc51f70d1a27668",
     "final_snapshot_entries": 35,
     "surface_digest": "16dac85a061a33c238b2a2a532a5caef4dd548e2dcd2b6f50bc1d64e1082cdac"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "e8d9bf41129c045b4475720d5881f8e1c0eafef4",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794743514.1501267,
+    "finished_at": 1794743706.4164953,
+    "strikes": 0,
+    "reviewer": "agent:claude-code:67c78038",
+    "allowed_removals": [],
+    "final_snapshot_digest": "e54831ae8d3d106b4853814003d881910e9016a33abb9a0a5fc51f70d1a27668",
+    "final_snapshot_entries": 35,
+    "surface_digest": "793f117022f166d830eef22e3fd0241b92fb93cc59aac2760d54b6e6ccb75271"
   }
 ]
