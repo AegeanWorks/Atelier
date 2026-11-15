@@ -1,0 +1,23 @@
+[
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/App.tsx",
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "7fe0456eb7400cfe07da0cf431b2f107f56fd6d2",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794738323.6285007,
+    "finished_at": 1794738475.9958854,
+    "strikes": 0,
+    "reviewer": "agent:claude-code:67c78038",
+    "allowed_removals": [],
+    "final_snapshot_digest": "b9af177476b07d1710568e30d2cb96ae0b0924539ed3b8d0e6cdded0a3ee0760",
+    "final_snapshot_entries": 8,
+    "surface_digest": "54ef9d9cb9524415a7ddc8d535fdf4f304cdb94aa089fe85c6d03dbc16a51361"
+  }
+]

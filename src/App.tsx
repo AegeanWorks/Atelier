@@ -7,7 +7,8 @@ import Markdown from "./Markdown";
 import { downloadTranscript } from "./transcript";
 import { splitAttachments } from "./attachments";
 import { imageProblem, readBase64 } from "./images";
-import { alwaysAllowRule } from "./rules";
+import { alwaysAllowRule, isProtectedConfigPath } from "./rules";
+import { applyLiveEvent, type LiveText } from "./live";
 import { contextView } from "./context";
 import { activeMention, applyMention, rankFiles } from "./mention";
 import { BUILTIN_COMMANDS, INIT_PROMPT, expandTemplate, matchCommands, parseSlash, type SlashCommand } from "./slash";
@@ -186,6 +187,7 @@ export default function App(): React.JSX.Element {
   const [historyTick, setHistoryTick] = useState(0);
   const [approvals, setApprovals] = useState<Approval[]>([]);
   const [activity, setActivity] = useState<ActivityItem[]>([]);
+  const [liveText, setLiveText] = useState<LiveText | null>(null);
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [approvalNotes, setApprovalNotes] = useState<Record<string, string>>({});
   const [approvalBusy, setApprovalBusy] = useState<string[]>([]);
@@ -368,6 +370,7 @@ export default function App(): React.JSX.Element {
       setApprovals([]);
       setApprovalNotes({});
       setApprovalBusy([]);
+      setLiveText(null);
       return;
     }
     setError(null);
@@ -444,7 +447,17 @@ export default function App(): React.JSX.Element {
         handler(event as MessageEvent);
       });
     };
+    // Live text is drawn while the answer is written and dropped as soon as the run starts, finishes or blocks.
+    on("text.delta", (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data) as unknown;
+        setLiveText((current) => applyLiveEvent(current, "text.delta", data));
+      } catch {
+        // A malformed delta is skipped; the saved message is authoritative.
+      }
+    });
     on("run.started", () => {
+      setLiveText(null);
       setRunStatus("running");
       setActivity([]);
       setTaskTick((tick) => tick + 1);
@@ -499,6 +512,7 @@ export default function App(): React.JSX.Element {
       }
     });
     on("run.finished", () => {
+      setLiveText(null);
       setRunStatus("idle");
       setUsageTick((tick) => tick + 1);
       setPlanTick((tick) => tick + 1);
@@ -530,6 +544,7 @@ export default function App(): React.JSX.Element {
       }
     });
     on("run.blocked", (event) => {
+      setLiveText(null);
       setUsageTick((tick) => tick + 1);
       setTaskTick((tick) => tick + 1);
       let reason: string | undefined;
@@ -1307,6 +1322,11 @@ export default function App(): React.JSX.Element {
                 </article>
               ))
             )}
+            {runStatus === "running" && liveText !== null && liveText.text.length > 0 ? (
+              <article className="message live" data-role="assistant" data-testid="live-message" aria-busy="true">
+                <div className="message-bubble">{liveText.text}</div>
+              </article>
+            ) : null}
             {runStatus === "running" ? (
               <div className="working" role="status" data-testid="working" aria-live="polite">
                 <span className="working-dots" aria-hidden="true">
@@ -1343,6 +1363,9 @@ export default function App(): React.JSX.Element {
                   <p>
                     <strong>{approval.tool}</strong> wants to {approval.action} <code>{approval.resource}</code>.
                     <span className="approval-reason">{approval.reason}</span>
+                    {approval.action === "edit" && isProtectedConfigPath(approval.resource) ? (
+                      <span className="approval-reason" data-testid="approval-protected">Protected configuration: no rule can cover this, only you can approve it.</span>
+                    ) : null}
                   </p>
                   {approval.preview === null || approval.preview.length === 0 ? null : <DiffView diff={approval.preview} defaultOpen />}
                   <input

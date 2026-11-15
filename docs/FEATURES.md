@@ -75,3 +75,6 @@ Everything below needs no browser and no person. Run each command with stdin clo
 - **Checks.** `atelier --check --json` and `atelier --doctor --json` report the runtime and the state as JSON.
 
 MCP over HTTP: a streamable HTTP server is asked for protocol version 2025-06-18; the version it answers with (2025-06-18, 2025-03-26 or 2024-11-05) is sent as an `MCP-Protocol-Version` header on every later request, and a server that answers with any other version is not connected, with an error that names both versions. Stdio and the older SSE transport still use 2024-11-05.
+
+
+Live text and protected approvals: while a run is working, the text of the step being written appears in the transcript as a dashed, muted bubble that grows as the server streams `text.delta` events and disappears when the run starts, finishes or blocks, so the saved message takes over; it is never stored and keeps only the newest 20,000 characters. An approval for an edit of the agent's own configuration (`.claude/`, `.atelier/`, `.agents/`, `AGENTS.md`, `CLAUDE.md`) shows the note "Protected configuration: no rule can cover this, only you can approve it" and offers no Always allow button; the same is true of a call a permission rule asks about.

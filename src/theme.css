@@ -655,6 +655,11 @@ select:focus-visible,
   border-color: color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
+.message.live .message-bubble {
+  border-style: dashed;
+  color: var(--text-muted);
+}
+
 .markdown {
   display: grid;
   gap: 8px;
