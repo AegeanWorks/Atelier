@@ -1,4 +1,4 @@
-import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
+﻿import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import type { ToolSchema } from "./providers/types.js";
 import type { Config } from "./state.js";
 
@@ -122,8 +122,13 @@ class StdioMcpClient implements McpClient {
 }
 
 
+/** Streamable HTTP protocol revisions this client speaks, newest first; the first is what it asks for. */
+export const HTTP_PROTOCOL_VERSIONS = ["2025-06-18", "2025-03-26", "2024-11-05"];
+
 class HttpMcpClient implements McpClient {
   private sessionId: string | null = null;
+  /** The version the server agreed to, sent as `MCP-Protocol-Version` on every request after initialize. */
+  private protocolVersion: string | null = null;
   private nextId = 1;
 
   constructor(private readonly server: McpServer) {}
@@ -135,6 +140,7 @@ class HttpMcpClient implements McpClient {
       ...this.server.headers,
     };
     if (this.sessionId !== null) headers["mcp-session-id"] = this.sessionId;
+    if (this.protocolVersion !== null) headers["mcp-protocol-version"] = this.protocolVersion;
     const response = await fetch(this.server.url ?? "", {
       method: "POST",
       headers,
@@ -172,7 +178,13 @@ class HttpMcpClient implements McpClient {
   }
 
   async initialize(): Promise<void> {
-    await this.request("initialize", { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "atelier", version: "0.1.0" } });
+    const asked = HTTP_PROTOCOL_VERSIONS[0] as string;
+    const result = await this.request("initialize", { protocolVersion: asked, capabilities: {}, clientInfo: { name: "atelier", version: "0.1.0" } });
+    const agreed = typeof result.protocolVersion === "string" ? result.protocolVersion : asked;
+    if (!HTTP_PROTOCOL_VERSIONS.includes(agreed)) {
+      throw new Error(`MCP ${this.server.id} answered protocol version ${agreed}, but this client speaks ${HTTP_PROTOCOL_VERSIONS.join(", ")}`);
+    }
+    this.protocolVersion = agreed;
     await this.post({ jsonrpc: "2.0", method: "notifications/initialized", params: {} }, false);
   }
 
