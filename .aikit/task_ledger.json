@@ -1,69 +1,18 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-space-gap",
+    "task_id": "atelier-ui-space-padding",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794740686.4380019,
+    "updated_at": 1794741049.32361,
     "owner": "claude:ui",
     "started_by": "claude:ui",
     "continuations": [],
-    "completed_at": 1794740891.238533,
-    "completed_head": "5566ea9aeece2a4956e422f92fa79c8e74c9f259"
+    "completed_at": 1794741404.377237,
+    "completed_head": "a3c10486e77b8f3b4a9221de3a897d5b5d6edc42"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-a6-ui",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794738461.3322203,
-      "timestamp_str": "2026-11-15 13:27:41",
-      "agent": "claude:a6",
-      "checklists": "passed",
-      "handoff": {
-        "state": "UI task reopened and reviewed by the agent under G-010",
-        "next": "ui finish then commit with ADR-097 and the FEATURES paragraph",
-        "evidence": "looked at before and after shots at 1440 and the live and protected scenario shots at 390 768 and 1440, empty states pixel identical, live bubble dashed and muted and grows then clears, protected note legible with Approve and Deny reachable and no Always allow button, no clipping or overlap or contrast problem, no console errors"
-      }
-    },
-    {
-      "task_id": "atelier-a6-ui",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-a6-ui' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794738632.1824205,
-      "timestamp_str": "2026-11-15 13:30:32",
-      "agent": "claude:a6",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-g007-all-states",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: G-007 requires screenshots of the changed state, and ui-shots covers every workspace tab at three widths",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794738939.0834713,
-      "timestamp_str": "2026-11-15 13:35:39",
-      "agent": "claude:ui",
-      "impact_assessment": {
-        "why": "The stock shots missed the states my last UI change affected",
-        "benefits": "Every UI change gets a before and after pair of the surface it touches",
-        "risks": "contract: ui:before and ui:after now take 27 more shots and fail on horizontal overflow; dependency: playwright and the tab list in the page; concurrency: none; state: none",
-        "mitigation": "Tab names are read from the page, the existing five shots keep their names"
-      },
-      "plan_digest": "78cbda690e8c89d6b23849ab0cd0269f27edc61e1c843fe5bda9cfba73f034f1"
-    },
     {
       "task_id": "atelier-g007-all-states",
       "phase": "verification",
@@ -341,6 +290,57 @@
       "status": "completed",
       "timestamp": 1794740891.260577,
       "timestamp_str": "2026-11-15 14:08:11",
+      "agent": "claude:ui",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-space-padding",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[2/3] Plan: spacing scale applied to every padding declaration",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794741049.0163078,
+      "timestamp_str": "2026-11-15 14:10:49",
+      "agent": "claude:ui",
+      "impact_assessment": {
+        "why": "G-008 asks for spacing from theme tokens and the sheet set 99 paddings by hand",
+        "benefits": "Padding follows the same scale as gap",
+        "risks": "contract: UI only, 1 file 176 lines; dependency: tokens from the previous step; concurrency: none; state: none",
+        "mitigation": "Guard test for undefined variables, every panel at three widths plus states compared pixel by pixel and by eye"
+      }
+    },
+    {
+      "task_id": "atelier-ui-space-padding",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794741049.32361,
+      "timestamp_str": "2026-11-15 14:10:49",
+      "agent": "claude:ui",
+      "checklists": "passed",
+      "handoff": {
+        "state": "padding tokenised and reviewed by the agent under G-010",
+        "next": "finish then commit then margin and colours",
+        "open": "History cards touch with no gap which predates this change",
+        "evidence": "160 values tokenised none raw remain, guard test passes, 38 pairs have identical dimensions with up to 10.6 percent of pixels differing, I inspected Settings and History at 390 and saw cards inset 2 px more and fields about 2 px looser with no clipping or overlap and unchanged contrast"
+      }
+    },
+    {
+      "task_id": "atelier-ui-space-padding",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-space-padding' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794741404.40089,
+      "timestamp_str": "2026-11-15 14:16:44",
       "agent": "claude:ui",
       "delivery": {
         "roots": [
