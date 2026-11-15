@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-banners-and-desktop-alignment",
+    "task_id": "atelier-ui-empty-state-and-statusbar-polish",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794776514.3667805,
+    "updated_at": 1794777118.2901952,
     "owner": "unidentified",
     "started_by": "unidentified",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794776518.6056395,
-    "completed_head": "5bfbd403bbebfb447b3df3dd66da5fa3dd781e20",
-    "completed_tree": "e2931fb792977faaeaf5bb6b59c818e05b2555e4"
+    "completed_at": 1794777123.5526109,
+    "completed_head": "4d61147b9393649c1cdaf6650ce4dbf64b2e81fa",
+    "completed_tree": "0529dd6eb15cbbb6de006ec32598eb724af74597"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-chat-and-approvals-polish",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "All 12 Phase 4 gates passed, assistant message bubbles, actions, jump button, and approval dock polished",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794769692.751116,
-      "timestamp_str": "2026-11-15 22:08:12",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-chat-and-approvals-polish",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-chat-and-approvals-polish' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794769697.0870972,
-      "timestamp_str": "2026-11-15 22:08:17",
-      "agent": "unidentified",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-sidebar-editor-and-alerts-polish",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Polish sidebar brand and new-conversation button, files editor, git legend, and alert ribbons",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794769806.0182962,
-      "timestamp_str": "2026-11-15 22:10:06",
-      "agent": "unidentified",
-      "impact_assessment": {
-        "why": "Elevate sidebar polish, file editor typography and compact alert banners",
-        "benefits": "Crisper branding, modern compact new-conversation button, sleek monospace code editor, clean git legend and elegant banners",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and CSS refinements only)",
-        "mitigation": "Constrain changes to theme.css within diff line limits (<=300 lines), verify with full test suite, screenshots and Phase 4 gates"
-      },
-      "plan_digest": "930cf9281423fb0f8645faf8e9eed5e32486877d87bf0170060e54ee760d18f3",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-sidebar-editor-and-alerts-polish",
       "phase": "phase 4",
@@ -392,6 +334,64 @@
       "status": "completed",
       "timestamp": 1794776518.7221043,
       "timestamp_str": "2026-11-16 00:01:58",
+      "agent": "unidentified",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-empty-state-and-statusbar-polish",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/2] Refine conversation empty state cards and typography, and add status dot micro-indicators",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794776602.416783,
+      "timestamp_str": "2026-11-16 00:03:22",
+      "agent": "unidentified",
+      "impact_assessment": {
+        "why": "Replace bulky 60px empty state prompt tiles with compact 42px suggestion rows and add modern 6px status indicators in the statusbar",
+        "benefits": "Clean first-run desktop onboarding, calm status strip diagnostics, and improved visual breathing room",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none",
+        "mitigation": "Preserve all prompt buttons, quick prompt text content, and statusbar DOM test ids"
+      },
+      "plan_digest": "d3718ef3e9fc21caf1d9497b1fd8deec069a1ab5835d224c88edcc55aca6757f",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-empty-state-and-statusbar-polish",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "Refined empty state prompt cards to 42px compact rows, calibrated empty monogram, and added 6px micro-dot indicators in the statusbar",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794777118.2901952,
+      "timestamp_str": "2026-11-16 00:11:58",
+      "agent": "unidentified",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-empty-state-and-statusbar-polish",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-empty-state-and-statusbar-polish' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794777123.6208525,
+      "timestamp_str": "2026-11-16 00:12:03",
       "agent": "unidentified",
       "delivery": {
         "roots": [
