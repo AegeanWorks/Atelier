@@ -163,6 +163,30 @@ describe("settings MCP servers", () => {
     });
     await waitFor(() => expect(screen.queryByTestId("mcp-row")).toBeNull());
   });
+
+  it("removes a provider only after a confirming click", async () => {
+    const view = configView();
+    fetchMock.mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
+      const method = init?.method ?? "GET";
+      if (url === "/api/config" && method === "GET") return new Response(JSON.stringify(view), { status: 200 });
+      if (url === "/api/providers/local" && method === "DELETE") {
+        return new Response(JSON.stringify({ ok: true }), { status: 200 });
+      }
+      return new Response(JSON.stringify({}), { status: 404 });
+    });
+    render(<SettingsPanel />);
+    await screen.findByTestId("provider-list");
+    fireEvent.click(screen.getByTestId("delete-provider-local"));
+    expect(fetchMock.mock.calls.some(([, init]) => init?.method === "DELETE")).toBe(false);
+    const confirmBtn = await screen.findByTestId("delete-provider-confirm-local");
+    expect(confirmBtn.textContent).toBe("Remove?");
+    fireEvent.click(confirmBtn);
+    await waitFor(() => {
+      const del = fetchMock.mock.calls.find(([input, init]) => String(input) === "/api/providers/local" && init?.method === "DELETE");
+      expect(del).toBeDefined();
+    });
+  });
 });
 
 describe("settings defaults", () => {

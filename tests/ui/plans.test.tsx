@@ -85,7 +85,22 @@ describe("plans panel", () => {
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/plans/plan_1", expect.objectContaining({ method: "PATCH" })));
 
     fireEvent.click(screen.getByTestId("plan-delete"));
+    const confirmDelete = await screen.findByTestId("plan-delete-confirm");
+    expect(confirmDelete.textContent).toBe("Delete?");
+    fireEvent.click(confirmDelete);
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/plans/plan_1", expect.objectContaining({ method: "DELETE" })));
+  });
+
+  it("requires a confirming click before deleting a plan", async () => {
+    render(<PlansPanel sessionId="ses_1" refreshTick={0} />);
+    await screen.findByTestId("plan-detail");
+    const deleteCalls = () => fetchMock.mock.calls.filter(([url, init]) => url === "/api/plans/plan_1" && init?.method === "DELETE").length;
+    fireEvent.click(screen.getByTestId("plan-delete"));
+    expect(deleteCalls()).toBe(0);
+    const confirm = await screen.findByTestId("plan-delete-confirm");
+    expect(confirm.textContent).toBe("Delete?");
+    fireEvent.click(confirm);
+    await waitFor(() => expect(deleteCalls()).toBe(1));
   });
 
   it("renders inside the Plans workspace tab", async () => {
