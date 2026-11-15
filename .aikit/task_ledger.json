@@ -3,32 +3,16 @@
   "active_task": {
     "task_id": "atelier-ui-focus-ring",
     "last_phase": "verification",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794742233.2029653,
     "owner": "claude:ui",
     "started_by": "claude:ui",
-    "continuations": []
+    "continuations": [],
+    "completed_at": 1794742460.5011137,
+    "completed_head": "45f25ae1e50fa3af0708f9a05730ffd97a3ceb90"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-a11y-gates",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: register test:a11y and test:browser as project gates (G-004)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794739546.173475,
-      "timestamp_str": "2026-11-15 13:45:46",
-      "agent": "claude:ui",
-      "impact_assessment": {
-        "why": "The axe gate failed for an unknown time because it was never run by check",
-        "benefits": "An accessibility or overflow regression now fails the gate set",
-        "risks": "contract: two more gates in fix and check; dependency: Chromium at gate time; concurrency: none; state: none",
-        "mitigation": "Both pass now and run in under 20 seconds"
-      },
-      "plan_digest": "a08b29355895c9c4f3c450d1c32c48f4072b089c4a12f99567a41ee6388e24ff"
-    },
     {
       "task_id": "atelier-a11y-gates",
       "phase": "verification",
@@ -349,6 +333,22 @@
         "next": "finish then commit",
         "open": "History cards touch with no gap and Firefox and WebKit are not tested",
         "evidence": "computed outline went from auto 1px rgb 16 16 16 to solid 2px accent for the link and the diff summary at 390 768 and 1440, the before shots showed an almost invisible dark rectangle and the after shots a clear accent ring in the same style as other controls, skip link dark text on accent is legible, 27 of 32 stock panel pairs are pixel identical and the other 5 differ only by live data since the same tree run twice also differs on 3 of them"
+      }
+    },
+    {
+      "task_id": "atelier-ui-focus-ring",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-focus-ring' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794742460.5229585,
+      "timestamp_str": "2026-11-15 14:34:20",
+      "agent": "claude:ui",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
       }
     }
   ]
