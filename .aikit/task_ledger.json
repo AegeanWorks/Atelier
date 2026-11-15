@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-sidebar-editor-and-alerts-polish",
+    "task_id": "atelier-ui-activity-slash-and-desktop-refinement",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794770357.3509562,
+    "updated_at": 1794771100.1390047,
     "owner": "unidentified",
     "started_by": "unidentified",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794770361.711409,
-    "completed_head": "a3ab78c1dec834435a721b156670fedd279a4c8c",
-    "completed_tree": "d51802be9b9c645e08155bf39fd69ba46704a134"
+    "completed_at": 1794771103.7909713,
+    "completed_head": "fad8740d2d0b2487c8891013e1e09b6f1d203d5e",
+    "completed_tree": "5b6933c2273e583cef5f5ff4cdc067bca75bb7de"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-sleek-polish",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "Phase 4 verification passed: all 12 gates green (test, lint, typecheck, build, agent-perf, agent-bench, a11y, browser, hygiene, guidelines, secrets, compat); screenshots reviewed at 390/768/1440px",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794766269.197468,
-      "timestamp_str": "2026-11-15 21:11:09",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-sleek-polish",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-sleek-polish' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794766289.0102105,
-      "timestamp_str": "2026-11-15 21:11:29",
-      "agent": "unidentified",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-panels-and-details-polish",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Sleek aesthetic overhaul of workspace panel lists, usage metrics, git change items, form inputs and approval docks",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794766408.0451603,
-      "timestamp_str": "2026-11-15 21:13:28",
-      "agent": "unidentified",
-      "impact_assessment": {
-        "why": "Eliminate blocky disjointed list items across panels and unify key-value metrics with sleek modern grouped cards",
-        "benefits": "Refined hierarchy, eliminated visual clutter across Usage/Evals/Git/Settings panels, cohesive micro-interactions",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none (strictly CSS and presentation styling polish)",
-        "mitigation": "Constrain edits to theme.css within diff budget, verify with test suite, screenshots and Phase 4 gates"
-      },
-      "plan_digest": "f0d605a92493808c9c5f467b72688e0d6fd6b9ccacecae008a043fffe881ab4e",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-panels-and-details-polish",
       "phase": "phase 4",
@@ -394,6 +336,64 @@
       "status": "completed",
       "timestamp": 1794770361.828843,
       "timestamp_str": "2026-11-15 22:19:21",
+      "agent": "unidentified",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-activity-slash-and-desktop-refinement",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/3] Refine activity feed, slash command popup, attachment chips and desktop interaction surfaces",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794770617.6549947,
+      "timestamp_str": "2026-11-15 22:23:37",
+      "agent": "unidentified",
+      "impact_assessment": {
+        "why": "Elevate live execution feedback, slash command suggestions and desktop attachment presentation",
+        "benefits": "Sleek floating activity feed, modern command autocomplete menu, refined attachment chips and desktop visual rhythm",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and CSS refinements only)",
+        "mitigation": "Constrain changes to theme.css within diff line limits (<=300 lines), verify with full test suite, screenshots and Phase 4 gates"
+      },
+      "plan_digest": "87229403979da9413dd8e2f6d3ba7e27f43b308c99ed75828497e847e776768a",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-activity-slash-and-desktop-refinement",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "All 12 Phase 4 gates passed, activity feed, slash command popup, attachment chips and desktop interaction surfaces polished",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794771100.1390047,
+      "timestamp_str": "2026-11-15 22:31:40",
+      "agent": "unidentified",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-activity-slash-and-desktop-refinement",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-activity-slash-and-desktop-refinement' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794771103.856965,
+      "timestamp_str": "2026-11-15 22:31:43",
       "agent": "unidentified",
       "delivery": {
         "roots": [
