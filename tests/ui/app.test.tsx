@@ -156,6 +156,19 @@ describe("atelier shell", () => {
     expect(screen.getByTestId("workspace").getAttribute("data-open")).toBe("true");
   });
 
+  it("lets the workspace overlay be left with the back button and Escape", async () => {
+    render(<App />);
+    await screen.findByTestId("provider-notice");
+    const workspace = screen.getByTestId("workspace");
+    fireEvent.click(screen.getByTestId("provider-settings"));
+    expect(workspace.getAttribute("data-open")).toBe("true");
+    fireEvent.click(screen.getByTestId("workspace-back"));
+    expect(workspace.getAttribute("data-open")).toBe("false");
+    fireEvent.click(screen.getByTestId("provider-settings"));
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(workspace.getAttribute("data-open")).toBe("false");
+  });
+
   it("explains a no_model block in actionable words", async () => {
     render(<App />);
     await screen.findByText("What are we building?");

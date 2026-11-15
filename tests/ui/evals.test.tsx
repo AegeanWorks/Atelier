@@ -64,6 +64,9 @@ describe("evals compare card", () => {
     render(<EvalsPanel />);
     expect(await screen.findByText("No baselines yet")).toBeTruthy();
     expect(screen.getByText("No harness runs yet")).toBeTruthy();
+    const hint = (await screen.findByText(/No eval runs yet/)).querySelector("code");
+    expect(hint?.textContent).toBe("npm run eval");
+    expect(document.body.textContent).not.toContain("`");
     expect((screen.getByTestId("eval-baseline") as HTMLSelectElement).disabled).toBe(true);
     expect((screen.getByTestId("eval-candidate") as HTMLSelectElement).disabled).toBe(true);
     expect((screen.getByTestId("eval-compare-run") as HTMLButtonElement).disabled).toBe(true);
