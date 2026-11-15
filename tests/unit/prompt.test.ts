@@ -90,4 +90,41 @@ describe("system prompt", () => {
     expect(prompt).not.toContain("R".repeat(101));
     expect(prompt).toContain("truncated");
   });
+
+  it("inlines a line that is only @relative/path from a file inside the repository", () => {
+    const root = workspace({ "AGENTS.md": "intro\n@docs/style.md\noutro" });
+    mkdirSync(join(root, ".git"));
+    mkdirSync(join(root, "docs"));
+    writeFileSync(join(root, "docs", "style.md"), "use tabs");
+    const prompt = buildSystemPrompt(root);
+    expect(prompt).toContain("intro\nuse tabs\noutro");
+    expect(prompt).not.toContain("@docs/style.md");
+  });
+
+  it("leaves an import that points outside the repository, or at nothing, as plain text", () => {
+    const outer = workspace({ "secret.md": "outside secret" });
+    const root = join(outer, "repo");
+    mkdirSync(join(root, ".git"), { recursive: true });
+    writeFileSync(join(root, "AGENTS.md"), "@../secret.md\n@missing.md");
+    const prompt = buildSystemPrompt(root);
+    expect(prompt).not.toContain("outside secret");
+    expect(prompt).toContain("@../secret.md");
+    expect(prompt).toContain("@missing.md");
+  });
+
+  it("follows nested imports a few levels, stops at a cycle and never repeats a file", () => {
+    const root = workspace({ "AGENTS.md": "top\n@a.md" });
+    mkdirSync(join(root, ".git"));
+    writeFileSync(join(root, "a.md"), "A\n@b.md");
+    writeFileSync(join(root, "b.md"), "B\n@a.md");
+    const prompt = buildSystemPrompt(root);
+    expect(prompt).toContain("top\nA\nB\n@a.md");
+    expect(prompt.split("\nA\n").length).toBe(2);
+    const deep = workspace({ "AGENTS.md": "@l1.md" });
+    mkdirSync(join(deep, ".git"));
+    for (let level = 1; level <= 6; level += 1) writeFileSync(join(deep, `l${level}.md`), `L${level}\n@l${level + 1}.md`);
+    const deepPrompt = buildSystemPrompt(deep);
+    expect(deepPrompt).toContain("L3");
+    expect(deepPrompt).not.toContain("L5");
+  });
 });

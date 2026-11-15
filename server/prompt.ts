@@ -1,5 +1,5 @@
-﻿import { existsSync, readFileSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+﻿import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { loadSkills } from "./skills.js";
 
 export const WORKSPACE_INSTRUCTIONS_FILES = ["AGENTS.md", "CLAUDE.md"];
@@ -49,13 +49,47 @@ function repositoryRoot(workspace: string): string | null {
   }
 }
 
-function readOne(dir: string): { file: string; text: string } | null {
+const MAX_IMPORT_DEPTH = 3;
+const MAX_IMPORT_BYTES = 64_000;
+const NEWLINE = "\n";
+const HAS_IMPORT = /^@\S+$/m;
+const IMPORT_LINE = /^@(\S+)$/;
+
+/**
+ * Replaces each line that is only `@relative/path` with that file's text, the way Claude Code's memory files do.
+ * An import must resolve (symlinks included) to a file inside `boundary`, so a rules file can never pull in a
+ * secret from elsewhere; anything else, a missing file, a cycle or a deep chain, stays as the plain line.
+ */
+function expandImports(text: string, dir: string, boundary: string, seen: Set<string>, depth: number): string {
+  if (depth >= MAX_IMPORT_DEPTH) return text;
+  return text
+    .split(NEWLINE)
+    .map((line) => {
+      const match = IMPORT_LINE.exec(line.trim());
+      if (match === null) return line;
+      try {
+        const real = realpathSync(resolve(dir, match[1] as string));
+        if (real !== boundary && !real.startsWith(boundary + sep)) return line;
+        if (seen.has(real) || !statSync(real).isFile() || statSync(real).size > MAX_IMPORT_BYTES) return line;
+        seen.add(real);
+        return expandImports(readFileSync(real, "utf8").trim(), dirname(real), boundary, seen, depth + 1);
+      } catch {
+        return line;
+      }
+    })
+    .join(NEWLINE);
+}
+
+function readOne(dir: string, boundary: () => string): { file: string; text: string } | null {
   for (const name of WORKSPACE_INSTRUCTIONS_FILES) {
     const path = join(dir, name);
     if (!existsSync(path)) continue;
     try {
-      const text = readFileSync(path, "utf8").trim();
-      if (text.length > 0) return { file: name, text };
+      const raw = readFileSync(path, "utf8").trim();
+      if (raw.length === 0) continue;
+      // The real paths are only worked out for a file that has an import line, so the common case costs nothing.
+      const text = HAS_IMPORT.test(raw) ? expandImports(raw, dir, boundary(), new Set([realpathSync(path)]), 0) : raw;
+      return { file: name, text };
     } catch {
       continue;
     }
@@ -76,11 +110,13 @@ function readInstructions(workspace: string, maxChars: number): InstructionFile[
     dirs.push(dir);
     if (root === null || dir === root || dirname(dir) === dir) break;
   }
+  let resolved: string | null = null;
+  const boundary = (): string => (resolved ??= realpathSync(root ?? start));
   const found: InstructionFile[] = [];
   let remaining = maxChars;
   for (const dir of dirs) {
     if (remaining <= 0) break;
-    const one = readOne(dir);
+    const one = readOne(dir, boundary);
     if (one === null) continue;
     const text = one.text.length <= remaining ? one.text : `${one.text.slice(0, remaining)}\nâ€¦ truncated at ${maxChars} characters`;
     remaining -= one.text.length;
