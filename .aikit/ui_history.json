@@ -101,5 +101,25 @@
     "final_snapshot_digest": "e54831ae8d3d106b4853814003d881910e9016a33abb9a0a5fc51f70d1a27668",
     "final_snapshot_entries": 35,
     "surface_digest": "3ad6b10c6b4912f0a1db0da2b22d9efc8ba8f0e2839d9b3ee832771ef135fa36"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "e41302cb74d6341db356e186457efa492cf14c3d",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794741459.5899818,
+    "finished_at": 1794741689.4635983,
+    "strikes": 0,
+    "reviewer": "agent:claude-code:67c78038",
+    "allowed_removals": [],
+    "final_snapshot_digest": "e54831ae8d3d106b4853814003d881910e9016a33abb9a0a5fc51f70d1a27668",
+    "final_snapshot_entries": 35,
+    "surface_digest": "17d76196f52e870d3e6b453d2d5b315910795d6e75afda55b8c655ae35e650b6"
   }
 ]
