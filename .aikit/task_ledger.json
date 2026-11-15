@@ -1,68 +1,18 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-space-padding",
+    "task_id": "atelier-ui-space-margin",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794741049.32361,
+    "updated_at": 1794741640.1056232,
     "owner": "claude:ui",
     "started_by": "claude:ui",
     "continuations": [],
-    "completed_at": 1794741404.377237,
-    "completed_head": "a3c10486e77b8f3b4a9221de3a897d5b5d6edc42"
+    "completed_at": 1794741997.9814262,
+    "completed_head": "1272308487a37caf93c7092e2be1c9ec7fc5b135"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-g007-all-states",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794739079.4653175,
-      "timestamp_str": "2026-11-15 13:37:59",
-      "agent": "claude:ui",
-      "checklists": "passed",
-      "handoff": {
-        "next": "fix the axe violation and tokenise type and spacing in bounded UI tasks",
-        "evidence": "ui:before ran 27 tab shots at three widths with no overflow, fix gate 10/10"
-      }
-    },
-    {
-      "task_id": "atelier-g007-all-states",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-g007-all-states' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794739084.5834336,
-      "timestamp_str": "2026-11-15 13:38:04",
-      "agent": "claude:ui",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-a11y-flat",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: fix the axe violation on the composer, flatten the primary button gradient, shorten the provider copy",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794739342.0816221,
-      "timestamp_str": "2026-11-15 13:42:22",
-      "agent": "claude:ui",
-      "impact_assessment": {
-        "why": "test:a11y failed with a critical aria-allowed-attr and G-008 asks for minimal flat controls and short truthful copy",
-        "benefits": "Axe gate passes, one flat primary style, less jargon",
-        "risks": "contract: UI only, 4 files 10 lines; dependency: none; concurrency: none; state: none",
-        "mitigation": "Before and after pairs of the draft and slash states at three widths and the Settings tab, a11y gate rerun"
-      },
-      "plan_digest": "0316bb66c8440b71c25c4b1c8fa819239ffaf19a01ec17ee98fbe29e4b11ee08"
-    },
     {
       "task_id": "atelier-ui-a11y-flat",
       "phase": "verification",
@@ -341,6 +291,57 @@
       "status": "completed",
       "timestamp": 1794741404.40089,
       "timestamp_str": "2026-11-15 14:16:44",
+      "agent": "claude:ui",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-space-margin",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[3/3] Plan: spacing scale applied to every margin and one theme-aware on-accent text colour",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794741639.6685328,
+      "timestamp_str": "2026-11-15 14:20:39",
+      "agent": "claude:ui",
+      "impact_assessment": {
+        "why": "G-008 asks for spacing and colours from theme tokens and the sheet set 31 margins and 3 text colours by hand, one of them white on a light accent",
+        "benefits": "Margins follow the scale and text on an accent surface reads well in both themes",
+        "risks": "contract: UI only, 1 file 47 lines; dependency: tokens from the earlier steps; concurrency: none; state: none",
+        "mitigation": "Guard test for undefined variables, panels and states at three widths plus light theme pairs, zoomed comparison of the affected controls"
+      }
+    },
+    {
+      "task_id": "atelier-ui-space-margin",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794741640.1056232,
+      "timestamp_str": "2026-11-15 14:20:40",
+      "agent": "claude:ui",
+      "checklists": "passed",
+      "handoff": {
+        "state": "margin and on-accent tokenised and reviewed by the agent under G-010",
+        "next": "finish then commit",
+        "open": "History cards touch with no gap and disabled Send text is fainter on the light theme",
+        "evidence": "no raw margin or text hex remains, guard test passes, 38 dark pairs and 9 light pairs have identical dimensions with at most 3.5 percent of pixels differing, a zoomed before and after montage showed Add provider and the brand mark go from dark to white text on the light theme with contrast about 4.0 to 4.8 to 1 and the dark theme send button unchanged, nothing clipped or overlapping"
+      }
+    },
+    {
+      "task_id": "atelier-ui-space-margin",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-space-margin' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794741998.0039651,
+      "timestamp_str": "2026-11-15 14:26:38",
       "agent": "claude:ui",
       "delivery": {
         "roots": [
