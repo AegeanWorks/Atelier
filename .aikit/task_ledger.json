@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-empty-states-and-feedback",
+    "task_id": "atelier-ui-feedback-and-scrollbars",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794762432.0103824,
+    "updated_at": 1794763023.2794733,
     "owner": "antigravity:1",
     "started_by": "antigravity:1",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794762435.845309,
-    "completed_head": "64adce7da2a4c27630cf7dcd346de411be4cdaa4",
-    "completed_tree": "becc6cde056d4b0ed00e5f6760dd5dabe442bb90"
+    "completed_at": 1794763027.298237,
+    "completed_head": "17fa204c9a42c8a2f815ed66fc1e4fbdc71bd316",
+    "completed_tree": "7d43541b08c2ea27e77026f26d074d1cf24e561a"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-history-input",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "12/12 gates passed. Before/after shots at 390/768/1440 (dark) and desktop light viewed: History Restore directory input was browser-default grey/square, now shared --bg-input/--radius-sm look, no clipping or overlap. checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794755638.7561507,
-      "timestamp_str": "2026-11-15 18:13:58",
-      "agent": "antigravity:1",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-history-input",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-history-input' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794755639.2288618,
-      "timestamp_str": "2026-11-15 18:13:59",
-      "agent": "antigravity:1",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-files-panel",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] FilesPanel UI consistency & tree scrolling: add standard file-head Refresh button matching all other workspace panels; fix .file-tree bottom clipping and overscroll containment; failing-first unit test; before/after shots at 390/768/1440",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794756359.495552,
-      "timestamp_str": "2026-11-15 18:25:59",
-      "agent": "antigravity:1",
-      "impact_assessment": {
-        "why": "G-008 visual grammar & completeness: FilesPanel was the only dynamic panel without a Refresh button in its header; file tree clipped bottom rows with no breathing room",
-        "benefits": "Consistent header controls across all workspace panels; smooth scrolling and unclipped file entries at all screen widths",
-        "risks": "contract: none; dependency: none; concurrency: none; state: refresh calls existing server endpoint",
-        "mitigation": "unit test verifies Refresh calls tree endpoint; theme tokens used exclusively; full 12-gate verification"
-      },
-      "plan_digest": "a6dea3d2421fa54a34b1411151d151f5a629e3dac44beffedeca4f414fabc810",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-files-panel",
       "phase": "phase 4",
@@ -391,6 +333,64 @@
       "status": "completed",
       "timestamp": 1794762435.9092171,
       "timestamp_str": "2026-11-15 20:07:15",
+      "agent": "antigravity:1",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-feedback-and-scrollbars",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Unify quick-card hover grammar, style cross-browser webkit scrollbars with tokens, add copied feedback state to message and code copy buttons, and align aria-selected menu styles",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794762601.598222,
+      "timestamp_str": "2026-11-15 20:10:01",
+      "agent": "antigravity:1",
+      "impact_assessment": {
+        "why": "Quick cards lacked consistent background hover lift, scrollbars were unstyled in webkit browsers, copy buttons lacked distinct visual success state styling, and menu listbox selections relied solely on data attributes",
+        "benefits": "Polished interactive feedback across copy actions, sleek minimal scrollbars in Chromium and Safari, consistent card hover states, and unified aria-selected keyboard styling",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and UI styling only)",
+        "mitigation": "Preserved all existing DOM structures and verified all 12 Phase 4 gates and UI tests"
+      },
+      "plan_digest": "60368a35f0120a131ba11a22d9b1b5c91ad7c3ccfd96f12210b9357517248d81",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-feedback-and-scrollbars",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[1/1] Verified all 12 Phase 4 gates passed with webkit scrollbar styling, quick-card hover grammar, and copy button success states",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794763023.2794733,
+      "timestamp_str": "2026-11-15 20:17:03",
+      "agent": "antigravity:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-feedback-and-scrollbars",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-feedback-and-scrollbars' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794763027.4139576,
+      "timestamp_str": "2026-11-15 20:17:07",
       "agent": "antigravity:1",
       "delivery": {
         "roots": [
