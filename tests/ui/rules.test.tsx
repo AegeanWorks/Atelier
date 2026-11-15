@@ -47,6 +47,7 @@ describe("settings permission rules", () => {
   it("adds a rule with a derived id and saves the whole list", async () => {
     render(<SettingsPanel />);
     expect((await screen.findByTestId("rules-card")).textContent).toContain("No rules");
+    expect(await screen.findByTestId("rules-empty")).toBeTruthy();
     fireEvent.change(screen.getByTestId("rule-name"), { target: { value: "Run Tests" } });
     fireEvent.change(screen.getByTestId("rule-action"), { target: { value: "exec" } });
     fireEvent.change(screen.getByTestId("rule-match"), { target: { value: "npm test*" } });

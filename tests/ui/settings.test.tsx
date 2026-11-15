@@ -102,6 +102,12 @@ describe("settings provider editing", () => {
 });
 
 describe("settings MCP servers", () => {
+  it("renders empty state when no MCP servers are configured", async () => {
+    render(<SettingsPanel />);
+    const empty = await screen.findByTestId("mcp-empty");
+    expect(empty.textContent).toBe("No MCP servers configured.");
+  });
+
   it("adds a stdio server with one argument per line", async () => {
     render(<SettingsPanel />);
     await screen.findByTestId("mcp-card");

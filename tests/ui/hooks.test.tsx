@@ -48,6 +48,7 @@ describe("settings hooks", () => {
   it("adds a hook with a derived id and saves the whole list", async () => {
     render(<SettingsPanel />);
     expect((await screen.findByTestId("hooks-card")).textContent).toContain("No hooks configured");
+    expect(await screen.findByTestId("hooks-empty")).toBeTruthy();
     fireEvent.change(screen.getByTestId("hook-name"), { target: { value: "Block Writes" } });
     fireEvent.change(screen.getByTestId("hook-event"), { target: { value: "pre_tool" } });
     fireEvent.change(screen.getByTestId("hook-match"), { target: { value: "write_file|edit_file" } });
