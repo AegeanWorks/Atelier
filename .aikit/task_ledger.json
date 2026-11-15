@@ -1,68 +1,18 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-type-scale",
+    "task_id": "atelier-theme-token-test",
     "last_phase": "verification",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794739917.5628297,
+    "updated_at": 1794740512.8594391,
     "owner": "claude:ui",
     "started_by": "claude:ui",
     "continuations": [],
-    "completed_at": 1794740104.800594,
-    "completed_head": "17007d51ac5f3aff3c048de9c4651b03171f2668"
+    "completed_at": 1794740517.8736768,
+    "completed_head": "db322c55aeca45295e7de9f6280b8663b26a8ecd"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-a6-logic",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794737563.9988406,
-      "timestamp_str": "2026-11-15 13:12:43",
-      "agent": "claude:a6",
-      "checklists": "passed",
-      "handoff": {
-        "next": "open the bounded UI task to wire both into the dock and transcript, finish needs the user",
-        "evidence": "fix gate 10/10, mutation-checked protected-path guard and step reducer"
-      }
-    },
-    {
-      "task_id": "atelier-a6-logic",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-a6-logic' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794737571.6746519,
-      "timestamp_str": "2026-11-15 13:12:51",
-      "agent": "claude:a6",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-a6-ui",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: draw live text deltas and explain protected-path approvals in the UI, one bounded task",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794738168.75322,
-      "timestamp_str": "2026-11-15 13:22:48",
-      "agent": "claude:a6",
-      "impact_assessment": {
-        "why": "The server streams text deltas and refuses to honour rules for protected paths, but the UI showed nothing live and offered the button",
-        "benefits": "Live reply bubble while the answer is written, a protected-configuration note, no misleading Always allow",
-        "risks": "contract: UI only, 2 files 33 lines; dependency: SSE text.delta event from ADR-086; concurrency: state cleared on run start, finish, block and session switch; state: none persisted",
-        "mitigation": "Pure reducer and guard already tested and committed, real-browser scenario at 390, 768 and 1440 wide"
-      },
-      "plan_digest": "658a80b9c5e2330c22afc24c212a0ba8eb2f1d3bd559f7aea42f839ccc42a012"
-    },
     {
       "task_id": "atelier-a6-ui",
       "phase": "verification",
@@ -328,6 +278,56 @@
       "status": "completed",
       "timestamp": 1794740104.8207786,
       "timestamp_str": "2026-11-15 13:55:04",
+      "agent": "claude:ui",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-theme-token-test",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan: a unit test that every var(--x) in theme.css is defined",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794740357.618651,
+      "timestamp_str": "2026-11-15 13:59:17",
+      "agent": "claude:ui",
+      "impact_assessment": {
+        "why": "A token refactor nearly shipped undefined variables that fail silently and loosened every form",
+        "benefits": "A missing or renamed token fails a test with its name and line",
+        "risks": "contract: test only; dependency: reads src/theme.css; concurrency: none; state: none",
+        "mitigation": "Mutation-checked: an undefined var fails with the name and line"
+      },
+      "plan_digest": "e3d173b14ca3f7e3bfa9e40f937851468f58d3be5cb54e49f7ef262fc7e04c10"
+    },
+    {
+      "task_id": "atelier-theme-token-test",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794740512.8594391,
+      "timestamp_str": "2026-11-15 14:01:52",
+      "agent": "claude:ui",
+      "checklists": "passed",
+      "handoff": {
+        "next": "redo the spacing and radius tokens against a renumbered scale in bounded UI tasks",
+        "evidence": "test passes on the real stylesheet and fails with name and line on a mutant, 12 of 12 gates"
+      }
+    },
+    {
+      "task_id": "atelier-theme-token-test",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-theme-token-test' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794740517.897415,
+      "timestamp_str": "2026-11-15 14:01:57",
       "agent": "claude:ui",
       "delivery": {
         "roots": [
