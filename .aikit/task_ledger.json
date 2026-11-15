@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-confirm-destructive",
+    "task_id": "atelier-ui-terminal-polish",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794758169.0210478,
+    "updated_at": 1794759171.7440584,
     "owner": "antigravity:1",
     "started_by": "antigravity:1",
     "continuations": [],
@@ -15,61 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794758169.6918938,
-    "completed_head": "8acade6949ca1b5135a02fb05572718207063879",
-    "completed_tree": "4b7712f9405bb4b12dc0434e7a533ec19878c248"
+    "completed_at": 1794759176.4542596,
+    "completed_head": "37d1f87b26b0d99861f17490261ad255275fa051",
+    "completed_tree": "43c74d5313bd659297bea43259ac6340533d1970"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-a11y-contrast-gate",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-a11y-contrast-gate' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794744034.9440765,
-      "timestamp_str": "2026-11-15 15:00:34",
-      "agent": "claude:ui",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-polish",
-      "phase": "phase 1",
-      "phase_num": 1,
-      "description": "Plan [1/1] audit UI at 390/768/1440 vs G-007/G-008/G-010, fix concrete defects",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794753481.955034,
-      "timestamp_str": "2026-11-15 17:38:01",
-      "agent": "antigravity:1",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-polish",
-      "phase": "phase 3",
-      "phase_num": 3,
-      "description": "G-008 duplicate control: header \u2318K palette button hidden when rail visible (>980px; mobile-only class). before/after shots/ at desktop+narrow viewed: desktop header no longer duplicates rail Command palette, no clipping/overlap/contrast change; narrow keeps \u2318K (rail hidden), unchanged. npm test 603/603.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794753718.702654,
-      "timestamp_str": "2026-11-15 17:41:58",
-      "agent": "antigravity:1",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-polish",
       "phase": "phase 4",
@@ -386,6 +336,63 @@
       "status": "completed",
       "timestamp": 1794758169.773304,
       "timestamp_str": "2026-11-15 18:56:09",
+      "agent": "antigravity:1",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-terminal-polish",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "Improve terminal drawer, git commit form submission, and responsive button wrapping",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794758575.1729486,
+      "timestamp_str": "2026-11-15 19:02:55",
+      "agent": "antigravity:1",
+      "impact_assessment": {
+        "why": "Fix terminal drawer typo and Escape dismissal, disable idle terminal controls, allow Enter-to-commit in Git panel, and wrap button toolbars",
+        "benefits": "Polished minimalist functional UI, improved keyboard ergonomics, prevents accidental empty runs and invalid stops, eliminates clipping",
+        "risks": "Existing tests relying on unconditional button clicks",
+        "mitigation": "Verify existing tests continue to pass and add targeted tests for new states"
+      },
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-terminal-polish",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "All 12 gates passed; terminal ergonomics, git commit form, responsive toolbars verified",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794759171.7440584,
+      "timestamp_str": "2026-11-15 19:12:51",
+      "agent": "antigravity:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-terminal-polish",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-terminal-polish' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794759176.5335653,
+      "timestamp_str": "2026-11-15 19:12:56",
       "agent": "antigravity:1",
       "delivery": {
         "roots": [
