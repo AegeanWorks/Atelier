@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-active-selection-and-pareto",
+    "task_id": "atelier-ui-empty-states-and-feedback",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794761494.360759,
+    "updated_at": 1794762432.0103824,
     "owner": "antigravity:1",
     "started_by": "antigravity:1",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794761500.4320133,
-    "completed_head": "0b3c179cd9760e14f74446937a5f8b6219b0c133",
-    "completed_tree": "a4e05875d08507a49f66eed9b06ae76ec435b324"
+    "completed_at": 1794762435.845309,
+    "completed_head": "64adce7da2a4c27630cf7dcd346de411be4cdaa4",
+    "completed_tree": "becc6cde056d4b0ed00e5f6760dd5dabe442bb90"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-workspace-exit",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "12/12 gates passed. Before/after shots/workspace-exit (390/768/1440): before the full-screen workspace had no exit at <=980px (composerReachableAfterOpen=false at 390 and 768); after true at all three, back bar legible, no clipping/overlap/horizontal scroll, desktop unchanged; Evals hint no longer shows raw backticks (dark+light viewed). 2 failing-first tests. checklists: passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794755257.8988295,
-      "timestamp_str": "2026-11-15 18:07:37",
-      "agent": "antigravity:1",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-workspace-exit",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-workspace-exit' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794755263.5819294,
-      "timestamp_str": "2026-11-15 18:07:43",
-      "agent": "antigravity:1",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-history-input",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] History 'Restore directory' input has no style rule (browser-default grey, square) while all other inputs share --bg-input/--radius-sm: give it the shared input grammar; before/after shots at 390/768/1440",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794755310.9291265,
-      "timestamp_str": "2026-11-15 18:08:30",
-      "agent": "antigravity:1",
-      "impact_assessment": {
-        "why": "G-008 controls share one visual grammar; one input is visibly off-theme",
-        "benefits": "Consistent input look in dark and light themes",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none",
-        "mitigation": "CSS-only class using existing tokens; a11y gate and before/after shots in both themes"
-      },
-      "plan_digest": "3fad826a6ddf86e8669b7d28e2dd57b56c9f591ce756afb7a4d6c0beb53e27d6",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-history-input",
       "phase": "phase 4",
@@ -391,6 +333,64 @@
       "status": "completed",
       "timestamp": 1794761500.495101,
       "timestamp_str": "2026-11-15 19:51:40",
+      "agent": "antigravity:1",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-empty-states-and-feedback",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Standardize empty state typography across panels, separate pre.diff-view styling from details.diff-view, and provide interactive loading feedback on save and restore actions",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794761885.7673495,
+      "timestamp_str": "2026-11-15 19:58:05",
+      "agent": "antigravity:1",
+      "impact_assessment": {
+        "why": "Empty states in Git, Files, and Preview panels lacked consistent typography and testability, diff pre styling collided with details summary, and asynchronous actions lacked visual loading feedback",
+        "benefits": "Consistent aesthetic typography across all panels, resolved diff view layout collision in approvals, testable empty states, and responsive visual action feedback",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and UI feedback only)",
+        "mitigation": "Preserved all existing DOM structures and verified all 12 Phase 4 gates and UI tests"
+      },
+      "plan_digest": "964c7a0d5f2929d5343712ee3fd25c6b50e2eaa0af28d03b1d22f7d83bd1544b",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-empty-states-and-feedback",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[1/1] Verified all 12 Phase 4 gates passed with standardized empty states, scoped pre.diff-view styling, and interactive action feedback",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794762432.0103824,
+      "timestamp_str": "2026-11-15 20:07:12",
+      "agent": "antigravity:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-empty-states-and-feedback",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-empty-states-and-feedback' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794762435.9092171,
+      "timestamp_str": "2026-11-15 20:07:15",
       "agent": "antigravity:1",
       "delivery": {
         "roots": [

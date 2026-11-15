@@ -379,5 +379,31 @@
     "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
     "final_snapshot_entries": 38,
     "surface_digest": "d0d6427bf895ae3a495fea0b167c166a881dc7a95c904ca78f6bf1a1b4d89dfa"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/FilesPanel.tsx",
+      "src/GitPanel.tsx",
+      "src/HistoryPanel.tsx",
+      "src/PlansPanel.tsx",
+      "src/PreviewPanel.tsx",
+      "src/RailConversations.tsx",
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "6ab28a75d7507b807b0acf245ab7b65c95d96e08",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794761920.2505786,
+    "finished_at": 1794762151.9329026,
+    "strikes": 0,
+    "reviewer": "",
+    "allowed_removals": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "31fd58579b41820a0e114832c7d524d1e5f74fa8df6cb6ec7fb62b829442ea67"
   }
 ]
