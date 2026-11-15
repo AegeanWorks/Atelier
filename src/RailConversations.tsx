@@ -196,6 +196,7 @@ export default function RailConversations({
                         type="button"
                         className="conversation-action"
                         aria-label={`Rename ${session.title}`}
+                        data-testid="conversation-rename"
                         onClick={() => startRename(session)}
                       >
                         ✎

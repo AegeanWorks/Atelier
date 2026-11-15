@@ -331,5 +331,27 @@
     "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
     "final_snapshot_entries": 38,
     "surface_digest": "db5b8e939088974bfe41e08ca0f245f1926a550eb1c624cf817ce6f64409b6e6"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/App.tsx",
+      "src/EvalsPanel.tsx",
+      "src/RailConversations.tsx"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "fe74b959dd71e3f9462e98c378166e24a87f81d1",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794759353.4125364,
+    "finished_at": 1794759541.5484452,
+    "strikes": 0,
+    "reviewer": "",
+    "allowed_removals": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "7d076d825d29689f7ed6102828430ab97be44604be0db231a9aebb1c979419cb"
   }
 ]

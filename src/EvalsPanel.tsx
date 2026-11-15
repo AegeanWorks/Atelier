@@ -144,7 +144,7 @@ export default function EvalsPanel(): React.JSX.Element {
           className="small-button"
           type="button"
           onClick={() => void compare()}
-          disabled={candidate.length === 0}
+          disabled={candidate.length === 0 || baseline.length === 0}
           data-testid="eval-compare-run"
         >
           Compare

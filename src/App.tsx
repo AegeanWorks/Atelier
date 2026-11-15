@@ -1181,7 +1181,15 @@ export default function App(): React.JSX.Element {
                 {stopping ? "Stopping…" : "Stop"}
               </button>
             ) : null}
-            <button className="icon-button mobile-only" type="button" aria-label="Open workspace" onClick={() => setWorkspaceOpen(true)}>
+            <button
+              className="icon-button mobile-only"
+              type="button"
+              aria-label="Open workspace"
+              title="Open workspace panels"
+              aria-expanded={workspaceOpen}
+              data-testid="open-workspace"
+              onClick={() => setWorkspaceOpen(true)}
+            >
               ▤
             </button>
             <button
@@ -1417,7 +1425,7 @@ export default function App(): React.JSX.Element {
             </div>
           ) : null}
 
-          <TodoStrip todos={todos} />
+          <TodoStrip todos={todos} onDismiss={() => setTodos([])} />
 
           <ActivityFeed
             items={activity}
@@ -1504,7 +1512,15 @@ export default function App(): React.JSX.Element {
               <button className="icon-button" type="button" aria-label="Attach image" title="Attach an image (or paste one)" data-testid="attach-image" onClick={() => imageInputRef.current?.click()}>
                 ▣
               </button>
-              <button className="icon-button" type="button" aria-label="Toggle terminal" onClick={() => setTerminalOpen((open) => !open)}>
+              <button
+                className="icon-button"
+                type="button"
+                aria-label="Toggle terminal"
+                title="Toggle terminal (Ctrl+J)"
+                aria-expanded={terminalOpen}
+                data-testid="toggle-terminal"
+                onClick={() => setTerminalOpen((open) => !open)}
+              >
                 &gt;_
               </button>
               <button className="send-button" type="submit" disabled={(draft.trim().length === 0 && pendingImages.length === 0) || sending || runStatus === "running"} title={runStatus === "running" ? "Stop the current run before sending another message" : "Send"} data-testid="send-button">
