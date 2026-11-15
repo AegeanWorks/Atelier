@@ -1,51 +1,16 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-space-margin",
+    "task_id": "atelier-ui-focus-ring",
     "last_phase": "verification",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1794741640.1056232,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1794742233.2029653,
     "owner": "claude:ui",
     "started_by": "claude:ui",
-    "continuations": [],
-    "completed_at": 1794741997.9814262,
-    "completed_head": "1272308487a37caf93c7092e2be1c9ec7fc5b135"
+    "continuations": []
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-a11y-flat",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794739342.3717067,
-      "timestamp_str": "2026-11-15 13:42:22",
-      "agent": "claude:ui",
-      "checklists": "passed",
-      "handoff": {
-        "state": "edits built and reviewed by the agent under G-010",
-        "next": "finish the UI task then commit then add the a11y gate to project.json",
-        "evidence": "a11y gate went from 1 critical violation to 0, draft and slash pairs at 390 and 1440 and the Settings pair at 390 inspected, layout identical, Send button gradient replaced by flat accent with readable text, copy shortened, no clipping or overlap, aria-expanded removed and aria-controls points at the open menu"
-      }
-    },
-    {
-      "task_id": "atelier-ui-a11y-flat",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-a11y-flat' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794739534.644972,
-      "timestamp_str": "2026-11-15 13:45:34",
-      "agent": "claude:ui",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
     {
       "task_id": "atelier-a11y-gates",
       "phase": "planning",
@@ -348,6 +313,42 @@
           "."
         ],
         "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-focus-ring",
+      "phase": "planning",
+      "phase_num": 2,
+      "description": "[1/1] Plan: links and diff summaries get the app focus ring",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794742232.751065,
+      "timestamp_str": "2026-11-15 14:30:32",
+      "agent": "claude:ui",
+      "impact_assessment": {
+        "why": "G-004 asks for keyboard gates and G-008 for one visual grammar with a visible focus state, and links and the diff summary showed the browser default near-black ring on a near-black theme",
+        "benefits": "A keyboard user can see where focus is on every focusable element",
+        "risks": "contract: UI only, 1 file 2 lines; dependency: none; concurrency: none; state: none",
+        "mitigation": "Computed outline measured before and after at three widths, focused states screenshotted and zoomed, all panels compared"
+      },
+      "plan_digest": "c0ee01ff7463a8126bbc4a865046c8a2c1c8ab95bbfe42c8e2b11b8c18d5ea56"
+    },
+    {
+      "task_id": "atelier-ui-focus-ring",
+      "phase": "verification",
+      "phase_num": 4,
+      "description": "",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794742233.2029653,
+      "timestamp_str": "2026-11-15 14:30:33",
+      "agent": "claude:ui",
+      "checklists": "passed",
+      "handoff": {
+        "state": "focus ring fix reviewed by the agent under G-010",
+        "next": "finish then commit",
+        "open": "History cards touch with no gap and Firefox and WebKit are not tested",
+        "evidence": "computed outline went from auto 1px rgb 16 16 16 to solid 2px accent for the link and the diff summary at 390 768 and 1440, the before shots showed an almost invisible dark rectangle and the after shots a clear accent ring in the same style as other controls, skip link dark text on accent is legible, 27 of 32 stock panel pairs are pixel identical and the other 5 differ only by live data since the same tree run twice also differs on 3 of them"
       }
     }
   ]
