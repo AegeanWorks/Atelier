@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-workspace-exit",
+    "task_id": "atelier-ui-history-input",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794755257.8988295,
+    "updated_at": 1794755638.7561507,
     "owner": "antigravity:1",
     "started_by": "antigravity:1",
     "continuations": [],
@@ -15,60 +15,10 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794755263.548699,
-    "completed_head": "ee33e2b4d89144e9f1280cc3a0f35120fab35c22"
+    "completed_at": 1794755639.1957467,
+    "completed_head": "0326dd41607b1838e6044fac044753c527891ab8"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-card-gap",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-card-gap' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794742833.761902,
-      "timestamp_str": "2026-11-15 14:40:33",
-      "agent": "claude:ui",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-browser-engines",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: the browser gate runs Chromium, Firefox and WebKit at three widths (G-004)",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794742950.0277452,
-      "timestamp_str": "2026-11-15 14:42:30",
-      "agent": "claude:ui",
-      "impact_assessment": {
-        "why": "G-004 requires three engines but only Chromium was ever tested",
-        "benefits": "A rendering or overflow regression in Firefox or WebKit now fails the gate set",
-        "risks": "contract: the browser gate needs two engines installed in the Playwright cache; dependency: playwright-core already declared; concurrency: none; state: none",
-        "mitigation": "A missing engine fails with the exact install command and is never skipped, all three pass today, composer and layout compared across engines"
-      },
-      "plan_digest": "6ecce2311f16b05f7d67bf53a9f59509a471bd1b439ef540cb52f4f62e83a9e4"
-    },
-    {
-      "task_id": "atelier-browser-engines",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794743105.6534827,
-      "timestamp_str": "2026-11-15 14:45:05",
-      "agent": "claude:ui",
-      "checklists": "passed",
-      "handoff": {
-        "next": "A2 needs a live model and the History or Evals panels with data are not screenshotted",
-        "evidence": "test:browser passes in chromium firefox and webkit at 390 768 and 1440, composer height identical in all three, 12 of 12 gates in 10 seconds for the browser gate"
-      }
-    },
     {
       "task_id": "atelier-browser-engines",
       "phase": "completed",
@@ -362,6 +312,64 @@
       "status": "completed",
       "timestamp": 1794755263.5819294,
       "timestamp_str": "2026-11-15 18:07:43",
+      "agent": "antigravity:1",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-history-input",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] History 'Restore directory' input has no style rule (browser-default grey, square) while all other inputs share --bg-input/--radius-sm: give it the shared input grammar; before/after shots at 390/768/1440",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794755310.9291265,
+      "timestamp_str": "2026-11-15 18:08:30",
+      "agent": "antigravity:1",
+      "impact_assessment": {
+        "why": "G-008 controls share one visual grammar; one input is visibly off-theme",
+        "benefits": "Consistent input look in dark and light themes",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none",
+        "mitigation": "CSS-only class using existing tokens; a11y gate and before/after shots in both themes"
+      },
+      "plan_digest": "3fad826a6ddf86e8669b7d28e2dd57b56c9f591ce756afb7a4d6c0beb53e27d6",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-history-input",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "12/12 gates passed. Before/after shots at 390/768/1440 (dark) and desktop light viewed: History Restore directory input was browser-default grey/square, now shared --bg-input/--radius-sm look, no clipping or overlap. checklists: passed",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794755638.7561507,
+      "timestamp_str": "2026-11-15 18:13:58",
+      "agent": "antigravity:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-history-input",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-history-input' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794755639.2288618,
+      "timestamp_str": "2026-11-15 18:13:59",
       "agent": "antigravity:1",
       "delivery": {
         "roots": [
