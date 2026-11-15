@@ -281,6 +281,7 @@ describe("atelier shell", () => {
     expect(code.tagName).toBe("CODE");
     fireEvent.click(screen.getByTestId("copy-code"));
     await waitFor(() => expect(writeText).toHaveBeenCalledWith("npm test"));
+    expect(screen.getByTestId("copy-code").classList.contains("copied")).toBe(true);
   });
 
   it("copies a message and confirms it briefly", async () => {
@@ -296,6 +297,7 @@ describe("atelier shell", () => {
     fireEvent.click(screen.getAllByTestId("copy-message")[0]!);
     await waitFor(() => expect(writeText).toHaveBeenCalledWith("copy me"));
     expect(screen.getByTestId("copy-message").textContent).toBe("Copied");
+    expect(screen.getByTestId("copy-message").classList.contains("copied")).toBe(true);
   });
 
   it("exports the conversation as a markdown download", async () => {
