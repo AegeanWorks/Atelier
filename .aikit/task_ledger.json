@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-history-input",
+    "task_id": "atelier-ui-files-panel",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794755638.7561507,
+    "updated_at": 1794756907.998044,
     "owner": "antigravity:1",
     "started_by": "antigravity:1",
     "continuations": [],
@@ -15,61 +15,10 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794755639.1957467,
-    "completed_head": "0326dd41607b1838e6044fac044753c527891ab8"
+    "completed_at": 1794756908.4667733,
+    "completed_head": "cc47ff46c30d5ad47186c2b435dd1c8793826872"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-browser-engines",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-browser-engines' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794743110.3040268,
-      "timestamp_str": "2026-11-15 14:45:10",
-      "agent": "claude:ui",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-light-contrast",
-      "phase": "planning",
-      "phase_num": 2,
-      "description": "[1/1] Plan: light theme text contrast, a deeper accent for text and a darker faint colour",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794743661.9475422,
-      "timestamp_str": "2026-11-15 14:54:21",
-      "agent": "claude:ui",
-      "impact_assessment": {
-        "why": "A contrast check that measures real colours found two light theme pairs below 4.5 to 1 which axe had left as incomplete",
-        "benefits": "Every visible text pair in both themes meets WCAG AA",
-        "risks": "contract: UI only, 1 file 8 lines; dependency: none; concurrency: none; state: none",
-        "mitigation": "Dark theme untouched, guard test passes, mutation check shows the new check catches a broken muted colour, light pairs reviewed"
-      },
-      "plan_digest": "81e55bf84d5f0d2edc07b284cd560be31780e8d50b52c491857285099f33fb91"
-    },
-    {
-      "task_id": "atelier-ui-light-contrast",
-      "phase": "verification",
-      "phase_num": 4,
-      "description": "",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794743662.2184734,
-      "timestamp_str": "2026-11-15 14:54:22",
-      "agent": "claude:ui",
-      "checklists": "passed",
-      "handoff": {
-        "state": "light contrast fix reviewed by the agent under G-010",
-        "next": "finish then commit then land the scripts that measure contrast and the light theme shots",
-        "evidence": "the new check went from 2 real failures to 0 across 18 scans and the dark theme pairs changed only by the known live data noise, light desktop pair compared by eye shows a crisper banner title and meta text with no layout change, mutation of the light muted colour is caught at 1.09 to 1"
-      }
-    },
     {
       "task_id": "atelier-ui-light-contrast",
       "phase": "completed",
@@ -370,6 +319,64 @@
       "status": "completed",
       "timestamp": 1794755639.2288618,
       "timestamp_str": "2026-11-15 18:13:59",
+      "agent": "antigravity:1",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-files-panel",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] FilesPanel UI consistency & tree scrolling: add standard file-head Refresh button matching all other workspace panels; fix .file-tree bottom clipping and overscroll containment; failing-first unit test; before/after shots at 390/768/1440",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794756359.495552,
+      "timestamp_str": "2026-11-15 18:25:59",
+      "agent": "antigravity:1",
+      "impact_assessment": {
+        "why": "G-008 visual grammar & completeness: FilesPanel was the only dynamic panel without a Refresh button in its header; file tree clipped bottom rows with no breathing room",
+        "benefits": "Consistent header controls across all workspace panels; smooth scrolling and unclipped file entries at all screen widths",
+        "risks": "contract: none; dependency: none; concurrency: none; state: refresh calls existing server endpoint",
+        "mitigation": "unit test verifies Refresh calls tree endpoint; theme tokens used exclusively; full 12-gate verification"
+      },
+      "plan_digest": "a6dea3d2421fa54a34b1411151d151f5a629e3dac44beffedeca4f414fabc810",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-files-panel",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "12/12 gates passed. Before/after shots at 390/768/1440 (dark+light) viewed: FilesPanel now includes standard file-head Refresh button matching all other workspace panels; file tree bottom clipping fixed with padding and contain overscroll. Unit test added in files.test.tsx. checklists: passed",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794756907.998044,
+      "timestamp_str": "2026-11-15 18:35:07",
+      "agent": "antigravity:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-files-panel",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-files-panel' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794756908.5065064,
+      "timestamp_str": "2026-11-15 18:35:08",
       "agent": "antigravity:1",
       "delivery": {
         "roots": [
