@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-obsidian-palette-and-tabstrip",
+    "task_id": "atelier-ui-desktop-stream-and-composer-icons",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794774672.594532,
+    "updated_at": 1794775962.4226854,
     "owner": "unidentified",
     "started_by": "unidentified",
     "continuations": [],
@@ -15,69 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794774682.9132712,
-    "completed_head": "f56eb765ae023d67f01caeadf1d82980977b862f",
-    "completed_tree": "59abbc907650fb510f0e440471af2309a188d20e"
+    "completed_at": 1794775966.4226635,
+    "completed_head": "6af48d064adeaa2ca18d03a1094ed14ff1fcbc72",
+    "completed_tree": "52246def78d2f8af56fa6342ffe8155da436b360"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-surface-and-controls-polish",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "All 12 Phase 4 gates passed, command palette, panel cards, form controls, and code blocks polished",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794768570.4785035,
-      "timestamp_str": "2026-11-15 21:49:30",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-surface-and-controls-polish",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-surface-and-controls-polish' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794768574.69495,
-      "timestamp_str": "2026-11-15 21:49:34",
-      "agent": "unidentified",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-dev-surfaces-polish",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/3] Polish diff views, terminal drawer, preview bar, plans inputs, and todo strip",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794768639.6698391,
-      "timestamp_str": "2026-11-15 21:50:39",
-      "agent": "unidentified",
-      "impact_assessment": {
-        "why": "Refine developer-facing workspace surfaces for maximum sleekness, compactness, and visual polish",
-        "benefits": "Crisper diff presentation, modern terminal styling, compact preview/plans inputs, and sleek todo strip",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none (presentation and CSS refinements only)",
-        "mitigation": "Constrain changes to theme.css within diff line limits (<=300 lines), verify with full test suite, screenshots and Phase 4 gates"
-      },
-      "plan_digest": "7ffe766bd27f378559a813ba7e607f08c8d85f16c09ead6c03fee082c0a08b36",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-dev-surfaces-polish",
       "phase": "phase 4",
@@ -394,6 +336,63 @@
       "status": "completed",
       "timestamp": 1794774682.984359,
       "timestamp_str": "2026-11-15 23:31:22",
+      "agent": "unidentified",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-desktop-stream-and-composer-icons",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[2/3] Upgrade message stream to symmetrical desktop layout and replace ASCII composer glyphs with crisp SVGs",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794774723.6945665,
+      "timestamp_str": "2026-11-15 23:32:03",
+      "agent": "unidentified",
+      "impact_assessment": {
+        "why": "Eliminate mobile SMS speech-balloon aesthetics and replace crude ASCII button glyphs with modern SVG icons",
+        "benefits": "Professional IDE desktop aesthetic aligned with Cursor/Zed, clean message readability, and high-precision composer controls",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none",
+        "mitigation": "Preserve all button titles, aria-labels, test-ids, and keyboard navigation bindings"
+      },
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-desktop-stream-and-composer-icons",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "Streamlined desktop message bubbles to symmetrical clean cards, replaced raw ASCII button glyphs with SVG icons for attachments and terminal, and refined send button with top specular highlight",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794775962.4226854,
+      "timestamp_str": "2026-11-15 23:52:42",
+      "agent": "unidentified",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-desktop-stream-and-composer-icons",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-desktop-stream-and-composer-icons' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794775966.5411944,
+      "timestamp_str": "2026-11-15 23:52:46",
       "agent": "unidentified",
       "delivery": {
         "roots": [
