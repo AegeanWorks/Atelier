@@ -590,7 +590,7 @@ select:focus-visible,
   border-radius: 16px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--accent-soft), transparent);
+  background: var(--accent-soft);
   border: 1px solid var(--border-strong);
   font-size: 22px;
 }
@@ -1084,7 +1084,7 @@ select:focus-visible,
   border: 0;
   border-radius: var(--radius-sm);
   padding: 8px 14px;
-  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--accent-2)));
+  background: var(--accent);
   color: #07101c;
   font-weight: 800;
 }

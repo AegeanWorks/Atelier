@@ -19,5 +19,27 @@
     "final_snapshot_digest": "b9af177476b07d1710568e30d2cb96ae0b0924539ed3b8d0e6cdded0a3ee0760",
     "final_snapshot_entries": 8,
     "surface_digest": "54ef9d9cb9524415a7ddc8d535fdf4f304cdb94aa089fe85c6d03dbc16a51361"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/App.tsx",
+      "src/SettingsPanel.tsx",
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "45edccd98cd4591f2d5e02f6a559b63b64420744",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794739144.6828437,
+    "finished_at": 1794739387.5526986,
+    "strikes": 0,
+    "reviewer": "agent:claude-code:67c78038",
+    "allowed_removals": [],
+    "final_snapshot_digest": "e54831ae8d3d106b4853814003d881910e9016a33abb9a0a5fc51f70d1a27668",
+    "final_snapshot_entries": 35,
+    "surface_digest": "30807950a971538b832ae68a718bf96966a3a59a1f4f948ad395f071d8d88f3f"
   }
 ]

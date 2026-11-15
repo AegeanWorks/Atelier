@@ -1436,7 +1436,7 @@ export default function App(): React.JSX.Element {
             ) : null}
             <label className="sr-only" htmlFor="composer-input">Message the agent</label>
             {mentionMatches.length > 0 ? (
-              <ul className="slash-menu" role="listbox" aria-label="Files" data-testid="mention-menu">
+              <ul className="slash-menu" id="mention-menu-list" role="listbox" aria-label="Files" data-testid="mention-menu">
                 {mentionMatches.map((path, index) => (
                   <li key={path} role="option" aria-selected={index === mentionActive}>
                     <button type="button" tabIndex={-1} data-active={index === mentionActive} data-testid="mention-option" onMouseDown={(event) => { event.preventDefault(); chooseMention(path); }}>
@@ -1448,7 +1448,7 @@ export default function App(): React.JSX.Element {
               </ul>
             ) : null}
             {slashMatches.length > 0 ? (
-              <ul className="slash-menu" role="listbox" aria-label="Slash commands" data-testid="slash-menu">
+              <ul className="slash-menu" id="slash-menu-list" role="listbox" aria-label="Slash commands" data-testid="slash-menu">
                 {slashMatches.map((command, index) => (
                   <li key={command.name} role="option" aria-selected={index === slashActive}>
                     <button type="button" tabIndex={-1} data-active={index === slashActive} data-testid="slash-option" onMouseDown={(event) => { event.preventDefault(); chooseSlash(command); }}>
@@ -1480,7 +1480,7 @@ export default function App(): React.JSX.Element {
               onKeyDown={onComposerKeyDown}
               onPaste={onComposerPaste}
               aria-autocomplete="list"
-              aria-expanded={slashMatches.length > 0 || mentionMatches.length > 0}
+              aria-controls={slashMatches.length > 0 ? "slash-menu-list" : mentionMatches.length > 0 ? "mention-menu-list" : undefined}
               placeholder="Ask, edit, run, or plan. / for commands, @ for files. Cmd/Ctrl+Enter sends."
               rows={1}
               data-testid="composer-input"

@@ -383,7 +383,7 @@ export default function SettingsPanel(): React.JSX.Element {
     <div className="settings-panel" data-testid="settings-panel">
       <div className="panel-card">
         <h2>Providers</h2>
-        <p>Keys are read from the environment or stored in a 0600 secrets file. Only SET / MISSING is rendered.</p>
+        <p>API keys stay on this machine; only set or missing is shown.</p>
         {config === null ? <p>Loading providers…</p> : null}
         {config !== null && config.providers.length === 0 ? <p>No providers yet. Add a compatible endpoint below.</p> : null}
         <ul className="provider-list" data-testid="provider-list">
