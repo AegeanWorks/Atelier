@@ -174,20 +174,27 @@ export default function GitPanel(): React.JSX.Element {
         </div>
       ) : null}
 
-      <div className="panel-card">
+      <form
+        className="panel-card"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!busy && message.trim().length > 0 && stagedCount > 0) {
+            void commit();
+          }
+        }}
+      >
         <h2>Commit</h2>
         <input value={message} onChange={(event) => setMessage(event.target.value)} placeholder="type(scope): message" aria-label="Commit message" data-testid="git-commit-message" />
         <button
           className="small-button"
-          type="button"
-          onClick={() => void commit()}
+          type="submit"
           disabled={busy || message.trim().length === 0 || stagedCount === 0}
           data-testid="git-commit"
         >
           Commit staged
         </button>
         {stagedCount === 0 ? <small data-testid="git-staged-hint">Stage at least one file to commit.</small> : null}
-      </div>
+      </form>
 
       {notice !== null ? <div className="banner-ok" role="status" data-testid="git-notice">{notice}</div> : null}
       {error !== null ? <div className="banner-error" role="alert" data-testid="git-error">{error}</div> : null}

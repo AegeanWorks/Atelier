@@ -586,6 +586,7 @@ export default function App(): React.JSX.Element {
         }
       } else if (event.key === "Escape") {
         setPaletteOpen(false);
+        setTerminalOpen(false);
         setWorkspaceOpen(false);
       }
     };
@@ -1563,7 +1564,7 @@ export default function App(): React.JSX.Element {
         <section className="terminal-drawer" aria-label="Terminal" data-testid="terminal-drawer">
           <div className="terminal-head">
             <strong>terminal</strong>
-            <span>pipe fallback ? 30 s timeout</span>
+            <span>pipe fallback · 30 s timeout</span>
             <span className="spacer" />
             <button className="icon-button" type="button" aria-label="Close terminal" onClick={() => setTerminalOpen(false)}>×</button>
           </div>

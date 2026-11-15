@@ -308,5 +308,28 @@
     "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
     "final_snapshot_entries": 38,
     "surface_digest": "92eb6488a46f1dfed65d67b96d7708faffb21a8cb92872ab2e0493ef19891f88"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/App.tsx",
+      "src/GitPanel.tsx",
+      "src/TerminalPanel.tsx",
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "862a116a709b1ccbdb4b668b4138d0f56ce38e62",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794758607.0490456,
+    "finished_at": 1794758825.12827,
+    "strikes": 0,
+    "reviewer": "",
+    "allowed_removals": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "db5b8e939088974bfe41e08ca0f245f1926a550eb1c624cf817ce6f64409b6e6"
   }
 ]

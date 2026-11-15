@@ -114,8 +114,8 @@ export default function TerminalPanel(): React.JSX.Element {
           aria-label="Terminal command"
           data-testid="terminal-input"
         />
-        <button className="small-button" type="submit" disabled={running} data-testid="terminal-run">{running ? "Running…" : "Run"}</button>
-        <button className="small-button danger" type="button" onClick={() => void stop()} data-testid="terminal-stop">Stop</button>
+        <button className="small-button" type="submit" disabled={running || command.trim().length === 0} data-testid="terminal-run">{running ? "Running…" : "Run"}</button>
+        <button className="small-button danger" type="button" onClick={() => void stop()} disabled={!running} data-testid="terminal-stop">Stop</button>
         <button
           className="small-button"
           type="button"
@@ -123,6 +123,7 @@ export default function TerminalPanel(): React.JSX.Element {
             setOutput(TERMINAL_HEADER);
             setError(null);
           }}
+          disabled={output === TERMINAL_HEADER || running}
           data-testid="terminal-clear"
         >
           Clear
