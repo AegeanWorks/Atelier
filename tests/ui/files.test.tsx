@@ -98,4 +98,17 @@ describe("file panel safety", () => {
     expect(await screen.findByTestId("files-message")).toBeTruthy();
     expect(screen.getByText(/saved/)).toBeTruthy();
   });
+
+  it("renders empty state when workspace tree has no files", async () => {
+    fetchMock.mockImplementationOnce(async (input: unknown) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : (input as Request).url;
+      if (url === "/api/workspace/tree") {
+        return new Response(JSON.stringify({ entries: [] }), { status: 200 });
+      }
+      return new Response(JSON.stringify({ error: { code: "UNEXPECTED" } }), { status: 500 });
+    });
+    render(<FilesPanel />);
+    const empty = await screen.findByTestId("files-empty");
+    expect(empty.textContent).toContain("No files in workspace.");
+  });
 });

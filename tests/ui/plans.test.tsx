@@ -110,4 +110,17 @@ describe("plans panel", () => {
     fireEvent.click(screen.getByTestId("tab-plans"));
     expect(await screen.findByTestId("plans-panel")).toBeTruthy();
   });
+
+  it("renders empty state when there are no plans for the session", async () => {
+    fetchMock.mockImplementationOnce(async (input: unknown) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : (input as Request).url;
+      if (url === "/api/plans?session=ses_empty") {
+        return new Response(JSON.stringify({ plans: [] }), { status: 200 });
+      }
+      return new Response(JSON.stringify({ error: { code: "NOT_FOUND" } }), { status: 404 });
+    });
+    render(<PlansPanel sessionId="ses_empty" refreshTick={0} />);
+    const empty = await screen.findByTestId("plans-empty");
+    expect(empty.textContent).toContain("No plans yet.");
+  });
 });

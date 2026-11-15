@@ -128,4 +128,17 @@ describe("git panel staging", () => {
     await waitFor(() => expect(callsTo("/api/git/commit")).toBe(1));
     expect((await screen.findByTestId("git-notice")).textContent).toContain("[main abc123] msg");
   });
+
+  it("renders empty state when working tree is clean", async () => {
+    fetchMock.mockImplementationOnce(async (input: unknown) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : (input as Request).url;
+      if (url === "/api/git/status") {
+        return new Response(JSON.stringify({ branch: "main", changes: [] }), { status: 200 });
+      }
+      return new Response(JSON.stringify({ error: { code: "UNEXPECTED" } }), { status: 500 });
+    });
+    render(<GitPanel />);
+    const empty = await screen.findByTestId("git-empty");
+    expect(empty.textContent).toBe("No working-tree changes.");
+  });
 });

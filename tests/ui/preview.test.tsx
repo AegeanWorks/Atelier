@@ -40,6 +40,7 @@ afterEach(() => {
 describe("preview panel", () => {
   it("loads a loopback URL through a directory session", async () => {
     render(<PreviewPanel />);
+    expect(screen.getByTestId("preview-empty")).toBeTruthy();
     fireEvent.click(screen.getByTestId("preview-load"));
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
