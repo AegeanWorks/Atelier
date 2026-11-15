@@ -202,5 +202,26 @@
     "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
     "final_snapshot_entries": 38,
     "surface_digest": "4618ab4623d9197106db0d33006897f7edd55265612cf2c24ca5936415b2b4b3"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/App.tsx",
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "18009875c547045c33022e937df75a9e1c7838fa",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794754310.8009958,
+    "finished_at": 1794754419.2201962,
+    "strikes": 1,
+    "reviewer": "",
+    "allowed_removals": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "263825ad641268e66484d8168fd7448d55a10025445cbef347daa3876b3711a2"
   }
 ]

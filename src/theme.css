@@ -1430,6 +1430,11 @@ summary:focus-visible,
   color: var(--accent-text);
 }
 
+.banner-hint .small-button {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  color: var(--text);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
