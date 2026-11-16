@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-surgical-polish-v7",
+    "task_id": "atelier-ui-claude-cursor-elevation",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794818871.9450939,
+    "updated_at": 1794820626.402684,
     "owner": "unidentified",
     "started_by": "unidentified",
     "continuations": [],
@@ -15,70 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794818878.106338,
-    "completed_head": "065eeb91536138af3423f533f3e038846bc3e3d8",
-    "completed_tree": "2270dc15fafb8b22a4e06962b2d990ff589b7bb4"
+    "completed_at": 1794820630.0799308,
+    "completed_head": "7c4d5803b70ceccb57640aa90d37017878b81242",
+    "completed_tree": "d36ae9cf2a9dd47d046d1984eba3c6ec446cf22c"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-flush-surfaces-and-ergonomics",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 2/2] Verified flush workspace panels, tabstrip indicator, and git row ergonomics pass all 12 gates",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794780586.9019415,
-      "timestamp_str": "2026-11-16 01:09:46",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-flush-surfaces-and-ergonomics",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-flush-surfaces-and-ergonomics' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794780591.6519656,
-      "timestamp_str": "2026-11-16 01:09:51",
-      "agent": "unidentified",
-      "head": "5160b12dd2c47a5f35dd151cac64d013c06de8cc",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-s-tier-polish",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/2] Calibrate workspace width to 412px, unify flush ribbons, expand file tree, and polish rail CTA",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794806409.5200462,
-      "timestamp_str": "2026-11-16 08:20:09",
-      "agent": "unidentified",
-      "impact_assessment": {
-        "why": "Fix 9th tab overflow (Evals truncation), unify error/ok banner ribbons, release file tree height clamp, and polish solid rail CTA",
-        "benefits": "Zero tab clipping, 100% unified edge-to-edge notification ribbons, dynamic vertical file explorer, and native desktop rail styling",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none",
-        "mitigation": "Preserve all button test IDs and DOM roles"
-      },
-      "plan_digest": "6117646a2e1267b13aef1b8bcab02a695e3fa92a23673ebb1059375433050f2c",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-s-tier-polish",
       "phase": "phase 4",
@@ -395,6 +336,58 @@
       "timestamp_str": "2026-11-16 11:47:58",
       "agent": "unidentified",
       "head": "065eeb91536138af3423f533f3e038846bc3e3d8",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-claude-cursor-elevation",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "Elevate Atelier UI to Claude, Cursor, and Mistral parity: unboxed assistant canvas, squircle user pills, pulse streaming, segmented tabstrip, ghost rail actions",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794819712.275218,
+      "timestamp_str": "2026-11-16 12:01:52",
+      "agent": "unidentified",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-claude-cursor-elevation",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "Verified all 12 gates pass for Claude and Cursor UI elevation",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794820626.402684,
+      "timestamp_str": "2026-11-16 12:17:06",
+      "agent": "unidentified",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-claude-cursor-elevation",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-claude-cursor-elevation' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794820630.1507642,
+      "timestamp_str": "2026-11-16 12:17:10",
+      "agent": "unidentified",
+      "head": "7c4d5803b70ceccb57640aa90d37017878b81242",
       "delivery": {
         "roots": [
           "."
