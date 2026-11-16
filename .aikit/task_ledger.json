@@ -1,156 +1,31 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-perf-calibration",
+    "task_id": "atelier-perf-gate-roles",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794859377.6133683,
+    "updated_at": 1794860738.2211387,
     "owner": "commandcode:1",
-    "started_by": "commandcode:1",
-    "continuations": [],
+    "started_by": "unidentified",
+    "continuations": [
+      {
+        "agent": "commandcode:1",
+        "from": "unidentified",
+        "at": 1794860511.8268487
+      }
+    ],
     "workspaces": [
       {
         "name": "atelier",
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794859390.6465895,
-    "completed_head": "c8c1cb54de7c14bf7eea2888c70c7198473cbc68",
-    "completed_tree": "6117a60939a3511b99812067c26de3484614acb4"
+    "completed_at": 1794860744.8638542,
+    "completed_head": "bf959e7cc08909c69b778d87791f977dc6c32790",
+    "completed_tree": "3b30426d3c82d149b1d5cb3bc1f197a58568b328"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-shelltask-bounds",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 1/1] Verified with paired numbers. Log ceiling: the probe wrote 2888895 bytes in 3s before, exactly 1000000 after. Read cost: a 200-char window from that log took 19.41ms before, 5.23ms after. delegate.background removed and the schema audit mutation-tested (reintroducing it fails the audit with 'delegate.background'). 117 test files green; 12/12 gates pass on a quiet host, with agent-bench 110.4ms vs its 125.6ms baseline when measured alone, against 215.7ms under concurrent suite load.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794852616.341725,
-      "timestamp_str": "2026-11-16 21:10:16",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "baseline": 2888895.0,
-          "command": "python scratch/probe_growth.py",
-          "drift": "bounded",
-          "unit": "bytes",
-          "metric": "background log size after 3s",
-          "candidate": 1000000.0,
-          "workload": "loop printing 24-byte lines for 3 seconds",
-          "artifact": "server/shellTasks.ts"
-        },
-        {
-          "baseline": 19.41,
-          "command": "python scratch/probe_growth.py",
-          "drift": "faster",
-          "unit": "ms",
-          "metric": "read 200 chars from a large log",
-          "candidate": 5.23,
-          "workload": "200-char window from a 1-2.9MB log",
-          "artifact": "server/shellTasks.ts"
-        },
-        {
-          "baseline": 1.0,
-          "command": "node node_modules/vitest/vitest.mjs run tests/unit/tool-schemas.test.ts",
-          "drift": "closed",
-          "unit": "tools",
-          "metric": "tools advertising an unread parameter",
-          "candidate": 0.0,
-          "workload": "tool schema audit over all 16 tools",
-          "artifact": "tests/unit/tool-schemas.test.ts"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-shelltask-bounds",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-shelltask-bounds' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794852633.975522,
-      "timestamp_str": "2026-11-16 21:10:33",
-      "agent": "commandcode:1",
-      "head": "676ceb853e9898a5732d765352c2794672e8a57c",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ledger-bounds",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Bound the read ledger's second cache. LEDGERS was capped at 32 runs but HASHES, keyed by absolute path, was not: measured at 833 bytes retained per hashed path with no way to release it, so a long-lived server walking a large repository accumulates forever. HASHES now clears at 4096 entries; a clear costs one re-read per file rather than a wrong answer. The ceiling is injectable so the test proves it with 40 files in 120ms instead of 4096 files in 8.5s.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794853573.7452755,
-      "timestamp_str": "2026-11-16 21:26:13",
-      "agent": "commandcode:1",
-      "impact_assessment": {
-        "why": "The ledger is the guard against blind writes; an unbounded guard that slowly eats the process is its own defect.",
-        "benefits": "A long session cannot grow this map without bound, and the cache still answers identically after a clear.",
-        "risks": "contract: none exported beyond test helpers; dependency: none; concurrency: a clear during a run costs a re-hash, not a wrong answer; state: in-memory only",
-        "mitigation": "The cap is mutation-tested (removing it fails with 'expected 11 to be less than or equal to 10'), and correctness after a clear is asserted by hashing the same file before and after"
-      },
-      "plan_digest": "6df3b985260766cedebd76707ea895c9ae4c661fb480355867b68560f2816785",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ledger-bounds",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 1/1] Verified: 3 new read-ledger tests pass in 120ms (was 8.5s), 118 test files green, and the cap is mutation-tested (removing the clear fails with 'expected 11 to be less than or equal to 10'). The 4336 baseline is the measured 4096 ceiling plus the 240 padded paths the probe assigned before the cap applied; the leak itself measured 833 heap bytes per hashed path.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794853631.1264498,
-      "timestamp_str": "2026-11-16 21:27:11",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "drift": "bounded",
-          "metric": "hash cache entries after 4336 distinct paths",
-          "candidate": 4096.0,
-          "unit": "entries",
-          "command": "node node_modules/vitest/vitest.mjs run tests/unit/readLedger.test.ts",
-          "workload": "distinct file paths hashed in one process",
-          "baseline": 4336.0,
-          "artifact": "tests/unit/readLedger.test.ts"
-        },
-        {
-          "drift": "faster",
-          "metric": "read ledger test cost",
-          "candidate": 120.0,
-          "unit": "ms",
-          "command": "node node_modules/vitest/vitest.mjs run tests/unit/readLedger.test.ts",
-          "workload": "proving the ceiling with a lowered limit",
-          "baseline": 8557.0,
-          "artifact": "tests/unit/readLedger.test.ts"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ledger-bounds",
       "phase": "completed",
@@ -566,6 +441,95 @@
       "timestamp_str": "2026-11-16 23:03:10",
       "agent": "commandcode:1",
       "head": "c8c1cb54de7c14bf7eea2888c70c7198473cbc68",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-perf-gate-roles",
+      "phase": "phase 1",
+      "phase_num": 1,
+      "description": "[plan] Open a task for the two commits made after atelier-perf-calibration closed: the gate-role clarification (bf959e7) and its ADR. The ledger flagged them as unverified commits following a completed task, which is correct process feedback: I committed code after closing the task that should have owned it.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794860501.6878195,
+      "timestamp_str": "2026-11-16 23:21:41",
+      "agent": "unidentified",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-perf-gate-roles",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] State the perf gate's two roles in the code: the host-calibrated absolute budget is the verdict, and the baseline comparison fails only past max(1.5x, baseline plus six baseline MADs). Records why a candidate-spread guard was tried and rejected (at six MADs it would absorb 7.98ms on a 3.66ms metric, a gate that never fails), and why sub-50% drift cannot be enforced from three passes on a shared host.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794860511.8268487,
+      "timestamp_str": "2026-11-16 23:21:51",
+      "agent": "commandcode:1",
+      "impact_assessment": {
+        "why": "One gate run still failed after calibration at hostScale 1.05; measuring showed the ledger stat costs 0.02ms, direct dispatch measures 4.06ms, and a re-run of identical code gave 3.66ms with 0.04 MAD against the failing run's 1.33 MAD. Same code, different samples.",
+        "benefits": "A reader can see which check is binding and which is advisory, and the gate cannot silently become a rubber stamp.",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none",
+        "mitigation": "Verified the gate still fails a real regression by tightening the budget to 0.5ms: ok False with the host-equivalent limit named"
+      },
+      "plan_digest": "c1663f557015df236fe287018dc3a66c7c5d32d29c09fcee4ccd2578d3a85d77",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ],
+      "continued_from": "unidentified"
+    },
+    {
+      "task_id": "atelier-perf-gate-roles",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 1/1] Verified: 12/12 gates pass on the committed tree (bf959e7). The gate's roles are stated in code, the rejected candidate-spread alternative is recorded with its number, and a real regression still fails (tightened budget to 0.5ms reported ok False naming the host-equivalent limit). 121 test files green.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794860738.2211387,
+      "timestamp_str": "2026-11-16 23:25:38",
+      "agent": "commandcode:1",
+      "measurements": [
+        {
+          "workload": "aikit check --strict",
+          "candidate": 12.0,
+          "command": "python aikit.py check atelier --strict",
+          "unit": "gates",
+          "baseline": 11.0,
+          "artifact": ".aikit/decisions.md",
+          "drift": "closed",
+          "metric": "gates passing on the committed tree"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-perf-gate-roles",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-perf-gate-roles' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794860744.9397156,
+      "timestamp_str": "2026-11-16 23:25:44",
+      "agent": "commandcode:1",
+      "head": "bf959e7cc08909c69b778d87791f977dc6c32790",
       "delivery": {
         "roots": [
           "."
