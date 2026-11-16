@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-summary-accounting",
-    "last_phase": "phase 4",
+    "task_id": "atelier-compact-accounting",
+    "last_phase": "phase 2",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794854701.266866,
+    "updated_at": 1794855804.720811,
     "owner": "commandcode:1",
     "started_by": "commandcode:1",
     "continuations": [],
@@ -15,187 +15,17 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794854728.430239,
-    "completed_head": "8d50c53a7356a8e51375e1846a9543038f41dab5",
-    "completed_tree": "9ee5645c3f542bf4d15d1937be60cdb07ae79859"
+    "impact_assessment": {
+      "why": "A billed request that leaves no record makes every usage total and every budget wrong by an amount nobody can see.",
+      "benefits": "Usage totals, the Usage panel and any spend report include /compact, so the numbers add up.",
+      "risks": "contract: llm.usage gains purpose compact and runId null for a request outside a run; dependency: none; concurrency: none; state: one extra usage event per compact",
+      "mitigation": "Priced through the same priceStep as every request; the test asserts the exact arithmetic and is mutation-tested"
+    },
+    "completed_at": 1794855893.3791893,
+    "completed_head": "77dfe49b1fc8b0f7e5bc714f0f979049e57e04f2",
+    "completed_tree": "3b3951708197364c0a1a0d2bfe7702364c4bc275"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-engine-trustworthiness",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 2/2] Done and verified: 638 tests pass with zero it.fails left in engine-gaps.test.ts, and 12/12 gates are green. A/B with one recorder against both trees in a linked worktree at 8336b54 shows the pre-change tree is not faster (toolDispatchP95 7.68 vs 6.39, agentRunP95 41.11 vs 33.77), so the old 5 ms budget was describing a host this code no longer runs on. Perf gates measured alone pass with tight spread (agentRunP95 MAD 0.73 ms); when the gate runs alongside the whole suite the MAD blows up to 31.99 ms on a 58 ms median, which is exactly the interference the spread now makes visible.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794847638.4704084,
-      "timestamp_str": "2026-11-16 19:47:18",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "unit": "passes",
-          "candidate": 5.0,
-          "metric": "perf baseline samples",
-          "artifact": ".aikit/agent-perf-baseline.json",
-          "command": "npx tsx scripts/agent-perf.ts --update",
-          "baseline": 1.0,
-          "qualified": "no"
-        },
-        {
-          "unit": "ms MAD",
-          "candidate": 0.73,
-          "metric": "agentRunP95 spread",
-          "artifact": ".aikit/agent-perf-baseline.json",
-          "command": "npm run test:agent-perf",
-          "baseline": 13.6,
-          "qualified": "no"
-        },
-        {
-          "unit": "bool",
-          "candidate": 1.0,
-          "metric": "resumed run sees tool result",
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "baseline": 0.0,
-          "qualified": "no"
-        },
-        {
-          "unit": "it.fails",
-          "candidate": 0.0,
-          "metric": "pinned gaps still open",
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "baseline": 7.0,
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-engine-trustworthiness",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 2/2] Qualified measurements for the perf recorder and the tool-history fix. The A/B used ONE recorder against both trees in a linked worktree at 8336b54, because comparing two different recorders would not have been a comparison.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794847651.3614817,
-      "timestamp_str": "2026-11-16 19:47:31",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "baseline": 1.0,
-          "metric": "perf baseline samples",
-          "candidate": 5.0,
-          "artifact": ".aikit/agent-perf-baseline.json",
-          "unit": "passes",
-          "command": "npx tsx scripts/agent-perf.ts --update",
-          "drift": "workload=agent-perf fixture loop, 129 agent runs + 100 tool dispatches per pass",
-          "qualified": "no"
-        },
-        {
-          "baseline": 13.6,
-          "metric": "agentRunP95 spread",
-          "candidate": 0.73,
-          "artifact": ".aikit/agent-perf-baseline.json",
-          "unit": "ms MAD",
-          "command": "npm run test:agent-perf",
-          "drift": "workload=agent-perf alone on an idle machine",
-          "qualified": "no"
-        },
-        {
-          "baseline": 0.0,
-          "metric": "resumed run sees its tool result",
-          "candidate": 1.0,
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "unit": "bool",
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "drift": "workload=two-run fixture conversation, second run inspected for a tool role",
-          "qualified": "no"
-        },
-        {
-          "baseline": 7.0,
-          "metric": "pinned gaps still open",
-          "candidate": 0.0,
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "unit": "it.fails",
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "drift": "workload=engine-gaps suite",
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-engine-trustworthiness",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 2/2] Qualified measurements. The A/B used ONE recorder against both trees in a linked worktree at 8336b54, because comparing two different recorders would not have been a comparison.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794847665.7379577,
-      "timestamp_str": "2026-11-16 19:47:45",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "candidate": 5.0,
-          "baseline": 1.0,
-          "workload": "agent-perf fixture loop",
-          "metric": "perf baseline samples",
-          "artifact": ".aikit/agent-perf-baseline.json",
-          "unit": "passes",
-          "command": "npx tsx scripts/agent-perf.ts --update",
-          "qualified": "no"
-        },
-        {
-          "candidate": 0.73,
-          "baseline": 13.6,
-          "workload": "agent-perf alone on an idle machine",
-          "metric": "agentRunP95 spread",
-          "artifact": ".aikit/agent-perf-baseline.json",
-          "unit": "ms MAD",
-          "command": "npm run test:agent-perf",
-          "qualified": "no"
-        },
-        {
-          "candidate": 1.0,
-          "baseline": 0.0,
-          "workload": "two-run fixture conversation",
-          "metric": "resumed run sees its tool result",
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "unit": "bool",
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "qualified": "no"
-        },
-        {
-          "candidate": 0.0,
-          "baseline": 7.0,
-          "workload": "engine-gaps suite",
-          "metric": "pinned gaps still open",
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "unit": "it.fails",
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-engine-trustworthiness",
       "phase": "phase 4",
@@ -661,6 +491,87 @@
       "timestamp_str": "2026-11-16 21:45:28",
       "agent": "commandcode:1",
       "head": "8d50c53a7356a8e51375e1846a9543038f41dab5",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-compact-accounting",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 1/1] Audited every collectProvider call and found the same gap in summarize.ts: /compact passes memo:false so it bills, yet recorded no llm.usage event, so its tokens reached no usage total and no budget. compactSession now records one priced llm.usage event with purpose compact. Test asserts the exact arithmetic (0.0045 for 1000 in / 100 out at 3/15 per million) and is mutation-tested: disabling the recording fails with 'expected [] to have a length of 1'. 119 test files green.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794855783.344432,
+      "timestamp_str": "2026-11-16 22:03:03",
+      "agent": "commandcode:1",
+      "measurements": [
+        {
+          "metric": "compact usage events recorded",
+          "unit": "events",
+          "baseline": 0.0,
+          "candidate": 1.0,
+          "command": "node node_modules/vitest/vitest.mjs run tests/integration/summarize.test.ts",
+          "drift": "accounted",
+          "artifact": "tests/integration/summarize.test.ts",
+          "workload": "compactSession against a priced model with a usage event"
+        },
+        {
+          "metric": "compact cost recorded",
+          "unit": "usd",
+          "baseline": 0.0,
+          "candidate": 0.0045,
+          "command": "node node_modules/vitest/vitest.mjs run tests/integration/summarize.test.ts",
+          "drift": "priced",
+          "artifact": "tests/integration/summarize.test.ts",
+          "workload": "1000 prompt and 100 completion tokens at 3 and 15 usd per million"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-compact-accounting",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Record the /compact request's usage. compactSession calls the provider with memo:false, so it bills, but it recorded no llm.usage event: the tokens reached no usage total, no Usage panel figure and no budget, which is the same defect already fixed for the in-loop summary.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794855804.720811,
+      "timestamp_str": "2026-11-16 22:03:24",
+      "agent": "commandcode:1",
+      "impact_assessment": {
+        "why": "A billed request that leaves no record makes every usage total and every budget wrong by an amount nobody can see.",
+        "benefits": "Usage totals, the Usage panel and any spend report include /compact, so the numbers add up.",
+        "risks": "contract: llm.usage gains purpose compact and runId null for a request outside a run; dependency: none; concurrency: none; state: one extra usage event per compact",
+        "mitigation": "Priced through the same priceStep as every request; the test asserts the exact arithmetic and is mutation-tested"
+      },
+      "plan_digest": "5658d72861b662271cf6bd992868ac693ba614bd119b66abbe9aa37472984017",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-compact-accounting",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-compact-accounting' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794855893.4537485,
+      "timestamp_str": "2026-11-16 22:04:53",
+      "agent": "commandcode:1",
+      "head": "77dfe49b1fc8b0f7e5bc714f0f979049e57e04f2",
       "delivery": {
         "roots": [
           "."
