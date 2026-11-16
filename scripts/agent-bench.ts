@@ -6,6 +6,7 @@ import { openDatabase, recoverOnBoot } from "../server/db";
 import { bootstrapDelta, mcnemarExact, percentile, summarize, wilson } from "../server/eval/stats";
 import { runEval } from "../server/eval/runner";
 import type { TaskResult } from "../server/eval/types";
+import { calibrateHost, hostScale } from "./hostCalibration.js";
 
 const ROOT = join(import.meta.dirname, "..");
 const BASELINE = join(ROOT, ".aikit", "agent-bench-baseline.json");
@@ -29,6 +30,12 @@ function bootstrapMean(values: number[], samples = 2_000, seed = 20261108): { me
     means.push(total / values.length);
   }
   return { mean, low: percentile(means, 0.025), high: percentile(means, 0.975) };
+}
+
+/** How much more time the current host needs than the baseline's, so limits can scale. */
+function calibrateScaleBetween(currentMs: number, baselineMs: number): number {
+  const scale = hostScale(currentMs, baselineMs);
+  return Number.isFinite(scale) && scale > 0 ? scale : 1;
 }
 
 function key(result: Pick<TaskResult, "taskId" | "repeat">): string {
@@ -79,20 +86,26 @@ try {
     resultsRoot: mkdtempSync(join(tmpdir(), "atelier-agent-bench-results-")),
   });
   const current = metrics(run.results);
+  // How fast this host ran a fixed workload during the run, so the latency comparison can divide
+  // it out. Without it, a shared machine's load reads as a code regression.
+  const calibrationMs = calibrateHost();
   const update = process.argv.includes("--update");
   const failures: string[] = [];
   let comparison: Record<string, unknown> | null = null;
   if (update) {
-    writeFileSync(BASELINE, `${JSON.stringify({ schema: 1, createdAt: Date.now(), repeat: REPEAT, tasks: TASKS, ...current }, null, 2)}\n`);
+    writeFileSync(BASELINE, `${JSON.stringify({ schema: 2, createdAt: Date.now(), repeat: REPEAT, tasks: TASKS, ...current, calibrationMs }, null, 2)}\n`);
   } else {
     try {
-      const baseline = JSON.parse(readFileSync(BASELINE, "utf8")) as { results: Array<{ taskId: string; repeat: number; ok: boolean; wallMs: number }>; repeat: number };
+      const baseline = JSON.parse(readFileSync(BASELINE, "utf8")) as { schema?: number; results: Array<{ taskId: string; repeat: number; ok: boolean; wallMs: number }>; repeat: number; calibrationMs?: number };
       if (baseline.repeat !== REPEAT) throw new Error(`baseline repeat ${baseline.repeat} does not match ${REPEAT}`);
       const baselineByKey = new Map(baseline.results.map((result) => [key(result), result]));
       const currentByKey = new Map(current.results.map((result) => [key(result), result]));
       const keys = [...currentByKey.keys()].filter((entryKey) => baselineByKey.has(entryKey));
+      // Divide each side by its own host calibration, so the comparison is about the code. A
+      // schema-1 baseline recorded no calibration and is compared raw, with the ratio reported.
+      const scale = baseline.calibrationMs === undefined ? 1 : calibrateScaleBetween(calibrationMs, baseline.calibrationMs);
       const baselineLatency = keys.map((entryKey) => baselineByKey.get(entryKey)?.wallMs ?? 0);
-      const currentLatency = keys.map((entryKey) => currentByKey.get(entryKey)?.wallMs ?? 0);
+      const currentLatency = keys.map((entryKey) => (currentByKey.get(entryKey)?.wallMs ?? 0) / scale);
       const latency = bootstrapDelta(baselineLatency, currentLatency, { seed: 20261108 });
       let baselineOnly = 0;
       let candidateOnly = 0;
@@ -107,7 +120,7 @@ try {
       const currentRate = keys.length === 0 ? 0 : keys.filter((entryKey) => currentByKey.get(entryKey)?.ok === true).length / keys.length;
       const meanBefore = baselineLatency.reduce((total, value) => total + value, 0) / Math.max(1, baselineLatency.length);
       const meanAfter = currentLatency.reduce((total, value) => total + value, 0) / Math.max(1, currentLatency.length);
-      comparison = { keys: keys.length, success: { baseline: baselineRate, candidate: currentRate, baselineOnly, candidateOnly, mcnemarP: pValue }, latency: { ...latency, baselineMean: meanBefore, candidateMean: meanAfter } };
+      comparison = { keys: keys.length, success: { baseline: baselineRate, candidate: currentRate, baselineOnly, candidateOnly, mcnemarP: pValue }, latency: { ...latency, baselineMean: meanBefore, candidateMean: meanAfter, hostScale: Number(scale.toFixed(2)) } };
       if (currentRate < baselineRate - MAX_SUCCESS_DROP) failures.push(`success rate ${currentRate.toFixed(3)} < baseline ${baselineRate.toFixed(3)} - ${MAX_SUCCESS_DROP}`);
       if (pValue < 0.05 && currentRate < baselineRate) failures.push(`success regression is significant (McNemar p=${pValue.toFixed(4)})`);
       if (meanBefore > 0 && meanAfter > meanBefore * MAX_MEAN_LATENCY_RATIO && latency.low > 0) failures.push(`mean latency ${meanAfter.toFixed(1)} ms > baseline ${meanBefore.toFixed(1)} ms +${Math.round((MAX_MEAN_LATENCY_RATIO - 1) * 100)}%`);

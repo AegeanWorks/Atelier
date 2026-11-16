@@ -1,6 +1,6 @@
 {
-  "schema": 1,
-  "createdAt": 1794251411984,
+  "schema": 2,
+  "createdAt": 1794861156473,
   "repeat": 10,
   "tasks": [
     "r0-read-only",
@@ -17,13 +17,13 @@
       "high": 1
     },
     "latency": {
-      "mean": 125.625,
-      "p50": 93,
-      "p95": 224,
+      "mean": 112.475,
+      "p50": 88,
+      "p95": 226,
       "ci": {
-        "mean": 125.625,
-        "low": 99.65,
-        "high": 155.125
+        "mean": 112.475,
+        "low": 93.65,
+        "high": 131.45
       }
     }
   },
@@ -37,9 +37,9 @@
         "high": 1
       },
       "latency": {
-        "mean": 25.8,
-        "p50": 25,
-        "p95": 37
+        "mean": 33.5,
+        "p50": 33,
+        "p95": 47
       }
     },
     "r1-single-file": {
@@ -51,9 +51,9 @@
         "high": 1
       },
       "latency": {
-        "mean": 223.3,
-        "p50": 192,
-        "p95": 436
+        "mean": 169.2,
+        "p50": 143,
+        "p95": 228
       }
     },
     "r2-multi-file": {
@@ -65,9 +65,9 @@
         "high": 1
       },
       "latency": {
-        "mean": 168.7,
-        "p50": 166,
-        "p95": 177
+        "mean": 167,
+        "p50": 158,
+        "p95": 232
       }
     },
     "r5-delegation": {
@@ -79,9 +79,9 @@
         "high": 1
       },
       "latency": {
-        "mean": 84.7,
-        "p50": 86,
-        "p95": 93
+        "mean": 80.2,
+        "p50": 80,
+        "p95": 88
       }
     }
   },
@@ -90,7 +90,7 @@
       "taskId": "r0-read-only",
       "repeat": 0,
       "ok": true,
-      "wallMs": 37
+      "wallMs": 47
     },
     {
       "taskId": "r0-read-only",
@@ -102,31 +102,31 @@
       "taskId": "r0-read-only",
       "repeat": 2,
       "ok": true,
-      "wallMs": 27
+      "wallMs": 34
     },
     {
       "taskId": "r0-read-only",
       "repeat": 3,
       "ok": true,
-      "wallMs": 28
+      "wallMs": 24
     },
     {
       "taskId": "r0-read-only",
       "repeat": 4,
       "ok": true,
-      "wallMs": 22
+      "wallMs": 39
     },
     {
       "taskId": "r0-read-only",
       "repeat": 5,
       "ok": true,
-      "wallMs": 29
+      "wallMs": 35
     },
     {
       "taskId": "r0-read-only",
       "repeat": 6,
       "ok": true,
-      "wallMs": 20
+      "wallMs": 33
     },
     {
       "taskId": "r0-read-only",
@@ -138,133 +138,133 @@
       "taskId": "r0-read-only",
       "repeat": 8,
       "ok": true,
-      "wallMs": 18
+      "wallMs": 38
     },
     {
       "taskId": "r0-read-only",
       "repeat": 9,
       "ok": true,
-      "wallMs": 24
+      "wallMs": 32
     },
     {
       "taskId": "r1-single-file",
       "repeat": 0,
       "ok": true,
-      "wallMs": 436
+      "wallMs": 211
     },
     {
       "taskId": "r1-single-file",
       "repeat": 1,
       "ok": true,
-      "wallMs": 224
+      "wallMs": 138
     },
     {
       "taskId": "r1-single-file",
       "repeat": 2,
       "ok": true,
-      "wallMs": 192
+      "wallMs": 136
     },
     {
       "taskId": "r1-single-file",
       "repeat": 3,
       "ok": true,
-      "wallMs": 334
+      "wallMs": 140
     },
     {
       "taskId": "r1-single-file",
       "repeat": 4,
-      "ok": true,
-      "wallMs": 220
-    },
-    {
-      "taskId": "r1-single-file",
-      "repeat": 5,
-      "ok": true,
-      "wallMs": 205
-    },
-    {
-      "taskId": "r1-single-file",
-      "repeat": 6,
-      "ok": true,
-      "wallMs": 150
-    },
-    {
-      "taskId": "r1-single-file",
-      "repeat": 7,
-      "ok": true,
-      "wallMs": 167
-    },
-    {
-      "taskId": "r1-single-file",
-      "repeat": 8,
       "ok": true,
       "wallMs": 151
     },
     {
       "taskId": "r1-single-file",
+      "repeat": 5,
+      "ok": true,
+      "wallMs": 183
+    },
+    {
+      "taskId": "r1-single-file",
+      "repeat": 6,
+      "ok": true,
+      "wallMs": 226
+    },
+    {
+      "taskId": "r1-single-file",
+      "repeat": 7,
+      "ok": true,
+      "wallMs": 143
+    },
+    {
+      "taskId": "r1-single-file",
+      "repeat": 8,
+      "ok": true,
+      "wallMs": 228
+    },
+    {
+      "taskId": "r1-single-file",
       "repeat": 9,
       "ok": true,
-      "wallMs": 154
+      "wallMs": 136
     },
     {
       "taskId": "r2-multi-file",
       "repeat": 0,
       "ok": true,
-      "wallMs": 177
+      "wallMs": 232
     },
     {
       "taskId": "r2-multi-file",
       "repeat": 1,
       "ok": true,
-      "wallMs": 176
+      "wallMs": 162
     },
     {
       "taskId": "r2-multi-file",
       "repeat": 2,
       "ok": true,
-      "wallMs": 176
+      "wallMs": 163
     },
     {
       "taskId": "r2-multi-file",
       "repeat": 3,
       "ok": true,
-      "wallMs": 163
+      "wallMs": 171
     },
     {
       "taskId": "r2-multi-file",
       "repeat": 4,
       "ok": true,
-      "wallMs": 161
+      "wallMs": 157
     },
     {
       "taskId": "r2-multi-file",
       "repeat": 5,
       "ok": true,
-      "wallMs": 173
+      "wallMs": 158
     },
     {
       "taskId": "r2-multi-file",
       "repeat": 6,
       "ok": true,
-      "wallMs": 160
+      "wallMs": 157
     },
     {
       "taskId": "r2-multi-file",
       "repeat": 7,
       "ok": true,
-      "wallMs": 174
+      "wallMs": 153
     },
     {
       "taskId": "r2-multi-file",
       "repeat": 8,
       "ok": true,
-      "wallMs": 161
+      "wallMs": 159
     },
     {
       "taskId": "r2-multi-file",
       "repeat": 9,
       "ok": true,
-      "wallMs": 166
+      "wallMs": 158
     },
     {
       "taskId": "r5-delegation",
@@ -276,55 +276,56 @@
       "taskId": "r5-delegation",
       "repeat": 1,
       "ok": true,
-      "wallMs": 87
+      "wallMs": 83
     },
     {
       "taskId": "r5-delegation",
       "repeat": 2,
       "ok": true,
-      "wallMs": 93
+      "wallMs": 80
     },
     {
       "taskId": "r5-delegation",
       "repeat": 3,
       "ok": true,
-      "wallMs": 85
+      "wallMs": 88
     },
     {
       "taskId": "r5-delegation",
       "repeat": 4,
       "ok": true,
-      "wallMs": 86
+      "wallMs": 77
     },
     {
       "taskId": "r5-delegation",
       "repeat": 5,
       "ok": true,
-      "wallMs": 76
+      "wallMs": 88
     },
     {
       "taskId": "r5-delegation",
       "repeat": 6,
       "ok": true,
-      "wallMs": 79
+      "wallMs": 74
     },
     {
       "taskId": "r5-delegation",
       "repeat": 7,
       "ok": true,
-      "wallMs": 87
+      "wallMs": 76
     },
     {
       "taskId": "r5-delegation",
       "repeat": 8,
       "ok": true,
-      "wallMs": 86
+      "wallMs": 81
     },
     {
       "taskId": "r5-delegation",
       "repeat": 9,
       "ok": true,
-      "wallMs": 87
+      "wallMs": 74
     }
-  ]
+  ],
+  "calibrationMs": 198.28
 }

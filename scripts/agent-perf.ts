@@ -10,6 +10,7 @@ import { appendSessionEvent, createRun } from "../server/runs";
 import { loadConfig, loadSecrets, saveConfig } from "../server/state";
 import { executeTool } from "../server/tools";
 import type { FixtureSpec } from "../server/eval/types";
+import { calibrateHost, HOST_REFERENCE_MS, hostScale } from "./hostCalibration.js";
 
 const ROOT = join(import.meta.dirname, "..");
 const BASELINE = join(ROOT, ".aikit", "agent-perf-baseline.json");
@@ -52,38 +53,6 @@ function percentile(values: number[], fraction: number): number {
   const high = sorted[upper] ?? low;
   const value = low * (1 - weight) + high * weight;
   return Number(value.toFixed(2));
-}
-
-/** Round count for the calibration workload: enough to dwarf process startup, ~190 ms here. */
-const CALIBRATION_ROUNDS = 60_000_000;
-
-/**
- * The calibration reading the BUDGETS below were written against, measured on this host.
- *
- * The budgets used to be absolute milliseconds, which made them a statement about how busy the
- * machine was: the same untouched tree measured toolDispatchP95 at 3.49 ms and at 18.63 ms on
- * different runs. Budgets are now scaled by (this run's calibration / this constant), so they
- * describe the code and a slower host is allowed proportionally more milliseconds.
- */
-const HOST_REFERENCE_MS = 189.8;
-
-/**
- * A fixed CPU workload with nothing to do with atelier.
- *
- * Measured insight: the loaded runs that failed this gate were internally *consistent* (spread 1-18%)
- * but shifted to a higher level, so a spread threshold cannot tell a busy host from a regression.
- * This workload can: it ranged 187.9-194.4 ms across five passes, a 3.4% spread, while the other
- * metrics were moving by 2-3x. Dividing a metric by it, and a baseline by its own recorded
- * calibration, makes the comparison about the code rather than about what else the machine was doing.
- */
-function calibrate(): number {
-  let accumulator = 0;
-  const started = performance.now();
-  for (let index = 0; index < CALIBRATION_ROUNDS; index += 1) accumulator = (accumulator + index * 31) % 1_000_003;
-  const elapsed = performance.now() - started;
-  // Keep the result live so the loop cannot be optimised away, and guard against a zero reading.
-  if (accumulator < 0) throw new Error("calibration accumulator wrapped");
-  return Math.max(1, Number(elapsed.toFixed(2)));
 }
 
 const RUN_WARMUP = 3;
@@ -185,7 +154,7 @@ async function measureOnce(): Promise<Metrics> {
     return {
       // Recorded alongside the metrics so a later comparison can divide it out. It is not a
       // metric of atelier: it is how fast this host ran a fixed workload during this pass.
-      calibrationMs: calibrate(),
+      calibrationMs: calibrateHost(),
       agentRunP50Ms: percentile(agentRuns, 0.5),
       agentRunP95Ms: stableP95(agentRuns, RUN_BATCHES),
       toolDispatchP50Ms: percentile(dispatch, 0.5),
@@ -284,8 +253,8 @@ try {
     if (typeof value !== "number") continue;
     // Normalise to this host's own calibration: on a host that is 1.5x slower than the one that
     // recorded the budget, the same code is allowed 1.5x the milliseconds.
-    const hostBudget = budget * (referenceCalibration / HOST_REFERENCE_MS);
-    if (value > hostBudget) failures.push(`${key} ${value} ms > budget ${budget} ms (x${(referenceCalibration / HOST_REFERENCE_MS).toFixed(2)} for this host = ${Number(hostBudget.toFixed(2))} ms)`);
+    const hostBudget = budget * hostScale(referenceCalibration);
+    if (value > hostBudget) failures.push(`${key} ${value} ms > budget ${budget} ms (x${hostScale(referenceCalibration).toFixed(2)} for this host = ${Number(hostBudget.toFixed(2))} ms)`);
   }
   let baseline: { median: Metrics; mad: Metrics | undefined } | null = null;
   if (update) {
@@ -304,7 +273,7 @@ try {
   }
   if (baseline !== null) failures.push(...regressions(aggregate.median, baseline));
 
-  const payload = { ok: failures.length === 0, budgets: BUDGETS, runs: aggregate.runs, calibrationMs: aggregate.median.calibrationMs, hostScale: Number(((aggregate.median.calibrationMs ?? HOST_REFERENCE_MS) / HOST_REFERENCE_MS).toFixed(2)), metrics: aggregate.median, mad: aggregate.mad, failures };
+  const payload = { ok: failures.length === 0, budgets: BUDGETS, runs: aggregate.runs, calibrationMs: aggregate.median.calibrationMs, hostScale: Number(hostScale(aggregate.median.calibrationMs ?? HOST_REFERENCE_MS).toFixed(2)), metrics: aggregate.median, mad: aggregate.mad, failures };
   if (json) console.log(JSON.stringify(payload, null, 2));
   else {
     console.log(`agent-perf ${payload.ok ? "PASS" : "FAIL"} runs=${aggregate.runs} hostScale=${payload.hostScale}`);
