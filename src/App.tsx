@@ -129,6 +129,12 @@ function readDrafts(): Record<string, string> {
   }
 }
 
+function formatWorkspace(path?: string): string {
+  if (!path) return "workspace";
+  const segments = path.split(/[\\/]/).filter(Boolean);
+  return segments.length <= 2 ? path : segments.slice(-2).join(" / ");
+}
+
 export default function App(): React.JSX.Element {
   const [boot, setBoot] = useState<Boot | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -1169,7 +1175,7 @@ export default function App(): React.JSX.Element {
             </button>
             <div className="header-title">
               <h1>{activeSession?.title ?? "New conversation"}</h1>
-              <div className="header-sub" title={boot?.workspace ?? "workspace"}>{boot?.workspace ?? "workspace"} · local</div>
+              <div className="header-sub" title={boot?.workspace ?? "workspace"}>{formatWorkspace(boot?.workspace)} · local</div>
             </div>
             <div className="header-spacer" />
             <div className="mode-group" role="group" aria-label="Agent mode">
