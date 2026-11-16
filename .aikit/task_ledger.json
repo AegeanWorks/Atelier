@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ledger-bounds",
+    "task_id": "atelier-summary-accounting",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794853631.1264498,
+    "updated_at": 1794854701.266866,
     "owner": "commandcode:1",
     "started_by": "commandcode:1",
     "continuations": [],
@@ -15,89 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794853642.4830165,
-    "completed_head": "da71581bb9bea9a407b9c3425820cdd3c8c46b08",
-    "completed_tree": "a34d1592db3c96f1f2cc1d6efbcc169d7f2a800c"
+    "completed_at": 1794854728.430239,
+    "completed_head": "8d50c53a7356a8e51375e1846a9543038f41dab5",
+    "completed_tree": "9ee5645c3f542bf4d15d1937be60cdb07ae79859"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-engine-depth",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 4/6] Wave 5 landed: -p/--print with piped-stdin prompts, --model for a one-run override, --no-session for a throwaway run, and exit codes 8 (max-turns) and 130 (interrupted) alongside 0/1/2. --help and docs/FEATURES.md document all five. Verified by hand: echo prompt | atelier -p reads stdin and reports no_provider on this machine; --help renders the new codes. 636 tests pass and all 12 gates are green.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794844013.4242835,
-      "timestamp_str": "2026-11-16 18:46:53",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "candidate": 5.0,
-          "metric": "exit codes documented",
-          "command": "npx tsx server/main.ts --help",
-          "unit": "codes",
-          "artifact": "server/cli.ts",
-          "baseline": 3.0
-        },
-        {
-          "candidate": 1.0,
-          "metric": "piped stdin prompt accepted",
-          "command": "echo hello | npx tsx server/main.ts -p --mode build",
-          "unit": "bool",
-          "artifact": "server/main.ts",
-          "baseline": 0.0
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-engine-depth",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-engine-depth' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794844023.8238897,
-      "timestamp_str": "2026-11-16 18:47:03",
-      "agent": "commandcode:1",
-      "head": "fc6216b7d59ff83ac3a06fb4230343d37df894c1",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-engine-trustworthiness",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/2] Two follow-ups from re-verifying my own proposals: (1) the perf recorder measured one process and called it a baseline, so a recording is now 5 passes reduced to a median plus MAD and a gate run is 3 passes, with a metric failing only past 1.5x AND median+6 MADs; commitP95 budget raised 5 -> 10 ms on instruction. (2) A resumed run could not see its tool results: appendMessage now accepts a tool role written without a text.ended event, listMessages excludes tool rows unless asked, and rebuildMessages carries them through.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794847622.5042415,
-      "timestamp_str": "2026-11-16 19:47:02",
-      "agent": "commandcode:1",
-      "impact_assessment": {
-        "why": "The perf baseline described a different host (pristine tree failed it too) and a resumed conversation repeated work it had already done, so neither number nor behaviour could be trusted.",
-        "benefits": "A timing claim now comes with its spread, so a busy machine is visible instead of silently failing; and work resumed in a conversation continues instead of restarting blind.",
-        "risks": "contract: agent-perf baseline schema 1 -> 2, and listMessages default shape; dependency: none; concurrency: none; state: tool rows are durable state the UI does not render",
-        "mitigation": "A schema-1 baseline still reads through its metrics key; tool rows are excluded by default so every existing reader is byte-for-byte unchanged; both proven by the 638-test suite and 12/12 gates"
-      },
-      "checklists": "passed",
-      "plan_digest": "e2c27296fdb98eef77db9dfbf7be28c3f0e0bbc826c7053b5d84d5ae1ddb644b",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-engine-trustworthiness",
       "phase": "phase 4",
@@ -668,6 +590,77 @@
       "timestamp_str": "2026-11-16 21:27:22",
       "agent": "commandcode:1",
       "head": "da71581bb9bea9a407b9c3425820cdd3c8c46b08",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-summary-accounting",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Price the compaction summary. summariseWindow calls collectProvider with memo:false, so it bills, but the loop's priceStep appeared only in the step path: a compacting run paid for the summary while spentUsd and --max-budget-usd never saw it. The summary now records an llm.usage event with purpose compaction-summary and reports its price to the loop through onSpend.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794854601.022446,
+      "timestamp_str": "2026-11-16 21:43:21",
+      "agent": "commandcode:1",
+      "impact_assessment": {
+        "why": "A budget that a run can exceed without detecting it is worse than no budget, because the caller trusts it.",
+        "benefits": "spentUsd and the unpriced flag include every request the run actually makes, so --max-budget-usd holds.",
+        "risks": "contract: llm.usage gains a purpose field and step -1 for summaries; dependency: none; concurrency: none; state: one extra usage event per compaction",
+        "mitigation": "Priced through the same priceStep as every request; the test uses a real HTTP provider and is mutation-tested (disabling the accounting fails with 'expected 0 to be greater than 0')"
+      },
+      "plan_digest": "37e801e7cdb138061cbf5ea54e31e2c406c6e2cfb7474b9b4f554da25de28aed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-summary-accounting",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 1/1] Verified: a priced provider reports a summary cost now, and one summary llm.usage event is recorded with purpose=compaction-summary. Mutation-tested: disabling the accounting fails with 'expected 0 to be greater than 0'. 119 test files green.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794854701.266866,
+      "timestamp_str": "2026-11-16 21:45:01",
+      "agent": "commandcode:1",
+      "measurements": [
+        {
+          "unit": "events",
+          "candidate": 1.0,
+          "artifact": "tests/integration/summary-accounting.test.ts",
+          "workload": "compaction forced with contextTokens 2000 against a priced provider",
+          "baseline": 0.0,
+          "command": "node node_modules/vitest/vitest.mjs run tests/integration/summary-accounting.test.ts",
+          "metric": "summary usage events recorded",
+          "drift": "accounted"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-summary-accounting",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-summary-accounting' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794854728.5051403,
+      "timestamp_str": "2026-11-16 21:45:28",
+      "agent": "commandcode:1",
+      "head": "8d50c53a7356a8e51375e1846a9543038f41dab5",
       "delivery": {
         "roots": [
           "."
