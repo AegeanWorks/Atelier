@@ -184,7 +184,7 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
           <small>{current.size} bytes · {dirty ? "unsaved — Cmd/Ctrl+S to save" : "saved"}</small>
         </div>
       ) : (
-        <div className="panel-card"><p>Select a file to open it.</p></div>
+        <div className="panel-card file-preview-placeholder"><p>Select a file to open it.</p></div>
       )}
 
       {message !== null ? <div className="banner-ok" role="status" data-testid="files-message">{message}</div> : null}

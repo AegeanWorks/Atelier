@@ -1475,6 +1475,7 @@ summary:focus-visible,
   height: 6px;
   border-radius: var(--radius-pill);
   background: var(--warn);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--warn) 60%, transparent);
 }
 
 .statusbar .status-bad {
@@ -1491,6 +1492,7 @@ summary:focus-visible,
   height: 6px;
   border-radius: var(--radius-pill);
   background: var(--bad);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--bad) 60%, transparent);
 }
 
 .statusbar .spacer {
@@ -1740,7 +1742,7 @@ summary:focus-visible,
 @media (max-width: 1180px) {
   :root {
     --rail: 220px;
-    --workspace: 400px;
+    --workspace: 412px;
   }
 }
 
@@ -2164,6 +2166,25 @@ p.provider-meta,
 .file-empty {
   list-style: none;
   padding: var(--space-3) var(--space-4);
+}
+
+.file-preview-placeholder {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px dashed var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  background: color-mix(in srgb, var(--bg-panel) 40%, transparent) !important;
+  margin-top: var(--space-4);
+  padding: var(--space-6);
+}
+
+.file-preview-placeholder p {
+  color: var(--text-faint);
+  font-size: var(--text-xs);
+  letter-spacing: 0.01em;
 }
 
 .file-item {
