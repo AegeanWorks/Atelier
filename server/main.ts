@@ -159,7 +159,39 @@ async function sessionsCli(options: Options): Promise<number> {
   }
 }
 
+/**
+ * The prompt when it arrives on stdin instead of argv, so `cat prompt.txt | atelier -p` works.
+ * Only a piped stdin is read: an interactive terminal with no prompt stays a usage error rather
+ * than hanging until the user notices.
+ */
+async function readPipedPrompt(): Promise<string | null> {
+  if (process.stdin.isTTY) return null;
+  const chunks: Buffer[] = [];
+  const deadline = setTimeout(() => {
+    // A pipe that never closes must not hang the command; 30 s matches the documented limit.
+    process.stdin.destroy();
+  }, 30_000);
+  deadline.unref();
+  try {
+    for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(deadline);
+  }
+  const text = Buffer.concat(chunks).toString("utf8").trim();
+  return text.length === 0 ? null : text;
+}
+
 async function runCli(options: Options): Promise<number> {
+  // A piped prompt fills in when argv named none, so the same command works either way.
+  if ((options.prompt === null || options.prompt.trim().length === 0) && !process.stdin.isTTY) {
+    const piped = await readPipedPrompt();
+    if (piped !== null) {
+      options.prompt = piped;
+      options.promptFromStdin = true;
+    }
+  }
   const invalid = validateRun(options);
   if (invalid !== null) {
     console.error(`What: ${invalid.what}`);
@@ -178,6 +210,8 @@ async function runCli(options: Options): Promise<number> {
       continueLatest: options.continue,
       images: options.images,
       autoApprove: options.yes,
+      noSession: options.noSession,
+      ...(options.model === null ? {} : { model: options.model }),
       ...(options.maxTurns === null ? {} : { maxTurns: options.maxTurns }),
       ...(options.maxBudgetUsd === null ? {} : { maxBudgetUsd: options.maxBudgetUsd }),
       ...(options.outputFormat === "stream-json" ? { onEvent: (event: { seq: number; type: string; data: unknown }) => console.log(JSON.stringify({ type: "event", seq: event.seq, event: event.type, data: event.data })) } : {}),
@@ -195,7 +229,9 @@ async function runCli(options: Options): Promise<number> {
       console.error(`Why: ${result.reason ?? "the provider or a tool blocked it"}.`);
       console.error(`Fix: inspect ${result.sessionId} in the workspace, or re-run with --mode build --yes if a write was blocked.`);
     }
-    return result.status === "finished" ? 0 : 1;
+    // A turn-cap stop is a distinct outcome a script can branch on, so it is not folded into 1.
+    if (result.status === "finished") return 0;
+    return /step cap/i.test(result.reason ?? "") ? 8 : 1;
   } catch (error) {
     return printReport(error);
   }
@@ -238,5 +274,14 @@ async function main(): Promise<number> {
   }
 }
 
+// For a one-shot command, a Ctrl-C is a distinct outcome: 130 tells a script the run was
+// interrupted rather than that it failed. The server path installs its own unwind handler.
+const oneShot = (): boolean => process.argv.slice(2).some((arg) => arg === "run" || arg === "sessions" || arg === "-p" || arg === "--print");
+const onSignal = (): void => {
+  process.exit(130);
+};
+if (oneShot()) process.once("SIGINT", onSignal);
+
 const code = await main();
+if (oneShot()) process.off("SIGINT", onSignal);
 if (code !== 0) process.exitCode = code;

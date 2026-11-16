@@ -2,7 +2,7 @@
 import { attachMentionedFiles } from "./attachments.js";
 import { attachImages, saveImageFile } from "./images.js";
 import { isProtectedConfigPath } from "./rules.js";
-import { createSession, getSession, listEvents, listSessions, listMessages, openDatabase, recoverOnBoot } from "./db.js";
+import { createSession, deleteSession, getSession, listEvents, listSessions, listMessages, openDatabase, recoverOnBoot } from "./db.js";
 import { executeRun } from "./runner.js";
 import { createRun, getRun, listRunSteps, type RunRow } from "./runs.js";
 import { appendMessage } from "./db.js";
@@ -21,6 +21,10 @@ export interface HeadlessOptions {
   autoApprove?: boolean;
   maxTurns?: number;
   maxBudgetUsd?: number;
+  /** Run this model for one run instead of the configured default; the config is not changed. */
+  model?: string;
+  /** One-shot run: hand back the answer without leaving a resumable conversation behind. */
+  noSession?: boolean;
   /** Called once per session event of this run, in order, while the run works and once more when it ends. */
   onEvent?: (event: { seq: number; type: string; data: unknown }) => void;
   adapter?: ProviderAdapter;
@@ -132,6 +136,7 @@ export async function runHeadless(options: HeadlessOptions): Promise<HeadlessRes
         ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
         ...(options.maxTurns === undefined ? {} : { maxSteps: options.maxTurns }),
         ...(options.maxBudgetUsd === undefined ? {} : { maxBudgetUsd: options.maxBudgetUsd }),
+        ...(options.model === undefined ? {} : { model: options.model }),
         approve: (_call, resource, action, explicitAsk) => {
           // --yes approves what the run asks for, except edits of the agent's own configuration and calls a permission
           // rule said to ask about: those need a person.
@@ -152,6 +157,9 @@ export async function runHeadless(options: HeadlessOptions): Promise<HeadlessRes
     const steps = listRunSteps(handle, finished.id);
     const tools = steps.filter((step) => step.kind === "tool").length;
     const usage = lastUsage(handle, sessionId, finished.id);
+    // --no-session: the answer is the whole point, so a throwaway conversation is not left
+    // behind in the list a later `--continue` would pick up.
+    if (options.noSession === true) deleteSession(handle, sessionId);
     if (finished.status === "finished") {
       const messages = listMessages(handle, sessionId);
       const last = [...messages].reverse().find((message) => message.role === "assistant");

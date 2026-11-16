@@ -5,7 +5,7 @@ import { forkSession } from "./fork.js";
 import { compactSession } from "./summarize.js";
 import { z } from "zod";
 import { AtelierError } from "./config.js";
-import { DELEGATE_SESSIONS_SQL, getSession, listEvents, listMessages, listSessions, type DbHandle } from "./db.js";
+import { DELEGATE_SESSIONS_SQL, deleteSession, getSession, listEvents, listMessages, listSessions, type DbHandle } from "./db.js";
 import { resumeRun, startSessionRun, stopSessionRun } from "./runner.js";
 import { getRun, listRunSteps, listRuns } from "./runs.js";
 import { auditRun } from "./audit.js";
@@ -151,19 +151,7 @@ export function createRunRoutes(deps: RunRouteDeps): Hono {
   app.delete("/sessions/:id", (c) => {
     const session = getSession(deps.db, c.req.param("id"));
     if (session === null) throw new AtelierError("NOT_FOUND", "Session not found.", c.req.param("id"), "Refresh the conversation list.");
-    const transaction = deps.db.db.transaction(() => {
-      deps.db.db.prepare("DELETE FROM leases WHERE run_id IN (SELECT id FROM runs WHERE session_id = ?)").run(session.id);
-      deps.db.db.prepare("DELETE FROM run_steps WHERE run_id IN (SELECT id FROM runs WHERE session_id = ?)").run(session.id);
-      deps.db.db.prepare("DELETE FROM resume_requests WHERE run_id IN (SELECT id FROM runs WHERE session_id = ?)").run(session.id);
-      deps.db.db.prepare("DELETE FROM interrupts WHERE run_id IN (SELECT id FROM runs WHERE session_id = ?)").run(session.id);
-      deps.db.db.prepare("DELETE FROM approvals WHERE session_id = ?").run(session.id);
-      deps.db.db.prepare("DELETE FROM plans WHERE session_id = ?").run(session.id);
-      deps.db.db.prepare("DELETE FROM runs WHERE session_id = ?").run(session.id);
-      deps.db.db.prepare("DELETE FROM messages WHERE session_id = ?").run(session.id);
-      deps.db.db.prepare("DELETE FROM events WHERE session_id = ?").run(session.id);
-      deps.db.db.prepare("DELETE FROM sessions WHERE id = ?").run(session.id);
-    });
-    transaction();
+    deleteSession(deps.db, session.id);
     return c.json({ ok: true });
   });
 

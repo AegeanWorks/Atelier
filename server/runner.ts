@@ -31,6 +31,8 @@ export interface ExecuteOptions {
   maxSteps?: number;
   /** Stops the run once its priced spend reaches this many US dollars. */
   maxBudgetUsd?: number;
+  /** Runs this one model instead of the configured default, without changing the configuration. */
+  model?: string;
 }
 
 const inflight = new Set<Promise<void>>();
@@ -77,7 +79,9 @@ async function runToCompletion(handle: DbHandle, runId: string, options: Execute
       appendSessionEvent(handle, run.session_id, "run.blocked", { runId: run.id, reason: "provider_missing" });
       return;
     }
-    const model = config.defaults.model ?? provider.defaultModel ?? catalogFor(provider)[0]?.id;
+    // A per-run override wins over the configured default, but only for this run: nothing on
+    // disk changes, so the next run is back on the default model.
+    const model = options.model ?? config.defaults.model ?? provider.defaultModel ?? catalogFor(provider)[0]?.id;
     if (model === undefined) {
       markRun(handle, run.id, "blocked", { blockedReason: "no_model" });
       appendSessionEvent(handle, run.session_id, "run.blocked", { runId: run.id, reason: "no_model" });

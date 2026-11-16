@@ -489,6 +489,26 @@ export function getSession(handle: DbHandle, id: string): SessionRow | null {
   return row ?? null;
 }
 
+/**
+ * Delete one conversation and everything a run wrote for it. Used by a `--no-session` run so a
+ * throwaway answer leaves nothing for a later `--continue` to pick up.
+ */
+export function deleteSession(handle: DbHandle, id: string): void {
+  const transaction = handle.db.transaction(() => {
+    handle.db.prepare("DELETE FROM leases WHERE run_id IN (SELECT id FROM runs WHERE session_id = ?)").run(id);
+    handle.db.prepare("DELETE FROM run_steps WHERE run_id IN (SELECT id FROM runs WHERE session_id = ?)").run(id);
+    handle.db.prepare("DELETE FROM resume_requests WHERE run_id IN (SELECT id FROM runs WHERE session_id = ?)").run(id);
+    handle.db.prepare("DELETE FROM interrupts WHERE run_id IN (SELECT id FROM runs WHERE session_id = ?)").run(id);
+    handle.db.prepare("DELETE FROM approvals WHERE session_id = ?").run(id);
+    handle.db.prepare("DELETE FROM plans WHERE session_id = ?").run(id);
+    handle.db.prepare("DELETE FROM runs WHERE session_id = ?").run(id);
+    handle.db.prepare("DELETE FROM messages WHERE session_id = ?").run(id);
+    handle.db.prepare("DELETE FROM events WHERE session_id = ?").run(id);
+    handle.db.prepare("DELETE FROM sessions WHERE id = ?").run(id);
+  });
+  transaction();
+}
+
 export function appendMessage(
   handle: DbHandle,
   sessionId: string,

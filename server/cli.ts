@@ -4,7 +4,8 @@ export const HELP = `atelier ${VERSION} - local agent workspace
 
 Usage:
   atelier [options]
-  atelier run <prompt> [--mode plan|build] [--session <id> | --continue] [--image <file>]... [--max-turns <n>] [--max-budget-usd <x>] [--output-format text|json|stream-json] [--yes] [--json]
+  atelier run <prompt> [--mode plan|build] [--session <id> | --continue] [--image <file>]... [--max-turns <n>] [--max-budget-usd <x>] [--output-format text|json|stream-json] [--model <id>] [--no-session] [--yes] [--json]
+  atelier -p [<prompt>]   headless alias for run; reads the prompt from stdin when it is piped
   atelier sessions [--json]
   atelier acp
   atelier --check
@@ -14,7 +15,10 @@ Options:
   --port <n>       port (default 4317; 0 picks a free port)
   --host <host>    bind host (default 127.0.0.1)
   --no-open        do not open the workspace window
+  -p, --print      headless run, like run; with no prompt argument the prompt is read from a piped stdin
   --mode <m>       run mode for the run command (plan, the default, or build)
+  --model <id>     use this model for the run instead of the configured default (must be in the local catalog)
+  --no-session     do not persist the conversation; the run still reports its id but nothing is resumed from it
   --session <id>   continue an existing conversation
   --continue, -c   continue the most recent conversation
   --image <file>   attach a png, jpeg, gif or webp image (repeatable, at most 4)
@@ -33,8 +37,10 @@ it prints nothing else on stdout and logs to stderr.
 
 Exit codes:
   0  the command succeeded (a run finished)
-  1  the command failed (a run was blocked, hit its turn cap or hit an error)
+  1  the command failed (a run was blocked or another run was already working)
   2  invalid usage or configuration; nothing was run
+  8  the run reached its --max-turns limit before answering
+  130  the run was interrupted (SIGINT/SIGTERM)
 
 Environment:
   ATELIER_HOME       state directory (default ~/.atelier)
@@ -63,6 +69,12 @@ export interface Options {
   maxTurns: number | null;
   outputFormat: string;
   maxBudgetUsd: number | null;
+  /** Per-run model override, resolved against the local catalog before the run starts. */
+  model: string | null;
+  /** One-shot run that must not be resumable afterwards. */
+  noSession: boolean;
+  /** The prompt came from a piped stdin rather than argv. */
+  promptFromStdin: boolean;
 }
 
 export function parse(argv: string[]): Options {
@@ -85,6 +97,9 @@ export function parse(argv: string[]): Options {
     maxTurns: null,
     outputFormat: "text",
     maxBudgetUsd: null,
+    model: null,
+    noSession: false,
+    promptFromStdin: false,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index] ?? "";
@@ -121,6 +136,14 @@ export function parse(argv: string[]): Options {
       index += 1;
     } else if (arg.startsWith("--output-format=")) options.outputFormat = arg.slice("--output-format=".length);
     else if (arg === "--yes" || arg === "-y") options.yes = true;
+    else if (arg === "--no-session") options.noSession = true;
+    else if (arg === "-p" || arg === "--print") {
+      // The Claude-Code-style headless form: `-p` with an optional prompt argument.
+      if (options.command === null) options.command = "run";
+    } else if (arg === "--model" && next !== undefined) {
+      options.model = next;
+      index += 1;
+    } else if (arg.startsWith("--model=")) options.model = arg.slice("--model=".length);
     else if (arg === "--port" && next !== undefined) {
       options.port = next;
       index += 1;
@@ -153,11 +176,11 @@ export interface ValidationError {
 }
 
 export function validateRun(options: Options): ValidationError | null {
-  if (options.prompt === null || options.prompt.trim().length === 0) {
+  if ((options.prompt === null || options.prompt.trim().length === 0) && !options.promptFromStdin) {
     return {
       what: "a prompt is required.",
       why: "the run command needs text to work on.",
-      fix: 'pass a prompt, for example `atelier run "fix the failing test"`.',
+      fix: 'pass a prompt, for example `atelier run "fix the failing test"`, or pipe one in.',
     };
   }
   if (options.continue && options.session !== null) {
@@ -200,6 +223,13 @@ export function validateRun(options: Options): ValidationError | null {
       what: "--yes has no effect in plan mode.",
       why: "plan mode never writes or runs commands.",
       fix: "drop --yes, or add `--mode build`.",
+    };
+  }
+  if (options.model !== null && options.model.trim().length === 0) {
+    return {
+      what: "--model needs an id.",
+      why: "an empty model id names nothing in the catalog.",
+      fix: "pass a model id from the Settings tab, or drop --model to use the configured default.",
     };
   }
   return null;

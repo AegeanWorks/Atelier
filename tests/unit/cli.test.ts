@@ -99,4 +99,28 @@ describe("CLI parsing", () => {
     }
     expect(validateRun(parse(["run", "x", "--max-budget-usd", "3"]))).toBeNull();
   });
+
+  it("parses --model, --no-session, -p and --print", () => {
+    expect(HELP).toContain("--model");
+    expect(parse(["run", "x", "--model", "claude-sonnet-4-5"]).model).toBe("claude-sonnet-4-5");
+    expect(parse(["run", "x", "--model=gpt-4o"]).model).toBe("gpt-4o");
+    expect(parse(["run", "x"]).model).toBeNull();
+    expect(validateRun(parse(["run", "x", "--model="]))?.what).toMatch(/--model/);
+    expect(parse(["run", "x", "--no-session"]).noSession).toBe(true);
+    expect(parse(["run", "x"]).noSession).toBe(false);
+    // -p is the Claude-Code-style headless form: it implies `run` and takes an optional prompt.
+    expect(parse(["-p", "fix it"]).command).toBe("run");
+    expect(parse(["-p", "fix it"]).prompt).toBe("fix it");
+    expect(parse(["--print", "fix it"]).command).toBe("run");
+    expect(parse(["-p"]).command).toBe("run");
+  });
+
+  it("accepts a prompt that arrived on stdin and documents the exit codes", () => {
+    const piped = { ...parse(["-p"]), prompt: "from stdin", promptFromStdin: true };
+    expect(validateRun(piped)).toBeNull();
+    // Without a piped prompt the same invocation is still a usage error.
+    expect(validateRun(parse(["-p"]))?.what).toMatch(/prompt/);
+    expect(HELP).toMatch(/8 {2}the run reached its --max-turns/);
+    expect(HELP).toMatch(/130 {2}the run was interrupted/);
+  });
 });
