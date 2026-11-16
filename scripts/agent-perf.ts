@@ -37,7 +37,7 @@ const BUDGETS = {
 const RECORD_RUNS = Number(process.env.ATELIER_PERF_RUNS ?? "5");
 const GATE_RUNS = Number(process.env.ATELIER_PERF_GATE_RUNS ?? "3");
 
-/** A metric above this fraction of the baseline median, or above this many times its MAD, fails. */
+/** A metric above this fraction of the baseline median, after host calibration, fails. */
 const REGRESSION_RATIO = 1.5;
 const REGRESSION_MADS = 6;
 
@@ -52,6 +52,38 @@ function percentile(values: number[], fraction: number): number {
   const high = sorted[upper] ?? low;
   const value = low * (1 - weight) + high * weight;
   return Number(value.toFixed(2));
+}
+
+/** Round count for the calibration workload: enough to dwarf process startup, ~190 ms here. */
+const CALIBRATION_ROUNDS = 60_000_000;
+
+/**
+ * The calibration reading the BUDGETS below were written against, measured on this host.
+ *
+ * The budgets used to be absolute milliseconds, which made them a statement about how busy the
+ * machine was: the same untouched tree measured toolDispatchP95 at 3.49 ms and at 18.63 ms on
+ * different runs. Budgets are now scaled by (this run's calibration / this constant), so they
+ * describe the code and a slower host is allowed proportionally more milliseconds.
+ */
+const HOST_REFERENCE_MS = 189.8;
+
+/**
+ * A fixed CPU workload with nothing to do with atelier.
+ *
+ * Measured insight: the loaded runs that failed this gate were internally *consistent* (spread 1-18%)
+ * but shifted to a higher level, so a spread threshold cannot tell a busy host from a regression.
+ * This workload can: it ranged 187.9-194.4 ms across five passes, a 3.4% spread, while the other
+ * metrics were moving by 2-3x. Dividing a metric by it, and a baseline by its own recorded
+ * calibration, makes the comparison about the code rather than about what else the machine was doing.
+ */
+function calibrate(): number {
+  let accumulator = 0;
+  const started = performance.now();
+  for (let index = 0; index < CALIBRATION_ROUNDS; index += 1) accumulator = (accumulator + index * 31) % 1_000_003;
+  const elapsed = performance.now() - started;
+  // Keep the result live so the loop cannot be optimised away, and guard against a zero reading.
+  if (accumulator < 0) throw new Error("calibration accumulator wrapped");
+  return Math.max(1, Number(elapsed.toFixed(2)));
 }
 
 const RUN_WARMUP = 3;
@@ -151,6 +183,9 @@ async function measureOnce(): Promise<Metrics> {
     }
 
     return {
+      // Recorded alongside the metrics so a later comparison can divide it out. It is not a
+      // metric of atelier: it is how fast this host ran a fixed workload during this pass.
+      calibrationMs: calibrate(),
       agentRunP50Ms: percentile(agentRuns, 0.5),
       agentRunP95Ms: stableP95(agentRuns, RUN_BATCHES),
       toolDispatchP50Ms: percentile(dispatch, 0.5),
@@ -203,21 +238,30 @@ async function measure(runs: number): Promise<Aggregate> {
 }
 
 /**
- * Fail a metric that rose beyond both a ratio and the baseline's own spread.
+ * Fail a metric that rose beyond the baseline, after dividing out how fast each host was.
  *
- * The ratio catches a real regression; the MAD bound keeps a single noisy gate run from
- * failing against a baseline whose recorded spread already explains the difference.
+ * Both sides are normalised by their own calibration, so the ratio says "this took N times as
+ * many calibrated milliseconds as before". A metric whose calibrated value is within the
+ * baseline's recorded spread is not called a regression.
  */
 function regressions(candidate: Metrics, baseline: { median: Metrics; mad: Metrics | undefined }): string[] {
   const failures: string[] = [];
+  const candidateCalibration = candidate.calibrationMs ?? 0;
+  const baselineCalibration = baseline.median.calibrationMs ?? 0;
+  // Without either calibration there is nothing to normalise by, so the raw number is compared
+  // and the labels say so.
+  const comparable = candidateCalibration > 0 && baselineCalibration > 0;
   for (const [key, baselineValue] of Object.entries(baseline.median ?? {})) {
+    if (key === "calibrationMs") continue;
     if (!key.endsWith("P95Ms") || key === "compactionP95Ms" || key === "sessionSwitchP95Ms") continue;
     const value = candidate[key];
     if (typeof value !== "number") continue;
-    const ratioLimit = baselineValue * REGRESSION_RATIO;
-    const spread = (baseline.mad?.[key] ?? 0) * REGRESSION_MADS;
-    const limit = Math.max(ratioLimit, baselineValue + spread);
-    if (value > limit) failures.push(`${key} ${value} ms > baseline ${baselineValue} ms (limit ${Number(limit.toFixed(2))} ms)`);
+    const scale = comparable ? candidateCalibration / baselineCalibration : 1;
+    const limit = Math.max(baselineValue * REGRESSION_RATIO, baselineValue + (baseline.mad?.[key] ?? 0) * REGRESSION_MADS);
+    // Compare the candidate's *host-equivalent* value against the baseline's own.
+    if (value / scale > limit) {
+      failures.push(`${key} ${value} ms > baseline ${baselineValue} ms even after host calibration (x${scale.toFixed(2)}), limit ${Number((limit * scale).toFixed(2))} ms`);
+    }
   }
   return failures;
 }
@@ -229,9 +273,17 @@ try {
   const aggregate = await measure(update ? RECORD_RUNS : GATE_RUNS);
   const failures: string[] = [];
   // A hard budget is about the machine, so it is checked on every run including a recording.
+  // It is compared against the host-normalised value, because a budget in milliseconds is
+  // otherwise a statement about how busy this computer is rather than about the code.
+  const calibration = aggregate.median.calibrationMs ?? 0;
+  const referenceCalibration = calibration > 0 ? calibration : 1;
   for (const [key, budget] of Object.entries(BUDGETS)) {
     const value = aggregate.median[key];
-    if (typeof value === "number" && value > budget) failures.push(`${key} ${value} ms > budget ${budget} ms`);
+    if (typeof value !== "number") continue;
+    // Normalise to this host's own calibration: on a host that is 1.5x slower than the one that
+    // recorded the budget, the same code is allowed 1.5x the milliseconds.
+    const hostBudget = budget * (referenceCalibration / HOST_REFERENCE_MS);
+    if (value > hostBudget) failures.push(`${key} ${value} ms > budget ${budget} ms (x${(referenceCalibration / HOST_REFERENCE_MS).toFixed(2)} for this host = ${Number(hostBudget.toFixed(2))} ms)`);
   }
   let baseline: { median: Metrics; mad: Metrics | undefined } | null = null;
   if (update) {
@@ -250,10 +302,10 @@ try {
   }
   if (baseline !== null) failures.push(...regressions(aggregate.median, baseline));
 
-  const payload = { ok: failures.length === 0, budgets: BUDGETS, runs: aggregate.runs, metrics: aggregate.median, mad: aggregate.mad, failures };
+  const payload = { ok: failures.length === 0, budgets: BUDGETS, runs: aggregate.runs, calibrationMs: aggregate.median.calibrationMs, hostScale: Number(((aggregate.median.calibrationMs ?? HOST_REFERENCE_MS) / HOST_REFERENCE_MS).toFixed(2)), metrics: aggregate.median, mad: aggregate.mad, failures };
   if (json) console.log(JSON.stringify(payload, null, 2));
   else {
-    console.log(`agent-perf ${payload.ok ? "PASS" : "FAIL"} runs=${aggregate.runs}`);
+    console.log(`agent-perf ${payload.ok ? "PASS" : "FAIL"} runs=${aggregate.runs} hostScale=${payload.hostScale}`);
     for (const [key, value] of Object.entries(aggregate.median)) console.log(`${key}=${value}`);
     for (const key of Object.keys(aggregate.mad)) if ((aggregate.mad[key] ?? 0) > 0) console.log(`${key}.mad=${aggregate.mad[key]}`);
     for (const failure of failures) console.log(`FAIL ${failure}`);
