@@ -53,7 +53,7 @@
   --radius-pill: 999px;
   --on-accent: #09090b;
   --rail: 248px;
-  --workspace: 380px;
+  --workspace: 412px;
   --status: 28px;
 }
 
@@ -269,21 +269,20 @@ summary:focus-visible,
   align-items: center;
   justify-content: center;
   gap: var(--space-3);
-  padding: var(--space-2) var(--space-4);
-  border: 1px dashed var(--border-strong);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xs);
-  background: transparent;
+  background: color-mix(in srgb, var(--bg-panel) 60%, transparent);
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 550;
   font-size: var(--text-xs);
-  height: 30px;
+  height: 28px;
   transition: background var(--ease), border-color var(--ease), color var(--ease);
 }
 
 .new-conversation:hover {
-  background: var(--bg-panel);
-  border-color: var(--accent);
-  border-style: solid;
+  background: var(--bg-panel-strong);
+  border-color: var(--border-strong);
   color: var(--text);
 }
 
@@ -1310,7 +1309,7 @@ summary:focus-visible,
   position: relative;
   border: none;
   border-radius: 0;
-  padding: 0 7px;
+  padding: 0 6px;
   background: transparent;
   color: var(--text-muted);
   font-size: var(--text-xs);
@@ -1619,18 +1618,19 @@ summary:focus-visible,
 }
 
 .banner-error {
-  margin: var(--space-5) var(--space-8);
-  border: 1px solid color-mix(in srgb, var(--bad) 45%, transparent);
-  background: var(--bad-soft);
-  border-radius: var(--radius-sm);
-  padding: var(--space-4) var(--space-5);
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--bad) 35%, var(--border));
+  background: color-mix(in srgb, var(--bad) 10%, var(--bg-raised));
+  border-radius: 0;
+  padding: var(--space-3) var(--space-7);
   color: var(--text);
   font-size: var(--text-xs);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-4);
   align-items: start;
+  backdrop-filter: blur(10px);
 }
 
 .banner-copy {
@@ -1740,7 +1740,7 @@ summary:focus-visible,
 @media (max-width: 1180px) {
   :root {
     --rail: 220px;
-    --workspace: 360px;
+    --workspace: 400px;
   }
 }
 
@@ -2064,11 +2064,17 @@ p.provider-meta,
 }
 
 .banner-ok.inline {
-  margin: var(--space-5) var(--space-8);
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--ok) 35%, var(--border));
+  background: color-mix(in srgb, var(--ok) 10%, var(--bg-raised));
+  border-radius: 0;
+  padding: var(--space-3) var(--space-7);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-4);
   align-items: center;
+  backdrop-filter: blur(10px);
 }
 
 .banner-ok .banner-dismiss {
@@ -2148,7 +2154,7 @@ p.provider-meta,
   list-style: none;
   margin: 0;
   padding: var(--space-1) 0 var(--space-2);
-  max-height: 320px;
+  max-height: min(65vh, 600px);
   overflow-y: auto;
   display: grid;
   gap: var(--hairline);
