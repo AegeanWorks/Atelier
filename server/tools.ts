@@ -447,7 +447,7 @@ const TOOLS: Record<string, ToolDefinition> = {
   delegate: {
     name: "delegate",
     description: "Delegate a bounded read-only brief to a nested agent and return its answer.",
-    parameters: { type: "object", required: ["brief"], properties: { brief: { type: "string" }, background: { type: "boolean" } } },
+    parameters: { type: "object", required: ["brief"], properties: { brief: { type: "string" } } },
     action: "read",
     readOnly: true,
     run() {

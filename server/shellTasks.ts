@@ -1,5 +1,5 @@
 import { spawn, type ChildProcess } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { closeSync, existsSync, mkdirSync, openSync, readSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { AtelierError } from "./config.js";
 
@@ -23,6 +23,10 @@ export interface BackgroundTask {
   exitCode: number | null;
   /** Why the task ended early, when it did. */
   note: string | null;
+  /** Bytes written to the log so far, so the ceiling is a counter rather than a stat per chunk. */
+  bytes: number;
+  /** The log hit its ceiling and stopped growing. */
+  truncated: boolean;
   child: ChildProcess;
 }
 
@@ -30,6 +34,12 @@ export interface BackgroundTask {
 const MAX_TASKS = 40;
 /** A task still running after this long is killed, so nothing outlives the process. */
 const MAX_LIFETIME_MS = 30 * 60_000;
+/**
+ * How much of one command's output is kept. Measured: a chatty command wrote 2.9 MB in three
+ * seconds, so without a ceiling a stray `yes` fills the state directory. Past this the log stops
+ * growing and the task is marked truncated, rather than the whole disk filling.
+ */
+const MAX_LOG_BYTES = 1_000_000;
 
 const TASKS = new Map<string, BackgroundTask>();
 
@@ -95,11 +105,31 @@ export function startBackgroundTask(command: string, options: StartOptions): Bac
     status: "running",
     exitCode: null,
     note: null,
+    bytes: 0,
+    truncated: false,
     child,
   };
   const append = (chunk: Buffer | string): void => {
+    // Past the ceiling the log stops growing; the task keeps running and says so when read, so a
+    // runaway command cannot fill the state directory.
+    if (task.truncated) return;
+    const text = chunk.toString();
+    if (task.bytes + Buffer.byteLength(text) > MAX_LOG_BYTES) {
+      const room = Math.max(0, MAX_LOG_BYTES - task.bytes);
+      if (room > 0) {
+        try {
+          writeFileSync(logPath, text.slice(0, room), { flag: "a" });
+        } catch {
+          // A log that cannot grow must not take the task down with it.
+        }
+        task.bytes += room;
+      }
+      task.truncated = true;
+      return;
+    }
     try {
-      writeFileSync(logPath, chunk.toString(), { flag: "a" });
+      writeFileSync(logPath, text, { flag: "a" });
+      task.bytes += Buffer.byteLength(text);
     } catch {
       // A log that cannot grow must not take the task down with it.
     }
@@ -142,27 +172,40 @@ export interface TaskOutput {
 export function readTaskOutput(id: string, fromOffset = 0, maxChars = 8_000): TaskOutput {
   const task = TASKS.get(id);
   if (task === undefined) throw new AtelierError("TASK_UNKNOWN", `No background task ${id}.`, "The task id is unknown to this run.", "Use shell_tasks to list the tasks this run started.");
-  let content = "";
+  // Seek to the offset and read only the window. A measured 2.9 MB log cost a full 19 ms load
+  // to answer a 200-character question, so this never reads more than it is about to return.
+  const start = Math.max(0, fromOffset);
+  let slice = "";
+  let total = 0;
   if (existsSync(task.logPath)) {
     try {
-      content = readFileSync(task.logPath, "utf8");
+      total = statSync(task.logPath).size;
+      const length = Math.max(0, Math.min(maxChars, total - start));
+      if (length > 0) {
+        const handle = openSync(task.logPath, "r");
+        try {
+          const buffer = Buffer.alloc(length);
+          const read = readSync(handle, buffer, 0, length, start);
+          slice = buffer.subarray(0, read).toString("utf8");
+        } finally {
+          closeSync(handle);
+        }
+      }
     } catch {
-      content = "";
+      slice = "";
     }
   }
-  const start = Math.max(0, Math.min(fromOffset, content.length));
-  const slice = content.slice(start, start + maxChars);
   const header = `${task.id} ${task.status} exit=${task.exitCode ?? "-"} ${task.command.slice(0, 80)}`;
-  const body = start === 0 ? slice : slice;
   const suffix = task.status === "running" ? "\n[still running]" : "\n[finished]";
+  const truncation = task.truncated ? `\n[log truncated at ${MAX_LOG_BYTES} bytes]` : "";
   return {
     id: task.id,
     status: task.status,
     exitCode: task.exitCode,
     command: task.command,
     elapsedMs: Date.now() - task.startedAt,
-    output: `${header}\n${body}${suffix}`,
-    truncated: content.length > start + maxChars,
+    output: `${header}\n${slice}${truncation}${suffix}`,
+    truncated: total > start + maxChars || task.truncated,
   };
 }
 

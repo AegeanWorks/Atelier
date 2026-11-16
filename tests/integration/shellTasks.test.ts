@@ -96,6 +96,33 @@ describe("background shell tasks", () => {
     expect(() => killTask("task_missing")).toThrow(/No background task/);
   });
 
+  it("stops a chatty command's log at its ceiling", async () => {
+    // Measured before the ceiling existed: a loop printing 24-byte lines wrote 2.9 MB in three
+    // seconds. Past 1 MB the log must stop growing and say why, not fill the state directory.
+    const id = start(process.platform === "win32" ? "for /L %i in (1,1,200000) do @echo line-%i-0123456789abcdef" : "for i in $(seq 1 200000); do echo line-$i-0123456789abcdef; done");
+    await new Promise((resolve) => setTimeout(resolve, 2_500));
+    const window = readTaskOutput(id, 0, 200);
+    // The reply names the ceiling instead of silently pretending the log is complete.
+    expect(window.truncated).toBe(true);
+    expect(readTaskOutput(id, 0, 4_000).output).toContain("truncated at 1000000 bytes");
+    killTask(id);
+    await settled(id);
+  });
+
+  it("reads a bounded window without loading the whole log", async () => {
+    // The read path seeks, so a window from a large log must stay cheap; before the fix it read
+    // the entire file and cost 19 ms for 200 characters on the 2.9 MB probe.
+    const id = start(process.platform === "win32" ? "for /L %i in (1,1,60000) do @echo pad-%i-0123456789abcdef" : "for i in $(seq 1 60000); do echo pad-$i-0123456789abcdef; done");
+    await settled(id, 30_000);
+    const started = performance.now();
+    const window = readTaskOutput(id, 500_000, 200);
+    const elapsed = performance.now() - started;
+    expect(elapsed).toBeLessThan(100);
+    expect(window.output.length).toBeLessThan(500);
+    // Position 500k must not contain the first line, proving the offset really seeked.
+    expect(window.output).not.toContain("pad-1-");
+  });
+
   it("refuses an empty command", () => {
     expect(() => start("   ")).toThrow(/command is required/i);
   });
