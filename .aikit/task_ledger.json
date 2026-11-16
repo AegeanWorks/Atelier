@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-flush-surfaces-and-ergonomics",
+    "task_id": "atelier-ui-s-tier-polish",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794780586.9019415,
+    "updated_at": 1794807034.2454994,
     "owner": "unidentified",
     "started_by": "unidentified",
     "continuations": [],
@@ -15,68 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794780591.5844226,
-    "completed_head": "5160b12dd2c47a5f35dd151cac64d013c06de8cc",
-    "completed_tree": "35dbaf2d8e9674f609a385c80de1dd9a30bcb0d3"
+    "completed_at": 1794807041.9927046,
+    "completed_head": "708fae45cb611a01d4330e06f95c3cfb2b9b12be",
+    "completed_tree": "56ac5cabac4e8fff216b3e16bda76a7b93bac55a"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-obsidian-palette-and-tabstrip",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "Modernized dark palette to obsidian neutral zinc, calibrated contrast to WCAG AA, fixed tabstrip single-line fit with 26px compact tabs, and de-nested panel cards",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794774672.594532,
-      "timestamp_str": "2026-11-15 23:31:12",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-obsidian-palette-and-tabstrip",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-obsidian-palette-and-tabstrip' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794774682.984359,
-      "timestamp_str": "2026-11-15 23:31:22",
-      "agent": "unidentified",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-desktop-stream-and-composer-icons",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[2/3] Upgrade message stream to symmetrical desktop layout and replace ASCII composer glyphs with crisp SVGs",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794774723.6945665,
-      "timestamp_str": "2026-11-15 23:32:03",
-      "agent": "unidentified",
-      "impact_assessment": {
-        "why": "Eliminate mobile SMS speech-balloon aesthetics and replace crude ASCII button glyphs with modern SVG icons",
-        "benefits": "Professional IDE desktop aesthetic aligned with Cursor/Zed, clean message readability, and high-precision composer controls",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none",
-        "mitigation": "Preserve all button titles, aria-labels, test-ids, and keyboard navigation bindings"
-      },
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-desktop-stream-and-composer-icons",
       "phase": "phase 4",
@@ -395,6 +338,65 @@
       "timestamp_str": "2026-11-16 01:09:51",
       "agent": "unidentified",
       "head": "5160b12dd2c47a5f35dd151cac64d013c06de8cc",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-s-tier-polish",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/2] Calibrate workspace width to 412px, unify flush ribbons, expand file tree, and polish rail CTA",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794806409.5200462,
+      "timestamp_str": "2026-11-16 08:20:09",
+      "agent": "unidentified",
+      "impact_assessment": {
+        "why": "Fix 9th tab overflow (Evals truncation), unify error/ok banner ribbons, release file tree height clamp, and polish solid rail CTA",
+        "benefits": "Zero tab clipping, 100% unified edge-to-edge notification ribbons, dynamic vertical file explorer, and native desktop rail styling",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none",
+        "mitigation": "Preserve all button test IDs and DOM roles"
+      },
+      "plan_digest": "6117646a2e1267b13aef1b8bcab02a695e3fa92a23673ebb1059375433050f2c",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-s-tier-polish",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 2/2] Verified 412px workspace width, ribbon unification, file tree expansion, and solid rail CTA pass all 12 gates",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794807034.2454994,
+      "timestamp_str": "2026-11-16 08:30:34",
+      "agent": "unidentified",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-s-tier-polish",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-s-tier-polish' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794807042.054383,
+      "timestamp_str": "2026-11-16 08:30:42",
+      "agent": "unidentified",
+      "head": "708fae45cb611a01d4330e06f95c3cfb2b9b12be",
       "delivery": {
         "roots": [
           "."
