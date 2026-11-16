@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-engine-trustworthiness",
+    "task_id": "atelier-prompt-test-flake",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794848021.3140545,
+    "updated_at": 1794848990.3706605,
     "owner": "commandcode:1",
     "started_by": "commandcode:1",
     "continuations": [],
@@ -15,63 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794848032.4091465,
-    "completed_head": "28958397ddd7d766449ce3e0d1b5989759ee732d",
-    "completed_tree": "230a2d0db05655b9405dc5382a8d841b9d33f9df"
+    "completed_at": 1794849003.4766512,
+    "completed_head": "9219f8e5d7e3dd09823260dc5b9f1cefb8d52568",
+    "completed_tree": "d16086adb6db047eb5eb916beebb0401039fcfc9"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-surgical-polish-v7",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "Verified all 12 gates pass for surgical micro-polish v7",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794818871.9450939,
-      "timestamp_str": "2026-11-16 11:47:51",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-surgical-polish-v7",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-surgical-polish-v7' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794818878.2079983,
-      "timestamp_str": "2026-11-16 11:47:58",
-      "agent": "unidentified",
-      "head": "065eeb91536138af3423f533f3e038846bc3e3d8",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-claude-cursor-elevation",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "Elevate Atelier UI to Claude, Cursor, and Mistral parity: unboxed assistant canvas, squircle user pills, pulse streaming, segmented tabstrip, ghost rail actions",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794819712.275218,
-      "timestamp_str": "2026-11-16 12:01:52",
-      "agent": "unidentified",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-claude-cursor-elevation",
       "phase": "phase 4",
@@ -738,6 +686,77 @@
       "timestamp_str": "2026-11-16 19:53:52",
       "agent": "commandcode:1",
       "head": "28958397ddd7d766449ce3e0d1b5989759ee732d",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-prompt-test-flake",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Fix the measured prompt-test flake: the test asserted a bare 'L5' against a prompt that embeds a mkdtemp path whose random suffix contains L5 in 0.4% of samples, so it failed about once in 250 full-suite runs for a reason unrelated to imports. Both assertions now name the whole line.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794848978.2229087,
+      "timestamp_str": "2026-11-16 20:09:38",
+      "agent": "commandcode:1",
+      "impact_assessment": {
+        "why": "A gate that fails at random teaches everyone to re-run it rather than read it, which is worse than the bug it hides.",
+        "benefits": "The prompt test now fails only when the import depth behaviour actually changes.",
+        "risks": "contract: the assertion is stricter, not looser; dependency: none; concurrency: none; state: none",
+        "mitigation": "MAX_IMPORT_DEPTH is 3 and verified, so 'L3 inlined, its own @l4 plain' remains the behaviour under test; the full suite is green."
+      },
+      "plan_digest": "092ff0d1d1e724a6391c79bc79151013f451e4f5d2cc6849b8c98776b9eeba07",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-prompt-test-flake",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 1/1] Verified: the tightened assertions pass, MAX_IMPORT_DEPTH is 3, and the full suite is 638/638. The flake rate was measured at 80 of 20000 mkdtemp samples, not estimated.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794848990.3706605,
+      "timestamp_str": "2026-11-16 20:09:50",
+      "agent": "commandcode:1",
+      "measurements": [
+        {
+          "baseline": 0.4,
+          "workload": "20000 mkdtemp samples containing the token L5",
+          "artifact": "tests/unit/prompt.test.ts",
+          "metric": "prompt test flake rate",
+          "candidate": 0.0,
+          "command": "python scratch/flake_odds.py",
+          "unit": "percent",
+          "drift": "eliminated"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-prompt-test-flake",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-prompt-test-flake' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794849003.5626454,
+      "timestamp_str": "2026-11-16 20:10:03",
+      "agent": "commandcode:1",
+      "head": "9219f8e5d7e3dd09823260dc5b9f1cefb8d52568",
       "delivery": {
         "roots": [
           "."
