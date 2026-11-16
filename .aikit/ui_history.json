@@ -937,5 +937,47 @@
     "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
     "final_snapshot_entries": 38,
     "surface_digest": "f6bef7228e06cc245fcf5f0daacc95df02041dac771389f3fdc2e3a49e58d60b"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/App.tsx",
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "7202feafeb11b62a56f7816da74d22e2407ccdae",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794814539.5818899,
+    "finished_at": 1794814797.9308527,
+    "strikes": 0,
+    "reviewer": "",
+    "allowed_removals": [],
+    "allowed_tests": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "72d6dc6160a652b1fd8045fa3850392eb658f30a92f6e1118f87aa96935cd2ad"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [],
+    "no_visual_reason": "",
+    "no_change_reason": "Reverted statusbar cost to 6 decimals for test parity",
+    "baseline_commit": "294c99c8d8da51bc943538fca28407070a9b0572",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794815219.4592965,
+    "finished_at": 1794815320.7159047,
+    "strikes": 0,
+    "reviewer": "user",
+    "allowed_removals": [],
+    "allowed_tests": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "ff6b9ab27edd9b7cb5866c040815b1f752b9948de1587b9a6acbf222df0eff2f"
   }
 ]
