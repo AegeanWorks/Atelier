@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-compact-accounting",
+    "task_id": "atelier-audit-accounting-closure",
     "last_phase": "phase 2",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794855804.720811,
+    "updated_at": 1794856375.3822656,
     "owner": "commandcode:1",
     "started_by": "commandcode:1",
     "continuations": [],
@@ -16,117 +16,16 @@
       }
     ],
     "impact_assessment": {
-      "why": "A billed request that leaves no record makes every usage total and every budget wrong by an amount nobody can see.",
-      "benefits": "Usage totals, the Usage panel and any spend report include /compact, so the numbers add up.",
-      "risks": "contract: llm.usage gains purpose compact and runId null for a request outside a run; dependency: none; concurrency: none; state: one extra usage event per compact",
-      "mitigation": "Priced through the same priceStep as every request; the test asserts the exact arithmetic and is mutation-tested"
+      "why": "A claim in a commit message that nobody rechecks becomes folklore; the audit found a fourth site, and it should be named rather than silently fixed or silently ignored.",
+      "benefits": "The three real accounting fixes stand verified, and the one remaining gap is documented with its reason.",
+      "risks": "contract: none; dependency: none; concurrency: none; state: none",
+      "mitigation": "A precise call-site scan replaces the regex scan that produced false positives; the conformance route is documented in ADR-113 with the condition that would make it a bug"
     },
-    "completed_at": 1794855893.3791893,
-    "completed_head": "77dfe49b1fc8b0f7e5bc714f0f979049e57e04f2",
-    "completed_tree": "3b3951708197364c0a1a0d2bfe7702364c4bc275"
+    "completed_at": 1794856421.0427165,
+    "completed_head": "bfbf46fb9da66c80e145bd1b8b0d78081b41223f",
+    "completed_tree": "96d6dc1f8ee8f030088ea2580c1f679d7f9ae79a"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-engine-trustworthiness",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 2/2] Qualified measurements: each names its drift and its workload. The A/B used ONE recorder against both trees in a linked worktree at 8336b54, because comparing two different recorders would not have been a comparison.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794848021.3140545,
-      "timestamp_str": "2026-11-16 19:53:41",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "baseline": 1.0,
-          "workload": "agent-perf fixture loop",
-          "drift": "toward a stable median",
-          "metric": "perf baseline samples",
-          "candidate": 5.0,
-          "command": "npx tsx scripts/agent-perf.ts --update",
-          "artifact": ".aikit/agent-perf-baseline.json",
-          "unit": "passes"
-        },
-        {
-          "baseline": 13.6,
-          "workload": "agent-perf alone on an idle machine",
-          "drift": "tighter",
-          "metric": "agentRunP95 spread",
-          "candidate": 0.73,
-          "command": "npm run test:agent-perf",
-          "artifact": ".aikit/agent-perf-baseline.json",
-          "unit": "ms MAD"
-        },
-        {
-          "baseline": 0.0,
-          "workload": "two-run fixture conversation",
-          "drift": "toward a resumed turn keeping its history",
-          "metric": "resumed run sees its tool result",
-          "candidate": 1.0,
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "unit": "bool"
-        },
-        {
-          "baseline": 7.0,
-          "workload": "engine-gaps suite",
-          "drift": "closed",
-          "metric": "pinned gaps still open",
-          "candidate": 0.0,
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "unit": "it.fails"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-engine-trustworthiness",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-engine-trustworthiness' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794848032.480046,
-      "timestamp_str": "2026-11-16 19:53:52",
-      "agent": "commandcode:1",
-      "head": "28958397ddd7d766449ce3e0d1b5989759ee732d",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-prompt-test-flake",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Fix the measured prompt-test flake: the test asserted a bare 'L5' against a prompt that embeds a mkdtemp path whose random suffix contains L5 in 0.4% of samples, so it failed about once in 250 full-suite runs for a reason unrelated to imports. Both assertions now name the whole line.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794848978.2229087,
-      "timestamp_str": "2026-11-16 20:09:38",
-      "agent": "commandcode:1",
-      "impact_assessment": {
-        "why": "A gate that fails at random teaches everyone to re-run it rather than read it, which is worse than the bug it hides.",
-        "benefits": "The prompt test now fails only when the import depth behaviour actually changes.",
-        "risks": "contract: the assertion is stricter, not looser; dependency: none; concurrency: none; state: none",
-        "mitigation": "MAX_IMPORT_DEPTH is 3 and verified, so 'L3 inlined, its own @l4 plain' remains the behaviour under test; the full suite is green."
-      },
-      "plan_digest": "092ff0d1d1e724a6391c79bc79151013f451e4f5d2cc6849b8c98776b9eeba07",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-prompt-test-flake",
       "phase": "phase 4",
@@ -572,6 +471,87 @@
       "timestamp_str": "2026-11-16 22:04:53",
       "agent": "commandcode:1",
       "head": "77dfe49b1fc8b0f7e5bc714f0f979049e57e04f2",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-audit-accounting-closure",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 1/1] Closed out the accounting audit. Verified the claim in the previous commit message with a precise check rather than the regex scan that produced false positives: both real billing sites (the in-loop summary at agent.ts 111 and /compact at summarize.ts 64) record llm.usage. Found a fourth site, POST /api/providers/:id/complete, which bills and records nothing but has no product caller (only tests/integration/provider-api.test.ts); recorded that as ADR-113 rather than inventing a session to attribute it to.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794856361.2931566,
+      "timestamp_str": "2026-11-16 22:12:41",
+      "agent": "commandcode:1",
+      "measurements": [
+        {
+          "artifact": ".aikit/decisions.md",
+          "candidate": 3.0,
+          "metric": "collectProvider sites that bill",
+          "drift": "classified",
+          "baseline": 3.0,
+          "workload": "precise scan of 8 call sites across server/",
+          "command": "python scratch/verify_claim2.py",
+          "unit": "sites"
+        },
+        {
+          "artifact": ".aikit/decisions.md",
+          "candidate": 1.0,
+          "metric": "billing sites with no recorded usage",
+          "drift": "documented not silent",
+          "baseline": 3.0,
+          "workload": "the conformance route with no product caller",
+          "command": "python scratch/who_calls_complete.py",
+          "unit": "sites"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-audit-accounting-closure",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Close the accounting audit honestly: verify the 'all billing sites accounted' claim with a precise check, and classify the one remaining unrecorded site rather than leave it ambiguous.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794856375.3822656,
+      "timestamp_str": "2026-11-16 22:12:55",
+      "agent": "commandcode:1",
+      "impact_assessment": {
+        "why": "A claim in a commit message that nobody rechecks becomes folklore; the audit found a fourth site, and it should be named rather than silently fixed or silently ignored.",
+        "benefits": "The three real accounting fixes stand verified, and the one remaining gap is documented with its reason.",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none",
+        "mitigation": "A precise call-site scan replaces the regex scan that produced false positives; the conformance route is documented in ADR-113 with the condition that would make it a bug"
+      },
+      "plan_digest": "92c1d27b177428a7ef2453134b616c16b1746b6f7b8457b9667602e432ca1159",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-audit-accounting-closure",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-audit-accounting-closure' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794856421.112004,
+      "timestamp_str": "2026-11-16 22:13:41",
+      "agent": "commandcode:1",
+      "head": "bfbf46fb9da66c80e145bd1b8b0d78081b41223f",
       "delivery": {
         "roots": [
           "."
