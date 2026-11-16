@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-path-breadcrumbs-and-toolbar-polish",
+    "task_id": "atelier-ui-surgical-polish-v7",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794815489.871834,
+    "updated_at": 1794818871.9450939,
     "owner": "unidentified",
     "started_by": "unidentified",
     "continuations": [],
@@ -15,70 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794815496.6479135,
-    "completed_head": "294c99c8d8da51bc943538fca28407070a9b0572",
-    "completed_tree": "488102ba55c7b1492464b9c43fdfa2133a58ecf0"
+    "completed_at": 1794818878.106338,
+    "completed_head": "065eeb91536138af3423f533f3e038846bc3e3d8",
+    "completed_tree": "2270dc15fafb8b22a4e06962b2d990ff589b7bb4"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-rail-conversations-density",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 2/2] Streamlined rail conversation items and verified all 12 gates passed",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794779003.6185412,
-      "timestamp_str": "2026-11-16 00:43:23",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-rail-conversations-density",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-rail-conversations-density' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794779008.2219484,
-      "timestamp_str": "2026-11-16 00:43:28",
-      "agent": "unidentified",
-      "head": "753474fcbc5533f6626beea56ea15a0fb727eff4",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-flush-surfaces-and-ergonomics",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/2] Flush workspace surface architecture, tabstrip underline, git row single-action, and ghost CTA",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794779826.2036037,
-      "timestamp_str": "2026-11-16 00:57:06",
-      "agent": "unidentified",
-      "impact_assessment": {
-        "why": "Eliminate card-in-a-card inception, fix 10px tab font, de-clutter git staging rows, and calm rail CTA",
-        "benefits": "Flush inspector panels, readable 11px tabs with accent underline, 2x wider git paths without dual buttons, refined ghost rail CTA",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none",
-        "mitigation": "Preserve all test IDs and button disabled states in DOM for test suite"
-      },
-      "plan_digest": "6cf5fa69b8c5424411ee9da64a75f13e667cbed6af76cffb2f9c67155ea7d0d9",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-flush-surfaces-and-ergonomics",
       "phase": "phase 4",
@@ -402,6 +343,58 @@
       "timestamp_str": "2026-11-16 10:51:36",
       "agent": "unidentified",
       "head": "294c99c8d8da51bc943538fca28407070a9b0572",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-surgical-polish-v7",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "Implement surgical micro-polish from UI critique v7: whisper-quiet panel actions, de-box git legend, adaptive composer elevation, mono breadcrumbs, preview load button",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794816105.4057925,
+      "timestamp_str": "2026-11-16 11:01:45",
+      "agent": "unidentified",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-surgical-polish-v7",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "Verified all 12 gates pass for surgical micro-polish v7",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794818871.9450939,
+      "timestamp_str": "2026-11-16 11:47:51",
+      "agent": "unidentified",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-surgical-polish-v7",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-surgical-polish-v7' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794818878.2079983,
+      "timestamp_str": "2026-11-16 11:47:58",
+      "agent": "unidentified",
+      "head": "065eeb91536138af3423f533f3e038846bc3e3d8",
       "delivery": {
         "roots": [
           "."

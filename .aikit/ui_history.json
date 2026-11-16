@@ -979,5 +979,26 @@
     "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
     "final_snapshot_entries": 38,
     "surface_digest": "ff6b9ab27edd9b7cb5866c040815b1f752b9948de1587b9a6acbf222df0eff2f"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [],
+    "no_visual_reason": "",
+    "no_change_reason": "Surgical micro-polish with adaptive composer elevation, mono breadcrumbs, de-boxed git legend, and whisper-quiet actions committed in 065eeb9",
+    "baseline_commit": "065eeb91536138af3423f533f3e038846bc3e3d8",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794818578.4050097,
+    "finished_at": 1794818696.2456658,
+    "strikes": 0,
+    "reviewer": "user",
+    "allowed_removals": [],
+    "allowed_tests": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "b20526f98c267f30aca4efb73466a2450a662a8f8a86c2121841442a3eb6d165",
+    "baseline_digest": "b20526f98c267f30aca4efb73466a2450a662a8f8a86c2121841442a3eb6d165"
   }
 ]
