@@ -1022,5 +1022,28 @@
     "final_snapshot_entries": 38,
     "surface_digest": "d8546604922518fd8d4d9aa68a5a999a533ffff1e2a371f74bdd118eedb55414",
     "baseline_digest": "b20526f98c267f30aca4efb73466a2450a662a8f8a86c2121841442a3eb6d165"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/App.tsx",
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "ecb340e8f4c671e5d23fe9777f5c79c979ad0557",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794822622.8795109,
+    "finished_at": 1794822759.8521345,
+    "strikes": 2,
+    "reviewer": "commandcode:1",
+    "allowed_removals": [],
+    "allowed_tests": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "9a697bbdc6082bbed586600998109dab00737751f09298dcbe39e036801a084d",
+    "baseline_digest": "d8546604922518fd8d4d9aa68a5a999a533ffff1e2a371f74bdd118eedb55414"
   }
 ]

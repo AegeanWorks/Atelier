@@ -1,13 +1,13 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-claude-cursor-elevation",
+    "task_id": "atelier-ui-canvas-and-composer-refinement",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794820626.402684,
-    "owner": "unidentified",
-    "started_by": "unidentified",
+    "updated_at": 1794822989.1372106,
+    "owner": "commandcode:1",
+    "started_by": "commandcode:1",
     "continuations": [],
     "workspaces": [
       {
@@ -15,70 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794820630.0799308,
-    "completed_head": "7c4d5803b70ceccb57640aa90d37017878b81242",
-    "completed_tree": "d36ae9cf2a9dd47d046d1984eba3c6ec446cf22c"
+    "completed_at": 1794823219.8979745,
+    "completed_head": "086021905821a8c9af1e18e24d0fb69cc856dd3d",
+    "completed_tree": "1d8095ea28a94001baf4e690c9f4e8b08e9b5a2b"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-s-tier-polish",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 2/2] Verified 412px workspace width, ribbon unification, file tree expansion, and solid rail CTA pass all 12 gates",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794807034.2454994,
-      "timestamp_str": "2026-11-16 08:30:34",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-s-tier-polish",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-s-tier-polish' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794807042.054383,
-      "timestamp_str": "2026-11-16 08:30:42",
-      "agent": "unidentified",
-      "head": "708fae45cb611a01d4330e06f95c3cfb2b9b12be",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-final-polish",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/2] Micro-polish statusbar LED glows, 1180px workspace width parity, and file preview placeholder",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794808373.994837,
-      "timestamp_str": "2026-11-16 08:52:53",
-      "agent": "unidentified",
-      "impact_assessment": {
-        "why": "Implement final S-tier polish points from Critic v4: warning/error LED glow halos, zero-clipping guarantee at 1180px, and structural file preview container",
-        "benefits": "Consistent hardware-LED statusbar aesthetics, 100% desktop horizon consistency across breakpoints, and tactile file preview empty state",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none",
-        "mitigation": "Preserve all test IDs and token rules"
-      },
-      "plan_digest": "418159e471c7da6614445ae24b71e847cc383f879d53190ae9ad2594733ae4a1",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-final-polish",
       "phase": "phase 4",
@@ -388,6 +329,114 @@
       "timestamp_str": "2026-11-16 12:17:10",
       "agent": "unidentified",
       "head": "7c4d5803b70ceccb57640aa90d37017878b81242",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ui-canvas-and-composer-refinement",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/4] Re-verified the benchmark report against HEAD and dropped four of its seven claims as already shipped: assistant bubbles are unboxed (theme.css 748-754), the dashed streaming border is gone, active conversation rows are already soft squircles (322-327), tabs are already capsules (1373-1403) and the statusbar already has LED dots (1503-1552). Remaining real gaps: (a) full-width bordered New conversation box in the rail, (b) streaming shows a 2px left stripe, (c) markdown h3/h4/h5 all collapse to --text-base, (d) no model chip in the composer and bare-text telemetry. Plan: ghost + trigger in the rail label, caret-based streaming with no stripe, markdown heading scale plus 1.65 prose, composer model chip that tolerates a failed config read, grouped telemetry pill. Dropping tab micro-badges: they need per-panel count plumbing for chrome that serves no task.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794821147.0983858,
+      "timestamp_str": "2026-11-16 12:25:47",
+      "agent": "commandcode:1",
+      "impact_assessment": {
+        "why": "The report frames five surfaces as deficits but four are already implemented, so re-implementing them would be churn on a tree that already passes its gates. Only the rail CTA, streaming indicator, type scale and composer/telemetry gaps are real.",
+        "benefits": "Frees 36px of rail height, replaces a dated left stripe with a calm caret, restores markdown hierarchy, and surfaces the active model in the composer without leaving the prompt.",
+        "risks": "contract: data-testid hooks and the statusbar cost format are test-pinned; dependency: none; concurrency: none; state: a new /api/config read on mount must tolerate the 404s existing UI tests return",
+        "mitigation": "Keep every data-testid and the toFixed(6) cost string byte-identical; guard the config read so unmocked tests stay green; verify with npm test plus before/after screenshots"
+      },
+      "plan_digest": "ade55d0d99c2a65f801a4e5f216f5941c5f43e7a3dd4559da61381339ded11e3",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-canvas-and-composer-refinement",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 4/4] Waves 1, 2 and 4 of the report implemented; 12/12 gates and 618/618 tests pass. Four of the report's seven claims were stale (assistant canvas already unboxed, no dashed border, active rows already soft squircles, tabs already capsules, statusbar already LED-dotted), so those were dropped rather than re-implemented. Visual review at 390/768/1440 in both themes found one real defect I fixed: the composer hint ellipsized mid-word at 390px, so it now swaps to a short label under 560px with the full sentence in title. Measurement source: node scripts/ui-measure.mjs on the pristine and the changed tree.",
+      "files_affected": [
+        "src/App.tsx",
+        "src/theme.css",
+        "package.json",
+        "scripts/ui-measure.mjs",
+        "scripts/ui-composer-shots.mjs",
+        "scripts/ui-streaming-shots.mjs"
+      ],
+      "status": "in_progress",
+      "timestamp": 1794822989.1372106,
+      "timestamp_str": "2026-11-16 12:56:29",
+      "agent": "commandcode:1",
+      "measurements": [
+        {
+          "baseline": 166.0,
+          "artifact": "shots/before,shots/after",
+          "unit": "px",
+          "command": "node scripts/ui-measure.mjs",
+          "metric": "rail space above the conversation list",
+          "candidate": 140.0
+        },
+        {
+          "baseline": 2.0,
+          "artifact": "shots/streaming/before,shots/streaming/after",
+          "unit": "px",
+          "command": "node scripts/ui-measure.mjs",
+          "metric": "live message left border",
+          "candidate": 0.0
+        },
+        {
+          "baseline": 0.0,
+          "artifact": "shots/streaming/after",
+          "unit": "bool",
+          "command": "node scripts/ui-measure.mjs",
+          "metric": "streaming caret inside the live bubble",
+          "candidate": 1.0
+        },
+        {
+          "baseline": 227.0,
+          "artifact": "shots/before/atelier-desktop-dark.png,shots/after/atelier-desktop-dark.png",
+          "unit": "px wide",
+          "command": "node scripts/ui-measure.mjs",
+          "metric": "new conversation trigger footprint",
+          "candidate": 22.0
+        },
+        {
+          "baseline": 0.0,
+          "artifact": "shots/composer/after/composer-narrow.png",
+          "unit": "bool",
+          "command": "node scripts/ui-measure.mjs",
+          "metric": "composer hint clipped at 390px",
+          "candidate": 0.0
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-canvas-and-composer-refinement",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-canvas-and-composer-refinement' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794823219.9596703,
+      "timestamp_str": "2026-11-16 13:00:19",
+      "agent": "commandcode:1",
+      "head": "086021905821a8c9af1e18e24d0fb69cc856dd3d",
       "delivery": {
         "roots": [
           "."
