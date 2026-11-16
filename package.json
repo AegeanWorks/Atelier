@@ -35,6 +35,7 @@
     "eval:baseline": "tsx scripts/eval.ts --baseline",
     "eval:compare": "tsx scripts/eval-compare.ts",
     "eval:gate": "tsx scripts/eval-gate.ts",
+    "engine:gaps": "tsx scripts/engine-gaps.ts",
     "eval:release": "tsx scripts/eval.ts --split test --release",
     "eval:quality": "tsx scripts/eval.ts --suite atelier-quality --split dev",
     "eval:quality:baseline": "tsx scripts/eval.ts --suite atelier-quality --split dev --baseline",

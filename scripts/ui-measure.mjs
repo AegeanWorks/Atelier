@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Measures the geometry the UI change moved, so the checkpoint carries numbers rather than prose.
-import { findBrowser, launchBrowser, startUi, stopUi } from "./browser.mjs";
+import { launchBrowser, startUi, stopUi } from "./browser.mjs";
 
 const viewports = [
   { width: 390, height: 844, name: "narrow" },
