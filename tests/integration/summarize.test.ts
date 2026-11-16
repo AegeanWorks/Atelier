@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { ensureHome } from "../../server/config";
-import { appendMessage, createSession, getSession, listMessages, listSessions, openDatabase, type DbHandle } from "../../server/db";
+import { appendMessage, createSession, getSession, listEvents, listMessages, listSessions, openDatabase, type DbHandle } from "../../server/db";
 import type { ChatRequest, ProviderAdapter, StreamEvent } from "../../server/providers/types";
 import { loadConfig, saveConfig } from "../../server/state";
 import { compactSession } from "../../server/summarize";
@@ -45,6 +45,42 @@ afterEach(() => {
 });
 
 describe("compactSession", () => {
+  it("records the summary request's usage so its cost is visible", async () => {
+    // /compact calls the provider with memo:false, so it bills. Before this it recorded nothing,
+    // and its tokens reached no usage total, panel or budget.
+    const handle = setup();
+    const config = loadConfig(handle.paths);
+    saveConfig(handle.paths, {
+      ...config,
+      providers: [{
+        id: "fixture",
+        name: "Fixture",
+        protocol: "openai-chat",
+        baseUrl: "http://127.0.0.1:1/v1",
+        defaultModel: "priced-model",
+        models: [{ id: "priced-model", pricing: { input: 3, output: 15 } }],
+      }],
+      defaults: { provider: "fixture", model: "priced-model" },
+    });
+    const old = createSession(handle, "Cost me");
+    appendMessage(handle, old.id, "user", "do the thing", null);
+    await compactSession(handle, old.id, {
+      adapter: adapter([
+        { type: "text-delta", text: "Goal: the thing." },
+        { type: "usage", promptTokens: 1_000, completionTokens: 100 },
+        { type: "finish", reason: "stop" },
+      ]),
+    });
+    const usage = listEvents(handle, old.id)
+      .filter((event) => event.type === "llm.usage")
+      .map((event) => JSON.parse(event.data) as { purpose?: string; costUsd?: number; promptTokens?: number });
+    expect(usage).toHaveLength(1);
+    expect(usage[0]?.purpose).toBe("compact");
+    expect(usage[0]?.promptTokens).toBe(1_000);
+    // 1000 input at $3/M plus 100 output at $15/M = 0.003 + 0.0015.
+    expect(usage[0]?.costUsd).toBeCloseTo(0.0045, 6);
+  });
+
   it("starts a new conversation seeded with the summary and leaves the old one alone", async () => {
     const handle = setup();
     const old = createSession(handle, "Fix the parser");

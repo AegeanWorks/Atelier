@@ -3,7 +3,9 @@ import { AtelierError } from "./config.js";
 import { appendMessage, createSession, getSession, listMessages, type DbHandle, type SessionRow } from "./db.js";
 import { collectProvider } from "./providers/run.js";
 import type { ChatMessage, ProviderAdapter } from "./providers/types.js";
+import { appendSessionEvent } from "./runs.js";
 import { loadConfig, loadSecrets } from "./state.js";
+import { priceStep } from "./usage.js";
 
 const MAX_TRANSCRIPT_CHARS = 16_000;
 const SUMMARY_TIMEOUT_MS = 120_000;
@@ -65,6 +67,25 @@ export async function compactSession(handle: DbHandle, sessionId: string, option
     });
   } finally {
     clearTimeout(timer);
+  }
+  // This request bills like any other, so it is recorded against the conversation it summarises.
+  // Without that, `/compact` spends tokens that no usage total, panel or budget ever sees.
+  if (result.usage !== null) {
+    const price = priceStep(config, providerId, model, result.usage, false);
+    appendSessionEvent(handle, sessionId, "llm.usage", {
+      runId: null,
+      step: -1,
+      providerId,
+      model,
+      promptTokens: result.usage.promptTokens,
+      completionTokens: result.usage.completionTokens,
+      cachedTokens: result.usage.cachedTokens ?? 0,
+      costUsd: price.costUsd,
+      priced: price.priced,
+      replayed: false,
+      latencyMs: result.latencyMs,
+      purpose: "compact",
+    });
   }
   const failure = result.events.find((event) => event.type === "error");
   const summary = result.text.trim();
