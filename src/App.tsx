@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { api, ensureAuth, ApiError } from "./api";
-import type { Approval, Boot, Message, CheckpointEntry, RuleConfig, Session, UsageSummary } from "./types";
+import type { Approval, Boot, ConfigView, Message, CheckpointEntry, RuleConfig, Session, UsageSummary } from "./types";
 import type { TodoItem } from "./TodoStrip";
 import RailConversations, { type SearchHit } from "./RailConversations";
 import Markdown from "./Markdown";
@@ -137,6 +137,7 @@ function formatWorkspace(path?: string): string {
 
 export default function App(): React.JSX.Element {
   const [boot, setBoot] = useState<Boot | null>(null);
+  const [modelLabel, setModelLabel] = useState<string | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [archivedView, setArchivedView] = useState(false);
   const archivedViewRef = useRef(archivedView);
@@ -342,6 +343,20 @@ export default function App(): React.JSX.Element {
       setError(toErrorState(caught));
     }
   }
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      await ensureAuth();
+      const config = await api<ConfigView>("/api/config").catch(() => null);
+      if (cancelled || config === null) return;
+      const model = config.defaults.model ?? config.providers.find((item) => item.defaultModel !== null)?.defaultModel ?? null;
+      setModelLabel(model);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -1135,13 +1150,20 @@ export default function App(): React.JSX.Element {
             <span className="brand-version">{boot?.version ?? "0.1.0"}</span>
           </div>
           <div className="rail-section">
-            <div className="rail-label">
-              <span>Conversations</span>
-              <span>{sessions.length}</span>
+            <div className="rail-head">
+              <span className="rail-head-title">Conversations</span>
+              <span className="rail-count">{sessions.length}</span>
+              <button
+                className="rail-add"
+                type="button"
+                aria-label="New conversation"
+                title="New conversation"
+                onClick={() => void createConversation()}
+                data-testid="new-conversation"
+              >
+                <span aria-hidden="true">+</span>
+              </button>
             </div>
-            <button className="new-conversation" type="button" onClick={() => void createConversation()} data-testid="new-conversation">
-              <span aria-hidden="true">+</span> New conversation
-            </button>
           </div>
           <RailConversations
             sessions={sessions}
@@ -1342,7 +1364,10 @@ export default function App(): React.JSX.Element {
             )}
             {runStatus === "running" && liveText !== null && liveText.text.length > 0 ? (
               <article className="message live" data-role="assistant" data-testid="live-message" aria-busy="true">
-                <div className="message-bubble">{liveText.text}</div>
+                <div className="message-bubble">
+                  {liveText.text}
+                  <span className="stream-caret" aria-hidden="true">▍</span>
+                </div>
               </article>
             ) : null}
             {runStatus === "running" ? (
@@ -1504,7 +1529,26 @@ export default function App(): React.JSX.Element {
               data-testid="composer-input"
             />
             <div className="composer-actions">
-              <span className="hint">{runStatus === "running" ? "Run in progress: Stop to send another message" : mode === "plan" ? "Plan mode: read-only" : "Build mode: edits require approval"}</span>
+              <span className="hint" title={runStatus === "running" ? "Run in progress: Stop to send another message" : mode === "plan" ? "Plan mode: read-only" : "Build mode: edits require approval"}>
+                <span className="hint-full">{runStatus === "running" ? "Run in progress" : mode === "plan" ? "Plan · read-only" : "Build · approval per edit"}</span>
+                <span className="hint-short">{runStatus === "running" ? "Running" : mode === "plan" ? "Plan" : "Build"}</span>
+              </span>
+              {modelLabel === null ? null : (
+                <button
+                  className="model-chip"
+                  type="button"
+                  title={`${modelLabel} · switch with /model <id>`}
+                  aria-label={`Active model ${modelLabel}. Switch with the model command.`}
+                  data-testid="model-chip"
+                  onClick={() => {
+                    setDraft("/model ");
+                    composerRef.current?.focus();
+                  }}
+                >
+                  <span className="model-chip-dot" aria-hidden="true">⚡</span>
+                  {modelLabel}
+                </button>
+              )}
               <input
                 ref={imageInputRef}
                 type="file"
@@ -1573,8 +1617,10 @@ export default function App(): React.JSX.Element {
               <span className={view.level === "high" ? "status-bad" : view.level === "warn" ? "status-warn" : "status-ok"} title={view.title} data-testid="context-meter">{view.label}</span>
             );
           })()}
-          <span className="hide-narrow">tokens {usage === null ? 0 : usage.promptTokens + usage.completionTokens}</span>
-          <span className="hide-narrow">${(usage?.costUsd ?? 0).toFixed(6)}</span>
+          <div className="telemetry hide-narrow">
+            <span>tokens {usage === null ? 0 : usage.promptTokens + usage.completionTokens}</span>
+            <span>${(usage?.costUsd ?? 0).toFixed(6)}</span>
+          </div>
           <span className={live ? "status-ok" : "status-warn"}>{live ? "sse live" : "sse idle"}</span>
           <span className={runStatus === "running" ? "status-warn" : runStatus === "blocked" ? "status-bad" : "status-ok"}>{runStatus}</span>
           <span className="spacer" />
