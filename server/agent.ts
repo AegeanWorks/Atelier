@@ -88,6 +88,8 @@ function compactionWorthSummarising(messages: ChatMessage[], budget: number): bo
  */
 async function summariseWindow(
   handle: DbHandle,
+  sessionId: string,
+  runId: string,
   config: Config,
   secrets: Secrets,
   providerId: string,
@@ -96,6 +98,7 @@ async function summariseWindow(
   budget: number,
   signal: AbortSignal,
   adapter: ProviderAdapter | undefined,
+  onSpend: (price: { costUsd: number; priced: boolean }) => void,
 ): Promise<string | null> {
   if (adapter !== undefined) return null;
   const dropped = droppedWindow(messages, budget);
@@ -114,6 +117,27 @@ async function summariseWindow(
       maxTokens: 900,
     }, AbortSignal.any([signal, AbortSignal.timeout(30_000)]), { memo: false });
     if (result.events.some((event) => event.type === "error")) return null;
+    // This call bills like any other, so its usage is recorded as an llm.usage event. Without
+    // that the run pays for the summary but spentUsd never sees it, and --max-budget-usd can be
+    // exceeded by an amount the run cannot detect.
+    if (result.usage !== null) {
+      const price = priceStep(config, providerId, model, result.usage, false);
+      appendSessionEvent(handle, sessionId, "llm.usage", {
+        runId,
+        step: -1,
+        providerId,
+        model,
+        promptTokens: result.usage.promptTokens,
+        completionTokens: result.usage.completionTokens,
+        cachedTokens: result.usage.cachedTokens ?? 0,
+        costUsd: price.costUsd,
+        priced: price.priced,
+        replayed: false,
+        latencyMs: result.latencyMs,
+        purpose: "compaction-summary",
+      });
+      onSpend(price);
+    }
     const text = result.text.trim();
     return text.length === 0 ? null : text;
   } catch {
@@ -275,7 +299,24 @@ export async function runAgent(
     const artifacts = listArtifacts(handle, run.session_id, run.id);
     let modelSummary: string | null = null;
     if (profile.compaction === "summary" && compactionWorthSummarising(conversation, contextBudget)) {
-      modelSummary = await summariseWindow(handle, config, secrets, providerId, model, conversation, contextBudget, signal, options.adapter);
+      modelSummary = await summariseWindow(
+        handle,
+        run.session_id,
+        run.id,
+        config,
+        secrets,
+        providerId,
+        model,
+        conversation,
+        contextBudget,
+        signal,
+        options.adapter,
+        // The summary is a real request, so its cost joins the run's spend and its budget.
+        (price) => {
+          spentUsd += price.costUsd;
+          if (!price.priced) unpriced = true;
+        },
+      );
     }
     const compacted = profile.compaction === "summary"
       ? compactMessages(conversation, contextBudget, { modelSummary, artifacts })
