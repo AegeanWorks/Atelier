@@ -1,23 +1,60 @@
 {
-  "schema": 1,
-  "createdAt": 1794250872930,
+  "schema": 2,
+  "createdAt": 1794846418984,
   "budgets": {
     "agentRunP95Ms": 150,
     "toolDispatchP95Ms": 10,
-    "commitP95Ms": 5,
+    "commitP95Ms": 10,
     "sessionSwitchP95Ms": 80,
     "compactionP50Ms": 5
   },
-  "metrics": {
-    "agentRunP50Ms": 15.59,
-    "agentRunP95Ms": 21.85,
-    "toolDispatchP50Ms": 2.72,
-    "toolDispatchP95Ms": 4.4,
-    "commitP50Ms": 2.08,
-    "commitP95Ms": 4,
-    "sessionSwitchP50Ms": 1.63,
-    "sessionSwitchP95Ms": 3.13,
-    "compactionP50Ms": 0.39,
-    "compactionP95Ms": 0.97
+  "runs": 5,
+  "median": {
+    "agentRunP50Ms": 21.51,
+    "agentRunP95Ms": 28.25,
+    "toolDispatchP50Ms": 2.43,
+    "toolDispatchP95Ms": 6.95,
+    "commitP50Ms": 1.96,
+    "commitP95Ms": 5.79,
+    "sessionSwitchP50Ms": 0.65,
+    "sessionSwitchP95Ms": 1.01,
+    "compactionP50Ms": 0.3,
+    "compactionP95Ms": 0.71
+  },
+  "mad": {
+    "agentRunP50Ms": 1.64,
+    "agentRunP95Ms": 3.97,
+    "toolDispatchP50Ms": 0.16,
+    "toolDispatchP95Ms": 0.69,
+    "commitP50Ms": 0.15,
+    "commitP95Ms": 1.04,
+    "sessionSwitchP50Ms": 0.01,
+    "sessionSwitchP95Ms": 0.2,
+    "compactionP50Ms": 0.02,
+    "compactionP95Ms": 0.08
+  },
+  "min": {
+    "agentRunP50Ms": 15.98,
+    "agentRunP95Ms": 21.46,
+    "toolDispatchP50Ms": 2.16,
+    "toolDispatchP95Ms": 3.38,
+    "commitP50Ms": 1.71,
+    "commitP95Ms": 3.33,
+    "sessionSwitchP50Ms": 0.63,
+    "sessionSwitchP95Ms": 0.75,
+    "compactionP50Ms": 0.2,
+    "compactionP95Ms": 0.38
+  },
+  "max": {
+    "agentRunP50Ms": 23.88,
+    "agentRunP95Ms": 36.44,
+    "toolDispatchP50Ms": 2.65,
+    "toolDispatchP95Ms": 7.64,
+    "commitP50Ms": 2.11,
+    "commitP95Ms": 6.83,
+    "sessionSwitchP50Ms": 0.73,
+    "sessionSwitchP95Ms": 1.35,
+    "compactionP50Ms": 0.32,
+    "compactionP95Ms": 0.91
   }
 }
