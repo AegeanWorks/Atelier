@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-background-shells",
+    "task_id": "atelier-shelltask-bounds",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794850616.6976,
+    "updated_at": 1794852616.341725,
     "owner": "commandcode:1",
     "started_by": "commandcode:1",
     "continuations": [],
@@ -15,154 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794850625.7401922,
-    "completed_head": "de19ea6a0002e1365949e2964ee07c8a1b11d327",
-    "completed_tree": "d8688705356624843dbfae58760651cb36ae120b"
+    "completed_at": 1794852633.815489,
+    "completed_head": "676ceb853e9898a5732d765352c2794672e8a57c",
+    "completed_tree": "2ee7885d0912a004e084607c2efaa09a850419cc"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-canvas-and-composer-refinement",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 4/4] Waves 1, 2 and 4 of the report implemented; 12/12 gates and 618/618 tests pass. Four of the report's seven claims were stale (assistant canvas already unboxed, no dashed border, active rows already soft squircles, tabs already capsules, statusbar already LED-dotted), so those were dropped rather than re-implemented. Visual review at 390/768/1440 in both themes found one real defect I fixed: the composer hint ellipsized mid-word at 390px, so it now swaps to a short label under 560px with the full sentence in title. Measurement source: node scripts/ui-measure.mjs on the pristine and the changed tree.",
-      "files_affected": [
-        "src/App.tsx",
-        "src/theme.css",
-        "package.json",
-        "scripts/ui-measure.mjs",
-        "scripts/ui-composer-shots.mjs",
-        "scripts/ui-streaming-shots.mjs"
-      ],
-      "status": "in_progress",
-      "timestamp": 1794822989.1372106,
-      "timestamp_str": "2026-11-16 12:56:29",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "baseline": 166.0,
-          "artifact": "shots/before,shots/after",
-          "unit": "px",
-          "command": "node scripts/ui-measure.mjs",
-          "metric": "rail space above the conversation list",
-          "candidate": 140.0
-        },
-        {
-          "baseline": 2.0,
-          "artifact": "shots/streaming/before,shots/streaming/after",
-          "unit": "px",
-          "command": "node scripts/ui-measure.mjs",
-          "metric": "live message left border",
-          "candidate": 0.0
-        },
-        {
-          "baseline": 0.0,
-          "artifact": "shots/streaming/after",
-          "unit": "bool",
-          "command": "node scripts/ui-measure.mjs",
-          "metric": "streaming caret inside the live bubble",
-          "candidate": 1.0
-        },
-        {
-          "baseline": 227.0,
-          "artifact": "shots/before/atelier-desktop-dark.png,shots/after/atelier-desktop-dark.png",
-          "unit": "px wide",
-          "command": "node scripts/ui-measure.mjs",
-          "metric": "new conversation trigger footprint",
-          "candidate": 22.0
-        },
-        {
-          "baseline": 0.0,
-          "artifact": "shots/composer/after/composer-narrow.png",
-          "unit": "bool",
-          "command": "node scripts/ui-measure.mjs",
-          "metric": "composer hint clipped at 390px",
-          "candidate": 0.0
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-canvas-and-composer-refinement",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-canvas-and-composer-refinement' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794823219.9596703,
-      "timestamp_str": "2026-11-16 13:00:19",
-      "agent": "commandcode:1",
-      "head": "086021905821a8c9af1e18e24d0fb69cc856dd3d",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-engine-depth",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 1/6] Wave 0 of the engine-depth plan: the gaps are now machine-runnable rather than prose. Added tests/integration/engine-gaps.test.ts (13 tests: 6 pass, 7 it.fails pinning verified gaps), scripts/engine-gaps.ts (npm run engine:gaps) and a frozen evals/results/baselines/engine-baseline-v1.json. Re-verification corrected plan v1 twice: CRLF/BOM preservation already works end to end and is NOT a gap, and the missing tool history is deeper than a mapper bug because appendMessage only accepts user|assistant so tool results never enter the message store. 624 tests pass, typecheck and lint clean.",
-      "files_affected": [
-        "tests/integration/engine-gaps.test.ts",
-        "scripts/engine-gaps.ts",
-        "package.json",
-        "scripts/ui-measure.mjs",
-        "evals/results/baselines/engine-baseline-v1.json",
-        ".aikit/decisions.md"
-      ],
-      "status": "in_progress",
-      "timestamp": 1794838848.895631,
-      "timestamp_str": "2026-11-16 17:20:48",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "artifact": "evals/results/baselines/engine-baseline-v1.json",
-          "command": "npm run engine:gaps",
-          "unit": "tokens",
-          "metric": "compaction budget vs catalog window",
-          "baseline": 24000.0,
-          "candidate": 24000.0
-        },
-        {
-          "artifact": "evals/results/baselines/engine-baseline-v1.json",
-          "command": "npm run engine:gaps",
-          "unit": "bool",
-          "metric": "indentation-only edit matched",
-          "baseline": 0.0,
-          "candidate": 0.0
-        },
-        {
-          "artifact": "evals/results/baselines/engine-baseline-v1.json",
-          "command": "npm run engine:gaps",
-          "unit": "bool",
-          "metric": "stale edit refused",
-          "baseline": 0.0,
-          "candidate": 0.0
-        },
-        {
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "unit": "tests",
-          "metric": "engine gap tests expected-fail",
-          "baseline": 7.0,
-          "candidate": 7.0
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-engine-depth",
       "phase": "phase 2",
@@ -779,6 +636,97 @@
       "timestamp_str": "2026-11-16 20:37:05",
       "agent": "commandcode:1",
       "head": "de19ea6a0002e1365949e2964ee07c8a1b11d327",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-shelltask-bounds",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Two measured defects fixed. (1) A background task's log had no ceiling: a loop printing 24-byte lines wrote 2888895 bytes in 3s. It now stops at 1 MB, marks the task truncated, and says so when read. (2) readTaskOutput loaded the whole log to return a 200-char window (19.41ms on that log); it now seeks with readSync and allocates only the window (5.23ms after). Also removed delegate's background parameter, which the implementation never read, and added a mutation-tested audit that fails when any tool advertises a parameter nothing reads.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794852037.1397595,
+      "timestamp_str": "2026-11-16 21:00:37",
+      "agent": "commandcode:1",
+      "impact_assessment": {
+        "why": "Both defects were in code I shipped in the previous turn, found by re-reading my own work rather than by trusting it.",
+        "benefits": "A runaway command can no longer fill the state directory, reading a large log is bounded, and a schema can no longer lie about a capability.",
+        "risks": "contract: readTaskOutput now reports truncated when a log hit the ceiling; dependency: none; concurrency: none; state: logs are capped, which is the intent",
+        "mitigation": "Both fixes are pinned by tests that assert the ceiling and the seek cost; the schema audit was verified by reintroducing the dead parameter and watching it fail"
+      },
+      "plan_digest": "2a532cfec03658119cfa0e92577df2758bb336f81af899cb193578bbfa56381e",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-shelltask-bounds",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 1/1] Verified with paired numbers. Log ceiling: the probe wrote 2888895 bytes in 3s before, exactly 1000000 after. Read cost: a 200-char window from that log took 19.41ms before, 5.23ms after. delegate.background removed and the schema audit mutation-tested (reintroducing it fails the audit with 'delegate.background'). 117 test files green; 12/12 gates pass on a quiet host, with agent-bench 110.4ms vs its 125.6ms baseline when measured alone, against 215.7ms under concurrent suite load.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794852616.341725,
+      "timestamp_str": "2026-11-16 21:10:16",
+      "agent": "commandcode:1",
+      "measurements": [
+        {
+          "baseline": 2888895.0,
+          "command": "python scratch/probe_growth.py",
+          "drift": "bounded",
+          "unit": "bytes",
+          "metric": "background log size after 3s",
+          "candidate": 1000000.0,
+          "workload": "loop printing 24-byte lines for 3 seconds",
+          "artifact": "server/shellTasks.ts"
+        },
+        {
+          "baseline": 19.41,
+          "command": "python scratch/probe_growth.py",
+          "drift": "faster",
+          "unit": "ms",
+          "metric": "read 200 chars from a large log",
+          "candidate": 5.23,
+          "workload": "200-char window from a 1-2.9MB log",
+          "artifact": "server/shellTasks.ts"
+        },
+        {
+          "baseline": 1.0,
+          "command": "node node_modules/vitest/vitest.mjs run tests/unit/tool-schemas.test.ts",
+          "drift": "closed",
+          "unit": "tools",
+          "metric": "tools advertising an unread parameter",
+          "candidate": 0.0,
+          "workload": "tool schema audit over all 16 tools",
+          "artifact": "tests/unit/tool-schemas.test.ts"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-shelltask-bounds",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-shelltask-bounds' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794852633.975522,
+      "timestamp_str": "2026-11-16 21:10:33",
+      "agent": "commandcode:1",
+      "head": "676ceb853e9898a5732d765352c2794672e8a57c",
       "delivery": {
         "roots": [
           "."
