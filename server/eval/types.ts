@@ -9,7 +9,12 @@ export interface HarnessProfile {
   maxSteps: number;
   toolNames: string[];
   contextMessages: number;
-  contextTokens: number;
+  /**
+   * Compaction budget in tokens. An explicit number keeps a fixture or an eval rung
+   * deterministic; `undefined` derives it from the model's real context window, so a
+   * live run is never capped at a constant unrelated to the model it is talking to.
+   */
+  contextTokens?: number | undefined;
   doomLoopLimit: number;
   compaction: "none" | "summary";
   permissions: "build-workspace" | "plan-readonly";

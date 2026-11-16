@@ -2,13 +2,17 @@ import { hashRequest } from "../providers/http.js";
 import { toolSchemas } from "../tools.js";
 import type { HarnessProfile } from "./types.js";
 
+/**
+ * The profile a live run uses. `contextTokens` is deliberately absent: the budget is
+ * derived from the model's own window by `budgetForModel`, so a 200k-window model is
+ * not compacted at 24k. Eval profiles below pin a number so their rungs stay comparable.
+ */
 export const FULL_PROFILE: HarnessProfile = {
   id: "full-v1",
   promptVersion: "agents-md-v1",
   maxSteps: 40,
   toolNames: ["read_file", "list_dir", "glob", "ripgrep", "write_file", "edit_file", "multi_edit", "todo_write", "bash", "wait", "delegate", "mcp", "git_status", "git_diff"],
   contextMessages: 200,
-  contextTokens: 24_000,
   doomLoopLimit: 3,
   compaction: "summary",
   permissions: "build-workspace",

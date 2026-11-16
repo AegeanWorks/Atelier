@@ -1,10 +1,10 @@
 ﻿import type { DbHandle } from "./db.js";
-import { appendMessage, createSession, listMessages } from "./db.js";
+import { appendMessage, createSession, listEvents, listMessages } from "./db.js";
 import { collectProvider } from "./providers/run.js";
 import type { ChatMessage, ChatRequest, StreamEvent } from "./providers/types.js";
 import { appendRunStep, appendSessionEvent, createRun, markRun, updateRunStep, type RunRow } from "./runs.js";
 import { requestApproval } from "./approvals.js";
-import { compactMessages, offloadToolOutput } from "./compaction.js";
+import { compactMessages, droppedWindow, offloadToolOutput } from "./compaction.js";
 import { runHooks, recordHookResults } from "./hooks.js";
 import { publishLive } from "./liveStream.js";
 import { evaluateRules } from "./rules.js";
@@ -19,6 +19,7 @@ import { buildSystemPrompt } from "./prompt.js";
 import { normalizeTodos, saveTodos, todoSummary } from "./todos.js";
 import { previewForApproval } from "./editPreview.js";
 import { priceStep } from "./usage.js";
+import { budgetForModel, findModel } from "./providers/catalog.js";
 import { DELEGATE_PROFILE, FULL_PROFILE } from "./eval/harness.js";
 import type { HarnessProfile } from "./eval/types.js";
 import type { ProviderAdapter } from "./providers/types.js";
@@ -35,12 +36,88 @@ export function toMessages(handle: DbHandle, sessionId: string, limit: number): 
   return listMessages(handle, sessionId)
     .slice(-limit)
     .map((message): ChatMessage => {
-      if (message.role === "assistant") return { role: "assistant", content: message.text };
+      if (message.role === "tool") {
+        // A tool result keeps its call id, so the provider can pair it with the request.
+        return { role: "tool", content: message.text, ...(message.tool_call_id === null ? {} : { toolCallId: message.tool_call_id }) };
+      }
       const { text, images } = extractImages(handle.paths, message.text);
+      if (message.role === "assistant") {
+        const calls = message.tool_calls === null ? null : (JSON.parse(message.tool_calls) as ChatMessage["toolCalls"]);
+        return {
+          role: "assistant",
+          content: text,
+          ...(calls === null || calls === undefined || calls.length === 0 ? {} : { toolCalls: calls }),
+        };
+      }
       return images.length === 0 ? { role: "user", content: text } : { role: "user", content: text, images };
     });
 }
 
+
+/**
+ * Large tool outputs this run offloaded to disk, newest last. They stay readable, so a
+ * compacted head names them instead of losing the fact that the output can be re-read.
+ */
+function listArtifacts(handle: DbHandle, sessionId: string, runId: string): string[] {
+  return listEvents(handle, sessionId)
+    .filter((event) => event.type === "artifact.offloaded")
+    .flatMap((event) => {
+      try {
+        const data = JSON.parse(event.data) as { path?: unknown; runId?: unknown };
+        if (data.runId !== runId) return [];
+        return typeof data.path === "string" ? [data.path] : [];
+      } catch {
+        return [];
+      }
+    });
+}
+
+/** Compaction is worth a model call only when the window is genuinely over budget. */
+function compactionWorthSummarising(messages: ChatMessage[], budget: number): boolean {
+  return droppedWindow(messages, budget).length > 0;
+}
+
+/**
+ * Summarise the window compaction is about to drop, with the same model the run is using.
+ *
+ * Returns null on any failure: an unsummarisable window degrades to the mechanical summary
+ * rather than blocking the run, and a fixture adapter is skipped entirely so eval rungs keep
+ * their fixed response sequence.
+ */
+async function summariseWindow(
+  handle: DbHandle,
+  config: Config,
+  secrets: Secrets,
+  providerId: string,
+  model: string,
+  messages: ChatMessage[],
+  budget: number,
+  signal: AbortSignal,
+  adapter: ProviderAdapter | undefined,
+): Promise<string | null> {
+  if (adapter !== undefined) return null;
+  const dropped = droppedWindow(messages, budget);
+  if (dropped.length === 0) return null;
+  const body = dropped
+    .map((message) => `${message.name ?? message.role}: ${message.content.replace(/\s+/g, " ").trim().slice(0, 600)}`)
+    .join("\n")
+    .slice(-24_000);
+  try {
+    const result = await collectProvider(handle, config, secrets, providerId, {
+      model,
+      messages: [
+        { role: "system", content: "Summarise the conversation below for an agent that must keep working. Keep names, paths, decisions, numbers and open tasks. Be terse; no preamble." },
+        { role: "user", content: body },
+      ],
+      maxTokens: 900,
+    }, AbortSignal.any([signal, AbortSignal.timeout(30_000)]), { memo: false });
+    if (result.events.some((event) => event.type === "error")) return null;
+    const text = result.text.trim();
+    return text.length === 0 ? null : text;
+  } catch {
+    return null;
+  }
+}
 
 function writeTodos(handle: DbHandle, run: RunRow, input: unknown): ToolOutcome {
   const args = typeof input === "object" && input !== null ? (input as Record<string, unknown>) : {};
@@ -103,6 +180,9 @@ export async function runAgent(
   if (imageProblem !== null) return { status: "blocked", text: "", reason: imageProblem, requestHash: null, providerId };
   const mcp = profile.toolNames.includes("mcp") ? await McpHub.open(config.mcpServers ?? [], scrubbedEnv(process.env, { providers: config.providers, passthrough: config.shellEnvPassthrough })) : new McpHub([], []);
   const tools = [...toolSchemas(profile.toolNames), ...mcp.schemas()];
+  // A model's declared output ceiling, when the catalog knows it; readers of `maxTokens` then
+  // size the answer instead of falling back to whatever the provider defaults to.
+  const outputLimit = providerConfig === undefined ? null : findModel(providerConfig, model)?.maxOutput ?? null;
   let lastSignature = "";
   let repeats = 0;
   let lastHash: string | null = null;
@@ -116,8 +196,21 @@ export async function runAgent(
     const step = appendRunStep(handle, run.id, "llm_request", "running", { providerId, model, step: stepIndex }, null);
     const system = messages[0]?.role === "system" ? messages[0] : null;
     const conversation = system === null ? messages : messages.slice(1);
+    // A profile may pin a budget (evals do, for comparability); a live run derives it from
+    // the model's own window, so a 200k model is not compacted at a 24k constant.
+    const contextBudget = profile.contextTokens ?? budgetForModel(
+      config.providers.find((entry) => entry.id === providerId) ?? { id: providerId, name: providerId, protocol: "openai-chat", baseUrl: "" },
+      model,
+    );
+    // Offloaded tool outputs stay readable on disk; name them in the compacted head so a
+    // dropped message does not take with it the fact that the output can be read again.
+    const artifacts = listArtifacts(handle, run.session_id, run.id);
+    let modelSummary: string | null = null;
+    if (profile.compaction === "summary" && compactionWorthSummarising(conversation, contextBudget)) {
+      modelSummary = await summariseWindow(handle, config, secrets, providerId, model, conversation, contextBudget, signal, options.adapter);
+    }
     const compacted = profile.compaction === "summary"
-      ? compactMessages(conversation, profile.contextTokens)
+      ? compactMessages(conversation, contextBudget, { modelSummary, artifacts })
       : { messages: conversation, stats: { beforeTokens: 0, afterTokens: 0, droppedMessages: 0, summaryTokens: 0 } };
     const context = { messages: system === null ? compacted.messages : [system, ...compacted.messages], stats: compacted.stats };
     if (context.stats.droppedMessages > 0) {
@@ -127,7 +220,13 @@ export async function runAgent(
         appendSessionEvent(handle, run.session_id, "context.compacted", { runId: run.id, step: stepIndex, ...context.stats });
       }
     }
-    const request: ChatRequest = { model, messages: context.messages, tools };
+    const request: ChatRequest = {
+      model,
+      messages: context.messages,
+      tools,
+      // The model's own output ceiling when the catalog knows it; otherwise the provider default.
+      ...(outputLimit === null ? {} : { maxTokens: outputLimit }),
+    };
     const result = await collectProvider(handle, config, secrets, providerId, request, signal, {
       ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
       onEvent: (event) => {

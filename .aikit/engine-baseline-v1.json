@@ -6,9 +6,10 @@
   "command": "npm run engine:gaps",
   "note": "Measured from the implementation, not from a model. Re-run the command after each wave and compare field by field; a field that flips from a gap to fixed is that wave's evidence. Companion tests: tests/integration/engine-gaps.test.ts.",
   "context": {
-    "profileContextTokens": 24000,
+    "profileContextTokens": null,
+    "derivedBudgetTokens": 192000,
     "catalogWindowTokens": 200000,
-    "ratioOfWindowUsedForCompaction": 0.12
+    "ratioOfWindowUsedForCompaction": 0.96
   },
   "compaction": {
     "isMechanical": true,
@@ -17,13 +18,13 @@
     "reInjectsArtifacts": false
   },
   "editCascade": {
-    "healsIndentationDifference": false,
-    "healsCrlfLfDifference": false,
+    "healsIndentationDifference": true,
+    "healsCrlfLfDifference": true,
     "refusesAmbiguousMatch": true
   },
   "writeSafety": {
-    "allowsEditAfterExternalChange": true,
-    "allowsOverwriteOfUnreadFile": true
+    "allowsEditAfterExternalChange": false,
+    "allowsOverwriteOfUnreadFile": false
   },
   "toolHistory": {
     "rebuiltRoles": [
@@ -39,5 +40,5 @@
     "ambiguousEditRefused": true,
     "note": "CRLF/BOM serialisation already works end to end; only the LF-vs-CRLF match is a gap. Plan v1 wrongly listed serialisation as broken."
   },
-  "generatedAt": "2026-11-16T14:22:46.111Z"
+  "generatedAt": "2026-11-16T14:44:00.605Z"
 }

@@ -27,12 +27,12 @@ afterEach(() => {
 });
 
 describe("database", () => {
-  it("opens WAL with explicit FULL synchronous and schema 9", () => {
+  it("opens WAL with explicit FULL synchronous and schema 10", () => {
     const paths = ensureHome(tempHome());
     const handle = openDatabase(paths);
     try {
       expect(handle.quickCheck()).toBe("ok");
-      expect(handle.schemaVersion).toBe(9);
+      expect(handle.schemaVersion).toBe(10);
       expect(Number(handle.sqliteVersion.split(".")[0])).toBeGreaterThanOrEqual(3);
       expect(String(handle.db.pragma("journal_mode", { simple: true }))).toBe("wal");
       expect(String(handle.db.pragma("synchronous", { simple: true }))).toBe("2");

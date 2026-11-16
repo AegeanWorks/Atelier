@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import Database from "better-sqlite3";
 import { AtelierError, assertDiskSpace, type AtelierPaths } from "./config.js";
 
-export const SCHEMA_VERSION = 9;
+export const SCHEMA_VERSION = 10;
 
 export interface RecoverySummary {
   startedAt: number;
@@ -29,6 +29,10 @@ export interface MessageRow {
   text: string;
   client_id: string | null;
   created: number;
+  /** A tool result answers this call id; null for prose messages. */
+  tool_call_id: string | null;
+  /** An assistant turn's requested tool calls, as JSON; null when it called none. */
+  tool_calls: string | null;
 }
 
 export interface EventRow {
@@ -303,7 +307,17 @@ const MIGRATION_9 = `
 ALTER TABLE approvals ADD COLUMN preview TEXT;
 `;
 
-const MIGRATIONS = [MIGRATION_1, MIGRATION_2, MIGRATION_3, MIGRATION_4, MIGRATION_5, MIGRATION_6, MIGRATION_7, MIGRATION_8, MIGRATION_9];
+/**
+ * Tool turns become part of the message projection, so a resumed run can see what its
+ * tools did. `tool_call_id` names the call a result answers; `tool_calls` holds the
+ * assistant's requested calls as JSON. Both are nullable: existing rows keep working.
+ */
+const MIGRATION_10 = `
+ALTER TABLE messages ADD COLUMN tool_call_id TEXT;
+ALTER TABLE messages ADD COLUMN tool_calls TEXT;
+`;
+
+const MIGRATIONS = [MIGRATION_1, MIGRATION_2, MIGRATION_3, MIGRATION_4, MIGRATION_5, MIGRATION_6, MIGRATION_7, MIGRATION_8, MIGRATION_9, MIGRATION_10];
 
 function migrate(db: Database.Database): void {
   const version = Number(db.pragma("user_version", { simple: true }));
@@ -478,15 +492,16 @@ export function getSession(handle: DbHandle, id: string): SessionRow | null {
 export function appendMessage(
   handle: DbHandle,
   sessionId: string,
-  role: "user" | "assistant",
+  role: "user" | "assistant" | "tool",
   text: string,
   clientId: string | null,
+  call?: { toolCallId?: string | null; toolCalls?: unknown },
 ): MessageRow {
   const now = Date.now();
   const transaction = handle.db.transaction(() => {
     if (clientId !== null) {
       const existing = handle.db
-        .prepare("SELECT id, session_id, seq, role, text, client_id, created FROM messages WHERE session_id = ? AND client_id = ?")
+        .prepare("SELECT id, session_id, seq, role, text, client_id, created, tool_call_id, tool_calls FROM messages WHERE session_id = ? AND client_id = ?")
         .get(sessionId, clientId) as MessageRow | undefined;
       if (existing) return existing;
     }
@@ -499,21 +514,27 @@ export function appendMessage(
       text,
       client_id: clientId,
       created: now,
+      tool_call_id: call?.toolCallId ?? null,
+      tool_calls: call?.toolCalls === undefined ? null : JSON.stringify(call.toolCalls),
     };
     handle.db
-      .prepare("INSERT INTO messages (id, session_id, seq, role, text, client_id, created) VALUES (?, ?, ?, ?, ?, ?, ?)")
-      .run(message.id, message.session_id, message.seq, message.role, message.text, message.client_id, message.created);
-    const eventSeq = nextSeq(handle.db, "events", sessionId);
-    handle.db
-      .prepare("INSERT INTO events (id, session_id, seq, type, data, created) VALUES (?, ?, ?, ?, ?, ?)")
-      .run(
-        randomUUID(),
-        sessionId,
-        eventSeq,
-        role === "user" ? "user.message" : "text.ended",
-        JSON.stringify({ messageId: message.id, text, clientId }),
-        now,
-      );
+      .prepare("INSERT INTO messages (id, session_id, seq, role, text, client_id, created, tool_call_id, tool_calls) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+      .run(message.id, message.session_id, message.seq, message.role, message.text, message.client_id, message.created, message.tool_call_id, message.tool_calls);
+    // A tool result has no prose event of its own: it is durable in the message projection,
+    // and the run's tool.result event already records it.
+    if (role !== "tool") {
+      const eventSeq = nextSeq(handle.db, "events", sessionId);
+      handle.db
+        .prepare("INSERT INTO events (id, session_id, seq, type, data, created) VALUES (?, ?, ?, ?, ?, ?)")
+        .run(
+          randomUUID(),
+          sessionId,
+          eventSeq,
+          role === "user" ? "user.message" : "text.ended",
+          JSON.stringify({ messageId: message.id, text, clientId }),
+          now,
+        );
+    }
     handle.db.prepare("UPDATE sessions SET updated = ? WHERE id = ?").run(now, sessionId);
     return message;
   });
@@ -522,7 +543,7 @@ export function appendMessage(
 
 export function listMessages(handle: DbHandle, sessionId: string): MessageRow[] {
   return handle.db
-    .prepare("SELECT id, session_id, seq, role, text, client_id, created FROM messages WHERE session_id = ? ORDER BY seq ASC")
+    .prepare("SELECT id, session_id, seq, role, text, client_id, created, tool_call_id, tool_calls FROM messages WHERE session_id = ? ORDER BY seq ASC")
     .all(sessionId) as MessageRow[];
 }
 

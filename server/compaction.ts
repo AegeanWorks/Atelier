@@ -30,14 +30,39 @@ function summarize(messages: ChatMessage[], maxChars: number): string {
   return text.length <= maxChars ? text : `${text.slice(0, maxChars)}\n… truncated`;
 }
 
-export function compactMessages(messages: ChatMessage[], maxTokens: number): { messages: ChatMessage[]; stats: CompactionStats } {
+/**
+ * A bounded, re-readable list of the large tool outputs this run offloaded to disk.
+ *
+ * Compaction drops the messages that mentioned them, so without this the model knows a
+ * file was read but not that it can read the full output again with `read_file`.
+ */
+export function artifactManifest(paths: string[]): string {
+  if (paths.length === 0) return "";
+  const lines = paths.slice(-20).map((path) => `- ${path}`);
+  return `[offloaded tool outputs still on disk; read any with read_file or bash]\n${lines.join("\n")}`;
+}
+
+export interface CompactOptionsExtra {
+  /** Summary of the dropped window from a model; absent or null falls back to the mechanical summary. */
+  modelSummary?: string | null | undefined;
+  /** Large tool outputs that remain readable on disk, listed in the compacted head. */
+  artifacts?: string[] | undefined;
+}
+
+export function compactMessages(messages: ChatMessage[], maxTokens: number, extra: CompactOptionsExtra = {}): { messages: ChatMessage[]; stats: CompactionStats } {
   const beforeTokens = messages.reduce((total, message) => total + estimateTokens(message.content), 0);
   if (beforeTokens <= maxTokens || messages.length <= 2) {
     return { messages, stats: { beforeTokens, afterTokens: beforeTokens, droppedMessages: 0, summaryTokens: 0 } };
   }
   const summaryBudget = Math.min(1_500, Math.max(200, Math.floor(maxTokens * 0.25)));
-  const summary = summarize(messages, summaryBudget * 4);
-  const summaryMessage: ChatMessage = { role: "user", content: `[compacted earlier context]\n${summary}` };
+  // A model summary is what the model actually wrote down; the mechanical one is the fallback.
+  const modelSummary = extra.modelSummary?.trim() ?? "";
+  const summary = modelSummary.length > 0
+    ? (modelSummary.length <= summaryBudget * 4 ? modelSummary : `${modelSummary.slice(0, summaryBudget * 4)}\n… truncated`)
+    : summarize(messages, summaryBudget * 4);
+  const manifest = artifactManifest(extra.artifacts ?? []);
+  const head = manifest.length === 0 ? `[compacted earlier context]\n${summary}` : `[compacted earlier context]\n${summary}\n\n${manifest}`;
+  const summaryMessage: ChatMessage = { role: "user", content: head };
   const summaryTokens = estimateTokens(summaryMessage.content);
   const budget = Math.max(200, maxTokens - summaryTokens);
   const kept: ChatMessage[] = [];
@@ -57,6 +82,13 @@ export function compactMessages(messages: ChatMessage[], maxTokens: number): { m
     messages: compacted,
     stats: { beforeTokens, afterTokens, droppedMessages: messages.length - kept.length, summaryTokens },
   };
+}
+
+/** The messages compaction is about to drop, so a model can summarise exactly that window. */
+export function droppedWindow(messages: ChatMessage[], maxTokens: number): ChatMessage[] {
+  const { stats } = compactMessages(messages, maxTokens);
+  if (stats.droppedMessages === 0) return [];
+  return messages.slice(0, messages.length - (messages.length - stats.droppedMessages));
 }
 
 export function offloadToolOutput(

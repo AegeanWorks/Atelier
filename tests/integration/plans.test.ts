@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createApp } from "../../server/app";
 import { createAuth } from "../../server/auth";
 import { ensureHome } from "../../server/config";
-import { createSession, listEvents, openDatabase, recoverOnBoot } from "../../server/db";
+import { createSession, listEvents, openDatabase, recoverOnBoot, SCHEMA_VERSION } from "../../server/db";
 import { createPlan, deletePlan, getPlan, listPlanRevisions, listPlans, restorePlanRevision, updatePlan } from "../../server/plans";
 import { getRun, type RunRow } from "../../server/runs";
 import { startSessionRun } from "../../server/runner";
@@ -68,19 +68,23 @@ afterEach(async () => {
 });
 
 describe("plans store", () => {
-  it("migrates a schema-6 database to schema 9 and creates a plans table", () => {
+  it("migrates a schema-6 database to the current schema and creates a plans table", () => {
     const paths = ensureHome(tempHome());
     const first = openDatabase(paths);
     first.close();
     const raw = new Database(paths.db);
     raw.exec("DROP TABLE IF EXISTS plans");
     raw.exec("ALTER TABLE approvals DROP COLUMN preview");
+    // A real schema-6 database predates these columns; this fixture is a current one rolled
+    // back, so drop them too or the later migrations would re-add existing columns.
+    raw.exec("ALTER TABLE messages DROP COLUMN tool_call_id");
+    raw.exec("ALTER TABLE messages DROP COLUMN tool_calls");
     raw.pragma("user_version = 6");
     raw.close();
 
     const migrated = openDatabase(paths);
     try {
-      expect(migrated.schemaVersion).toBe(9);
+      expect(migrated.schemaVersion).toBe(SCHEMA_VERSION);
       const table = migrated.db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'plans'").get() as { name: string } | undefined;
       expect(table?.name).toBe("plans");
       const session = createSession(migrated, "Migrated");
@@ -147,12 +151,14 @@ describe("plans store", () => {
     const raw = new Database(paths.db);
     raw.exec("DROP TABLE IF EXISTS plan_revisions");
     raw.exec("ALTER TABLE approvals DROP COLUMN preview");
+    raw.exec("ALTER TABLE messages DROP COLUMN tool_call_id");
+    raw.exec("ALTER TABLE messages DROP COLUMN tool_calls");
     raw.pragma("user_version = 7");
     raw.close();
 
     const migrated = openDatabase(paths);
     try {
-      expect(migrated.schemaVersion).toBe(9);
+      expect(migrated.schemaVersion).toBe(SCHEMA_VERSION);
       const revisions = listPlanRevisions(migrated, plan.id);
       expect(revisions).toHaveLength(1);
       expect(revisions[0]?.body).toBe("kept");

@@ -18,7 +18,7 @@ import { executeTool } from "../server/tools";
 import { applyTextEdit } from "../server/edits";
 import { compactMessages } from "../server/compaction";
 import { toMessages } from "../server/agent";
-import { findModel } from "../server/providers/catalog";
+import { budgetForModel, findModel } from "../server/providers/catalog";
 import { FULL_PROFILE } from "../server/eval/harness";
 
 const dirs: string[] = [];
@@ -39,6 +39,7 @@ function refuses(run: () => unknown): boolean {
 
 const provider = { id: "probe", name: "Probe", protocol: "anthropic-messages" as const, baseUrl: "https://example.test/v1" };
 const modelWindow = findModel(provider, "claude-sonnet-4-5")?.contextWindow ?? null;
+const derivedBudget = budgetForModel(provider, "claude-sonnet-4-5");
 
 const messages = Array.from({ length: 40 }, (_value, index) => ({
   role: "user" as const,
@@ -80,9 +81,10 @@ const report = {
   generatedAt: new Date().toISOString(),
   providerContacted: false,
   context: {
-    profileContextTokens: FULL_PROFILE.contextTokens,
+    profileContextTokens: FULL_PROFILE.contextTokens ?? null,
+    derivedBudgetTokens: derivedBudget,
     catalogWindowTokens: modelWindow,
-    ratioOfWindowUsedForCompaction: modelWindow === null ? null : Number((FULL_PROFILE.contextTokens / modelWindow).toFixed(4)),
+    ratioOfWindowUsedForCompaction: modelWindow === null ? null : Number(((derivedBudget / modelWindow)).toFixed(4)),
   },
   compaction: {
     isMechanical: summary.startsWith("[compacted earlier context]"),

@@ -78,6 +78,8 @@ describe("workspace search and editing tools", () => {
     const db = openDatabase(paths);
     try {
       const run = createRun(db, createSession(db, "Edit").id, null, null, dir);
+      // The read ledger requires a file to be read before this run edits it.
+      await executeTool(db, run, "build", { id: "r1", name: "read_file", input: { path: "count.txt" } });
       const ambiguous = await executeTool(db, run, "build", { id: "e1", name: "edit_file", input: { path: "count.txt", oldString: "one", newString: "two" } });
       expect(ambiguous.ok).toBe(false);
       expect(ambiguous.output).toContain("exactly one match");
@@ -96,6 +98,7 @@ describe("workspace search and editing tools", () => {
     const db = openDatabase(paths);
     try {
       const run = createRun(db, createSession(db, "Multi").id, null, null, dir);
+      await executeTool(db, run, "build", { id: "r1", name: "read_file", input: { path: "multi.txt" } });
       const ok = await executeTool(db, run, "build", {
         id: "m1",
         name: "multi_edit",

@@ -88,12 +88,14 @@ describe("compaction", () => {
       models: [{ id: "fixture-model", name: "Fixture" }],
       responses: [{ events: [{ type: "text-delta", text: "done" }, { type: "finish", reason: "stop" }] }],
     });
-    const budget = FULL_PROFILE.contextTokens;
+    // A live run derives its budget from the model window, which is large for this
+    // fixture model. Pin a small budget here so the test exercises compaction cheaply.
+    const budget = 24_000;
     const messages = Math.ceil((budget * 2) / 750) + 4;
     for (let index = 0; index < messages; index += 1) appendMessage(handle, sessionId, index % 2 === 0 ? "user" : "assistant", `message ${index} ${"y".repeat(3_000)}`, null);
     const run = getRun(handle, runId);
     if (run === null) throw new Error("run missing");
-    const outcome = await runAgent(handle, loadConfig(handle.paths), loadSecrets(handle.paths), run, "fixture", "fixture-model", new AbortController().signal, { adapter });
+    const outcome = await runAgent(handle, loadConfig(handle.paths), loadSecrets(handle.paths), run, "fixture", "fixture-model", new AbortController().signal, { adapter, profile: { ...FULL_PROFILE, contextTokens: budget } });
     expect(outcome.status).toBe("finished");
     const sent = adapter.requests[0]?.messages ?? [];
     expect(sent[0]?.role).toBe("system");

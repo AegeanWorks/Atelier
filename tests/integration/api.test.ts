@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createApp } from "../../server/app";
 import { createAuth } from "../../server/auth";
 import { ensureHome } from "../../server/config";
-import { appendMessage, createSession, openDatabase, recoverOnBoot } from "../../server/db";
+import { appendMessage, createSession, openDatabase, recoverOnBoot, SCHEMA_VERSION } from "../../server/db";
 import { appendSessionEvent, createRun } from "../../server/runs";
 import { loadConfig, saveConfig } from "../../server/state";
 
@@ -68,7 +68,7 @@ describe("HTTP API", () => {
       expect(health.status).toBe(200);
       const body = (await health.json()) as { ok: boolean; db: { schemaVersion: number } };
       expect(body.ok).toBe(true);
-      expect(body.db.schemaVersion).toBe(9);
+      expect(body.db.schemaVersion).toBe(SCHEMA_VERSION);
 
       const boot = await app.request("/api/boot", { headers });
       expect(boot.status).toBe(200);

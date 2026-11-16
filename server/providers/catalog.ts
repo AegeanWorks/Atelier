@@ -42,3 +42,22 @@ export function catalogFor(provider: ProviderConfig, live: ModelInfo[] = []): Mo
 export function findModel(provider: ProviderConfig, modelId: string): ModelInfo | null {
   return catalogFor(provider).find((model) => model.id === modelId) ?? null;
 }
+
+/** Used when a provider's catalog says nothing about a model: a conservative floor, not a real window. */
+export const UNKNOWN_CONTEXT_WINDOW = 128_000;
+
+/** Tokens held back from the window for the model's own answer. */
+export const OUTPUT_RESERVE_TOKENS = 8_000;
+
+/**
+ * The prompt budget for one model: its real context window minus room for the answer.
+ *
+ * The window comes from the provider's own `models` entry, then the built-in catalog.
+ * A model nobody describes gets `UNKNOWN_CONTEXT_WINDOW` rather than a small constant,
+ * because guessing low silently discards context the model could actually hold.
+ */
+export function budgetForModel(provider: ProviderConfig, modelId: string): number {
+  const window = findModel(provider, modelId)?.contextWindow ?? UNKNOWN_CONTEXT_WINDOW;
+  const reserve = Math.min(OUTPUT_RESERVE_TOKENS, Math.floor(window / 4));
+  return Math.max(1_000, window - reserve);
+}

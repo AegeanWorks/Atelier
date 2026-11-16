@@ -7,6 +7,7 @@ import type { DbHandle } from "./db.js";
 import { beginEffect, effectKey, finishEffect } from "./effects.js";
 import { checkPermission, isInside, type Mode } from "./permissions.js";
 import { checkpointPath } from "./checkpoints.js";
+import { checkEdit, checkWrite, recordRead, recordWrite } from "./readLedger.js";
 import { scrubbedEnv } from "./shellEnv.js";
 import { loadConfig } from "./state.js";
 import { hashRequest } from "./providers/http.js";
@@ -501,13 +502,27 @@ export async function executeTool(
 
   if (tool.readOnly) {
     try {
-      return { ok: true, output: await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: process.env }) };
+      const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: process.env });
+      // Reading is what makes a later edit of this file allowed, so every read is recorded.
+      if (call.name === "read_file" && typeof input.path === "string") recordRead(run.id, run.workspace ?? process.cwd(), input.path);
+      return { ok: true, output };
     } catch (error) {
       return { ok: false, output: error instanceof Error ? error.message : String(error) };
     }
   }
 
   const path = tool.action === "edit" ? resolveInside(run.workspace ?? process.cwd(), String(input.path)) : null;
+  // A full overwrite must not clobber bytes this run never saw, or bytes that changed since it
+  // did. A targeted edit quotes the text it replaces, so it is only bound by the staleness half.
+  if (tool.action === "edit" && typeof input.path === "string") {
+    const verdict = call.name === "write_file"
+      ? checkWrite(run.id, run.workspace ?? process.cwd(), input.path)
+      : checkEdit(run.id, run.workspace ?? process.cwd(), input.path);
+    if (!verdict.ok) {
+      appendSessionEvent(handle, run.session_id, "access.decision", { runId: run.id, callId: call.id, tool: call.name, action: "edit", resource: String(input.path), decision: "deny", reason: "unread or stale write refused" });
+      return { ok: false, output: `Refused: ${verdict.reason}` };
+    }
+  }
   const preHash = path === null ? null : hashFile(path);
   const key = effectKey(run.id, call.id, call.name, input, preHash);
   const existing = beginEffect(handle, { effectKey: key, runId: run.id, tool: call.name, argsHash: hashRequest(input), preHash });
@@ -524,6 +539,8 @@ export async function executeTool(
     const config = loadConfig(handle.paths);
     const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: scrubbedEnv(process.env, { providers: config.providers, passthrough: config.shellEnvPassthrough }) });
     finishEffect(handle, key, "applied", output, path === null ? null : hashFile(path));
+    // Its own write is known to this run, so a later edit of the same file is not refused.
+    if (tool.action === "edit" && typeof input.path === "string") recordWrite(run.id, run.workspace ?? process.cwd(), input.path);
     return { ok: true, output, effectKey: key };
   } catch (error) {
     const output = error instanceof Error ? error.message : String(error);
