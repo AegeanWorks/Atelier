@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-audit-accounting-closure",
-    "last_phase": "phase 2",
+    "task_id": "atelier-tool-reachability",
+    "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794856375.3822656,
+    "updated_at": 1794857282.3117023,
     "owner": "commandcode:1",
     "started_by": "commandcode:1",
     "continuations": [],
@@ -15,88 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "impact_assessment": {
-      "why": "A claim in a commit message that nobody rechecks becomes folklore; the audit found a fourth site, and it should be named rather than silently fixed or silently ignored.",
-      "benefits": "The three real accounting fixes stand verified, and the one remaining gap is documented with its reason.",
-      "risks": "contract: none; dependency: none; concurrency: none; state: none",
-      "mitigation": "A precise call-site scan replaces the regex scan that produced false positives; the conformance route is documented in ADR-113 with the condition that would make it a bug"
-    },
-    "completed_at": 1794856421.0427165,
-    "completed_head": "bfbf46fb9da66c80e145bd1b8b0d78081b41223f",
-    "completed_tree": "96d6dc1f8ee8f030088ea2580c1f679d7f9ae79a"
+    "completed_at": 1794857300.463376,
+    "completed_head": "4e6c0b993b2d6d508fe593ef408b5ac3788ed1d6",
+    "completed_tree": "e1cb076e72a7169ebcac8c4391bd0377b4f12870"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-prompt-test-flake",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 1/1] Verified: the tightened assertions pass, MAX_IMPORT_DEPTH is 3, and the full suite is 638/638. The flake rate was measured at 80 of 20000 mkdtemp samples, not estimated.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794848990.3706605,
-      "timestamp_str": "2026-11-16 20:09:50",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "baseline": 0.4,
-          "workload": "20000 mkdtemp samples containing the token L5",
-          "artifact": "tests/unit/prompt.test.ts",
-          "metric": "prompt test flake rate",
-          "candidate": 0.0,
-          "command": "python scratch/flake_odds.py",
-          "unit": "percent",
-          "drift": "eliminated"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-prompt-test-flake",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-prompt-test-flake' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794849003.5626454,
-      "timestamp_str": "2026-11-16 20:10:03",
-      "agent": "commandcode:1",
-      "head": "9219f8e5d7e3dd09823260dc5b9f1cefb8d52568",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-background-shells",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Wave 3b: server/shellTasks.ts gives bash a real background mode. run_in_background starts a detached child, writes its output to a log under the state home, and returns a task id and log path; shell_output, shell_tasks and kill_shell read, list and stop it. The pre-existing killProcessTree teardown is reused, every task dies with the server, and a 30-minute lifetime bounds a task nobody stops.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794850391.8000908,
-      "timestamp_str": "2026-11-16 20:33:11",
-      "agent": "commandcode:1",
-      "impact_assessment": {
-        "why": "Every command blocked the agent loop, so a build or a watch occupied a whole step and the delegate tool's background flag was declared but never read.",
-        "benefits": "A long command no longer costs the run its remaining steps, and its output lands in a file the agent can read a window of instead of flooding the context.",
-        "risks": "contract: three new tool names enter the harness profile; dependency: none; concurrency: a registry shared across runs in one process; state: log files under the state home",
-        "mitigation": "The registry is capped at 40 tasks, every task is killed on server stop, kill reuses the tested process-tree teardown, and 6 tests drive start/read/offset/list/kill/refusal"
-      },
-      "plan_digest": "930bac5cc3a230e5c4f286601adbf9022f6417f4a339876224822e82c01e3691",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-background-shells",
       "phase": "phase 4",
@@ -552,6 +475,87 @@
       "timestamp_str": "2026-11-16 22:13:41",
       "agent": "commandcode:1",
       "head": "bfbf46fb9da66c80e145bd1b8b0d78081b41223f",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-tool-reachability",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Pin tool reachability. The registry in tools.ts and the live profile toolNames in harness.ts are separate lists, so a tool added to one and not the other is invisible to the model. Probed end to end: all 16 registered tools are exposed and the four background-shell tools work through executeTool, so the state was correct but unpinned. Added a test for both halves.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794857188.126538,
+      "timestamp_str": "2026-11-16 22:26:28",
+      "agent": "commandcode:1",
+      "impact_assessment": {
+        "why": "A capability that exists in the registry and is unreachable is the same failure shape as a parameter that is advertised and ignored.",
+        "benefits": "Adding a tool without exposing it now fails a test instead of shipping silently unreachable.",
+        "risks": "contract: none; dependency: none; concurrency: none; state: none",
+        "mitigation": "The guard is mutation-tested by removing the background tools from the profile, and the dispatch half drives a real task start to kill"
+      },
+      "plan_digest": "693720a08c61c39a1f14eaa2f5670833b8082da8d865c61b6c4a1594fd458c76",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-tool-reachability",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 1/1] Verified: 16 of 16 registered tools exposed; bash run_in_background, shell_tasks, shell_output and kill_shell all dispatch end to end; the guard is mutation-tested (removing the three background tools fails with 'expected [shell_output, shell_tasks, ...] to deeply equal []'). 120 test files green.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794857282.3117023,
+      "timestamp_str": "2026-11-16 22:28:02",
+      "agent": "commandcode:1",
+      "measurements": [
+        {
+          "artifact": "tests/integration/tool-reachability.test.ts",
+          "command": "node node_modules/vitest/vitest.mjs run tests/integration/tool-reachability.test.ts",
+          "workload": "registry against FULL_PROFILE toolNames",
+          "drift": "pinned",
+          "unit": "tools",
+          "metric": "registered tools missing from the live profile",
+          "baseline": 0.0,
+          "candidate": 0.0
+        },
+        {
+          "artifact": "tests/integration/tool-reachability.test.ts",
+          "command": "node node_modules/vitest/vitest.mjs run tests/integration/tool-reachability.test.ts",
+          "workload": "bash background, shell_tasks, shell_output, kill_shell",
+          "drift": "covered",
+          "unit": "calls",
+          "metric": "round trips in the dispatch test",
+          "baseline": 0.0,
+          "candidate": 4.0
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-tool-reachability",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-tool-reachability' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794857300.5329976,
+      "timestamp_str": "2026-11-16 22:28:20",
+      "agent": "commandcode:1",
+      "head": "4e6c0b993b2d6d508fe593ef408b5ac3788ed1d6",
       "delivery": {
         "roots": [
           "."
