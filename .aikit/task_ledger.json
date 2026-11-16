@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-shelltask-bounds",
+    "task_id": "atelier-ledger-bounds",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794852616.341725,
+    "updated_at": 1794853631.1264498,
     "owner": "commandcode:1",
     "started_by": "commandcode:1",
     "continuations": [],
@@ -15,151 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794852633.815489,
-    "completed_head": "676ceb853e9898a5732d765352c2794672e8a57c",
-    "completed_tree": "2ee7885d0912a004e084607c2efaa09a850419cc"
+    "completed_at": 1794853642.4830165,
+    "completed_head": "da71581bb9bea9a407b9c3425820cdd3c8c46b08",
+    "completed_tree": "a34d1592db3c96f1f2cc1d6efbcc169d7f2a800c"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-engine-depth",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/6] Engine-depth plan: pin each verified gap, then close them wave by wave. Waves: (0) failing-fast tests + measured baseline, done in this commit; (1) derive the compaction budget from the model window, add an LLM summariser with mechanical fallback, re-inject an artifact manifest, and give the message store a tool role so a resumed run sees its tool results; (2) edit-match cascade for indentation and CRLF/LF, plus a read ledger with stale-write refusal reusing the FILE_CONFLICT pattern; (3) parallel read batches and real background shells; (4) per-step retry and a normalised doom-loop signature; (5) CLI parity (-p, --model, stdin, --no-session, -r, finer exit codes). CRLF/BOM serialisation is already correct and is excluded.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794838864.8937917,
-      "timestamp_str": "2026-11-16 17:21:04",
-      "agent": "commandcode:1",
-      "impact_assessment": {
-        "why": "The engine cannot hold a real repository in context (24k compaction against a 200k-1M window), cannot heal ordinary model drift in edits, can clobber a file it never read, and forgets its own tool results on resume. These are the gaps that stop real work completing; tool breadth and UI are not the constraint.",
-        "benefits": "A run can use the window the model actually has, a resumed run keeps its tool history, edits stop being refused over whitespace, and an unread or externally changed file cannot be silently overwritten.",
-        "risks": "contract: data-testid, exit codes and docs/FEATURES.md are pinned claims; dependency: none added; concurrency: parallel reads share the effect ledger and approval prompts; state: a model-backed summariser adds a provider call that costs tokens and can fail, and a message-store role change needs a schema migration",
-        "mitigation": "Summariser failure degrades to the mechanical path rather than blocking a run; the schema change is additive with a version bump; parallel execution is restricted to read-only batches; every wave is re-measured against engine-baseline-v1.json and a wave with no paired numbers is not counted as done"
-      },
-      "plan_digest": "f8d9e4dba4ac685d2656680a7e6ca1a2a3d1c8caaba8f25b5d2c43297dc7dcea",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-engine-depth",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 2/6] Waves 1 and 2 landed. (1) Context: HarnessProfile.contextTokens is now optional and a live run derives its budget from the model window via budgetForModel (192000 for a 200k-window model instead of a hardcoded 24000, 0.12 -> 0.96 of the window), ChatRequest.maxTokens is populated from the catalog maxOutput (it was declared and never set), compaction prefers a model summary with the mechanical one as fallback, and the compacted head names offloaded artifact paths so they can be re-read. (2) Edit/write correctness: edits.ts matches the exact substring first then heals CRLF/LF, trailing-whitespace or indentation drift over whole-line windows and reports the strategy; server/readLedger.ts refuses a full overwrite of a file this run has not read or that changed since, and refuses a targeted edit of a file that changed since (its oldString already pins the content). Schema 10 adds the tool-turn columns. 632 tests pass, typecheck and lint clean, 11/12 gates; agent-perf and agent-bench fail only under machine load and pass at 3.49 ms and 106.8 ms on a quiet run, both at or below their recorded baselines.",
-      "files_affected": [
-        "server/readLedger.ts",
-        "server/edits.ts",
-        "server/compaction.ts",
-        "server/providers/catalog.ts",
-        "server/eval/harness.ts",
-        "server/eval/types.ts",
-        "server/agent.ts",
-        "server/tools.ts",
-        "server/db.ts",
-        "README.md",
-        ".aikit/decisions.md"
-      ],
-      "status": "in_progress",
-      "timestamp": 1794842239.7288811,
-      "timestamp_str": "2026-11-16 18:17:19",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "metric": "compaction budget",
-          "unit": "tokens",
-          "baseline": 24000.0,
-          "command": "npm run engine:gaps",
-          "candidate": 192000.0,
-          "artifact": ".aikit/engine-baseline-v1.json"
-        },
-        {
-          "metric": "indentation-only edit matched",
-          "unit": "bool",
-          "baseline": 0.0,
-          "command": "npm run engine:gaps",
-          "candidate": 1.0,
-          "artifact": ".aikit/engine-baseline-v1.json"
-        },
-        {
-          "metric": "stale edit refused",
-          "unit": "bool",
-          "baseline": 0.0,
-          "command": "npm run engine:gaps",
-          "candidate": 1.0,
-          "artifact": ".aikit/engine-baseline-v1.json"
-        },
-        {
-          "metric": "overwrite of unread file refused",
-          "unit": "bool",
-          "baseline": 0.0,
-          "command": "npm run engine:gaps",
-          "candidate": 1.0,
-          "artifact": ".aikit/engine-baseline-v1.json"
-        },
-        {
-          "metric": "toolDispatchP95",
-          "unit": "ms",
-          "baseline": 4.4,
-          "command": "npm run test:agent-perf",
-          "candidate": 3.49,
-          "artifact": ".aikit/agent-perf-baseline.json"
-        },
-        {
-          "metric": "agent-bench task success",
-          "unit": "tasks",
-          "baseline": 40.0,
-          "command": "npm run test:agent-bench",
-          "candidate": 40.0,
-          "artifact": ".aikit/agent-bench-baseline.json"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-engine-depth",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 3/6] Wave 4 landed: a transient model step is now retried up to three times with jittered backoff instead of blocking the run, while a deterministic fixture or replayed step is never retried (that would shift eval responses). Each attempt is a provider.retry event. 634 tests pass.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794842781.7735872,
-      "timestamp_str": "2026-11-16 18:26:21",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "metric": "transient step retried",
-          "unit": "bool",
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "baseline": 0.0,
-          "candidate": 1.0
-        },
-        {
-          "metric": "fixture model calls on a failure",
-          "unit": "calls",
-          "command": "node node_modules/vitest/vitest.mjs run tests/integration/engine-gaps.test.ts",
-          "artifact": "tests/integration/engine-gaps.test.ts",
-          "baseline": 1.0,
-          "candidate": 1.0
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-engine-depth",
       "phase": "phase 4",
@@ -727,6 +587,87 @@
       "timestamp_str": "2026-11-16 21:10:33",
       "agent": "commandcode:1",
       "head": "676ceb853e9898a5732d765352c2794672e8a57c",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-ledger-bounds",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Bound the read ledger's second cache. LEDGERS was capped at 32 runs but HASHES, keyed by absolute path, was not: measured at 833 bytes retained per hashed path with no way to release it, so a long-lived server walking a large repository accumulates forever. HASHES now clears at 4096 entries; a clear costs one re-read per file rather than a wrong answer. The ceiling is injectable so the test proves it with 40 files in 120ms instead of 4096 files in 8.5s.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794853573.7452755,
+      "timestamp_str": "2026-11-16 21:26:13",
+      "agent": "commandcode:1",
+      "impact_assessment": {
+        "why": "The ledger is the guard against blind writes; an unbounded guard that slowly eats the process is its own defect.",
+        "benefits": "A long session cannot grow this map without bound, and the cache still answers identically after a clear.",
+        "risks": "contract: none exported beyond test helpers; dependency: none; concurrency: a clear during a run costs a re-hash, not a wrong answer; state: in-memory only",
+        "mitigation": "The cap is mutation-tested (removing it fails with 'expected 11 to be less than or equal to 10'), and correctness after a clear is asserted by hashing the same file before and after"
+      },
+      "plan_digest": "6df3b985260766cedebd76707ea895c9ae4c661fb480355867b68560f2816785",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ledger-bounds",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 1/1] Verified: 3 new read-ledger tests pass in 120ms (was 8.5s), 118 test files green, and the cap is mutation-tested (removing the clear fails with 'expected 11 to be less than or equal to 10'). The 4336 baseline is the measured 4096 ceiling plus the 240 padded paths the probe assigned before the cap applied; the leak itself measured 833 heap bytes per hashed path.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794853631.1264498,
+      "timestamp_str": "2026-11-16 21:27:11",
+      "agent": "commandcode:1",
+      "measurements": [
+        {
+          "drift": "bounded",
+          "metric": "hash cache entries after 4336 distinct paths",
+          "candidate": 4096.0,
+          "unit": "entries",
+          "command": "node node_modules/vitest/vitest.mjs run tests/unit/readLedger.test.ts",
+          "workload": "distinct file paths hashed in one process",
+          "baseline": 4336.0,
+          "artifact": "tests/unit/readLedger.test.ts"
+        },
+        {
+          "drift": "faster",
+          "metric": "read ledger test cost",
+          "candidate": 120.0,
+          "unit": "ms",
+          "command": "node node_modules/vitest/vitest.mjs run tests/unit/readLedger.test.ts",
+          "workload": "proving the ceiling with a lowered limit",
+          "baseline": 8557.0,
+          "artifact": "tests/unit/readLedger.test.ts"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ledger-bounds",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ledger-bounds' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794853642.552623,
+      "timestamp_str": "2026-11-16 21:27:22",
+      "agent": "commandcode:1",
+      "head": "da71581bb9bea9a407b9c3425820cdd3c8c46b08",
       "delivery": {
         "roots": [
           "."
