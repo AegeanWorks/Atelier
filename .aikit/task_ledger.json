@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-prompt-test-flake",
+    "task_id": "atelier-background-shells",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794848990.3706605,
+    "updated_at": 1794850616.6976,
     "owner": "commandcode:1",
     "started_by": "commandcode:1",
     "continuations": [],
@@ -15,70 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794849003.4766512,
-    "completed_head": "9219f8e5d7e3dd09823260dc5b9f1cefb8d52568",
-    "completed_tree": "d16086adb6db047eb5eb916beebb0401039fcfc9"
+    "completed_at": 1794850625.7401922,
+    "completed_head": "de19ea6a0002e1365949e2964ee07c8a1b11d327",
+    "completed_tree": "d8688705356624843dbfae58760651cb36ae120b"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-claude-cursor-elevation",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "Verified all 12 gates pass for Claude and Cursor UI elevation",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794820626.402684,
-      "timestamp_str": "2026-11-16 12:17:06",
-      "agent": "unidentified",
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-claude-cursor-elevation",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ui-claude-cursor-elevation' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794820630.1507642,
-      "timestamp_str": "2026-11-16 12:17:10",
-      "agent": "unidentified",
-      "head": "7c4d5803b70ceccb57640aa90d37017878b81242",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ui-canvas-and-composer-refinement",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/4] Re-verified the benchmark report against HEAD and dropped four of its seven claims as already shipped: assistant bubbles are unboxed (theme.css 748-754), the dashed streaming border is gone, active conversation rows are already soft squircles (322-327), tabs are already capsules (1373-1403) and the statusbar already has LED dots (1503-1552). Remaining real gaps: (a) full-width bordered New conversation box in the rail, (b) streaming shows a 2px left stripe, (c) markdown h3/h4/h5 all collapse to --text-base, (d) no model chip in the composer and bare-text telemetry. Plan: ghost + trigger in the rail label, caret-based streaming with no stripe, markdown heading scale plus 1.65 prose, composer model chip that tolerates a failed config read, grouped telemetry pill. Dropping tab micro-badges: they need per-panel count plumbing for chrome that serves no task.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794821147.0983858,
-      "timestamp_str": "2026-11-16 12:25:47",
-      "agent": "commandcode:1",
-      "impact_assessment": {
-        "why": "The report frames five surfaces as deficits but four are already implemented, so re-implementing them would be churn on a tree that already passes its gates. Only the rail CTA, streaming indicator, type scale and composer/telemetry gaps are real.",
-        "benefits": "Frees 36px of rail height, replaces a dated left stripe with a calm caret, restores markdown hierarchy, and surfaces the active model in the composer without leaving the prompt.",
-        "risks": "contract: data-testid hooks and the statusbar cost format are test-pinned; dependency: none; concurrency: none; state: a new /api/config read on mount must tolerate the 404s existing UI tests return",
-        "mitigation": "Keep every data-testid and the toFixed(6) cost string byte-identical; guard the config read so unmocked tests stay green; verify with npm test plus before/after screenshots"
-      },
-      "plan_digest": "ade55d0d99c2a65f801a4e5f216f5941c5f43e7a3dd4559da61381339ded11e3",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-ui-canvas-and-composer-refinement",
       "phase": "phase 4",
@@ -757,6 +698,87 @@
       "timestamp_str": "2026-11-16 20:10:03",
       "agent": "commandcode:1",
       "head": "9219f8e5d7e3dd09823260dc5b9f1cefb8d52568",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-background-shells",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Wave 3b: server/shellTasks.ts gives bash a real background mode. run_in_background starts a detached child, writes its output to a log under the state home, and returns a task id and log path; shell_output, shell_tasks and kill_shell read, list and stop it. The pre-existing killProcessTree teardown is reused, every task dies with the server, and a 30-minute lifetime bounds a task nobody stops.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794850391.8000908,
+      "timestamp_str": "2026-11-16 20:33:11",
+      "agent": "commandcode:1",
+      "impact_assessment": {
+        "why": "Every command blocked the agent loop, so a build or a watch occupied a whole step and the delegate tool's background flag was declared but never read.",
+        "benefits": "A long command no longer costs the run its remaining steps, and its output lands in a file the agent can read a window of instead of flooding the context.",
+        "risks": "contract: three new tool names enter the harness profile; dependency: none; concurrency: a registry shared across runs in one process; state: log files under the state home",
+        "mitigation": "The registry is capped at 40 tasks, every task is killed on server stop, kill reuses the tested process-tree teardown, and 6 tests drive start/read/offset/list/kill/refusal"
+      },
+      "plan_digest": "930bac5cc3a230e5c4f286601adbf9022f6417f4a339876224822e82c01e3691",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-background-shells",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 1/1] Verified: 6 new background-task tests pass, the full suite is 116 files green, and all 12 gates pass on a quiet host. A long command now returns a task id immediately instead of occupying a step, and its output is read in bounded windows from a log file. The delegate tool's previously-dead background flag is left alone: making it real means a detached sub-agent, which is a separate change from a detached shell.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794850616.6976,
+      "timestamp_str": "2026-11-16 20:36:56",
+      "agent": "commandcode:1",
+      "measurements": [
+        {
+          "artifact": "tests/integration/shellTasks.test.ts",
+          "unit": "tests",
+          "command": "node node_modules/vitest/vitest.mjs run tests/integration/shellTasks.test.ts",
+          "baseline": 0.0,
+          "candidate": 6.0,
+          "metric": "background task tests",
+          "workload": "shellTasks suite driving start/read/offset/list/kill/refusal",
+          "drift": "covered"
+        },
+        {
+          "artifact": "server/shellTasks.ts",
+          "unit": "steps",
+          "command": "node node_modules/vitest/vitest.mjs run tests/integration/shellTasks.test.ts",
+          "baseline": 1.0,
+          "candidate": 0.0,
+          "metric": "loop steps a build occupies",
+          "workload": "one bash call with run_in_background",
+          "drift": "freed"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-background-shells",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-background-shells' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794850625.86512,
+      "timestamp_str": "2026-11-16 20:37:05",
+      "agent": "commandcode:1",
+      "head": "de19ea6a0002e1365949e2964ee07c8a1b11d327",
       "delivery": {
         "roots": [
           "."
