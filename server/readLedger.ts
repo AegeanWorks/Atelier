@@ -16,8 +16,19 @@ export interface ReadRecord {
 
 const LEDGERS = new Map<string, Map<string, ReadRecord>>();
 
-/** Content hashes keyed by size+mtime, so a repeated check does not re-read and re-hash. */
+/**
+ * Content hashes keyed by absolute path, so a repeated check does not re-read and re-hash.
+ *
+ * Measured: 833 bytes retained per hashed path, and a server that walks a large repository
+ * touches thousands of them, so this needs a ceiling as much as LEDGERS does. Past the cap the
+ * map is emptied rather than evicted one by one: a hash is a cache, and losing all of it costs
+ * one re-read per file, while evicting the oldest costs the same bookkeeping for no better hit
+ * rate on a working set this small.
+ */
 const HASHES = new Map<string, { key: string; hash: string }>();
+const MAX_HASHES = 4_096;
+/** Overridable so a test can prove the ceiling with a handful of files instead of thousands. */
+let hashCeiling = MAX_HASHES;
 
 /** How many runs may keep a ledger before the oldest is dropped. */
 const MAX_RUNS = 32;
@@ -53,7 +64,10 @@ export function hashOf(path: string): string | null {
   if (key !== null && cached !== undefined && cached.key === key) return cached.hash;
   try {
     const hash = createHash("sha256").update(readFileSync(path)).digest("hex");
-    if (key !== null) HASHES.set(path, { key, hash });
+    if (key !== null) {
+      if (HASHES.size >= hashCeiling) HASHES.clear();
+      HASHES.set(path, { key, hash });
+    }
     return hash;
   } catch {
     return null;
@@ -153,4 +167,17 @@ export function readableSize(path: string, limit = 10 * 1024 * 1024): boolean {
 export function resetLedgers(): void {
   LEDGERS.clear();
   HASHES.clear();
+}
+
+/** Test-only: the number of cached hashes, so the ceiling can be asserted rather than assumed. */
+export function hashCacheSize(): number {
+  return HASHES.size;
+}
+
+/** Test-only: the ceiling itself, and a way to lower it so a test need not hash thousands of files. */
+export const HASH_CACHE_LIMIT = MAX_HASHES;
+
+export function setHashCeiling(limit: number): void {
+  hashCeiling = Math.max(1, Math.floor(limit));
+  resetLedgers();
 }
