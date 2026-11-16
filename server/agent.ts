@@ -119,6 +119,57 @@ async function summariseWindow(
   }
 }
 
+/** How many times one model step may be attempted before the run gives up. */
+const STEP_ATTEMPTS = 3;
+
+/** Errors worth another attempt: the provider or the network was briefly unavailable. */
+export function isTransient(message: string): boolean {
+  return /rate.?limit|\b429\b|\b5\d\d\b|overloaded|temporar|timeout|timed out|ECONNRESET|ETIMEDOUT|socket hang up|network/i.test(message);
+}
+
+function abortableDelay(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(resolve, ms);
+    signal.addEventListener("abort", () => {
+      clearTimeout(timer);
+      resolve();
+    }, { once: true });
+  });
+}
+
+/**
+ * One model step, retried on a transient provider or network failure.
+ *
+ * The provider layer already retries the HTTP call; this heals the case that reaches the loop as
+ * an `error` event, which used to block the whole run. A non-transient error, an exhausted
+ * retry budget or an abort still returns the failing result so the loop can end honestly.
+ */
+async function collectStep(
+  handle: DbHandle,
+  sessionId: string,
+  config: Config,
+  secrets: Secrets,
+  providerId: string,
+  request: ChatRequest,
+  signal: AbortSignal,
+  options: { adapter?: ProviderAdapter; onEvent?: (event: StreamEvent) => void },
+): Promise<Awaited<ReturnType<typeof collectProvider>>> {
+  let last: Awaited<ReturnType<typeof collectProvider>> | null = null;
+  for (let attempt = 0; attempt < STEP_ATTEMPTS; attempt += 1) {
+    if (signal.aborted) break;
+    last = await collectProvider(handle, config, secrets, providerId, request, signal, options);
+    const failure = last.events.find((event) => event.type === "error");
+    if (failure === undefined || failure.type !== "error") return last;
+    // A replayed or adapter-backed step is deterministic: retrying it just repeats the failure.
+    if (options.adapter !== undefined || last.replayed || !isTransient(failure.message)) return last;
+    if (attempt === STEP_ATTEMPTS - 1) return last;
+    appendSessionEvent(handle, sessionId, "provider.retry", { attempt: attempt + 1, reason: failure.message.slice(0, 200) });
+    // Jittered exponential backoff, so several runs do not retry in lockstep.
+    await abortableDelay(200 * 2 ** attempt + Math.floor(Math.random() * 100), signal);
+  }
+  return last ?? collectProvider(handle, config, secrets, providerId, request, signal, options);
+}
+
 function writeTodos(handle: DbHandle, run: RunRow, input: unknown): ToolOutcome {
   const args = typeof input === "object" && input !== null ? (input as Record<string, unknown>) : {};
   try {
@@ -227,7 +278,7 @@ export async function runAgent(
       // The model's own output ceiling when the catalog knows it; otherwise the provider default.
       ...(outputLimit === null ? {} : { maxTokens: outputLimit }),
     };
-    const result = await collectProvider(handle, config, secrets, providerId, request, signal, {
+    const result = await collectStep(handle, run.session_id, config, secrets, providerId, request, signal, {
       ...(options.adapter === undefined ? {} : { adapter: options.adapter }),
       onEvent: (event) => {
         if (event.type === "text-delta") publishLive(run.session_id, { type: "text.delta", runId: run.id, step: stepIndex, text: event.text });

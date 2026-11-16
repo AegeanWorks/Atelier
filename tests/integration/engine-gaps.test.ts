@@ -20,7 +20,10 @@ import { createRun } from "../../server/runs";
 import { executeTool } from "../../server/tools";
 import { applyTextEdit } from "../../server/edits";
 import { compactMessages } from "../../server/compaction";
-import { toMessages } from "../../server/agent";
+import { isTransient, runAgent, toMessages } from "../../server/agent";
+import { FixtureProviderAdapter } from "../../server/eval/fixtures";
+import { getRun } from "../../server/runs";
+import { loadConfig, loadSecrets, saveConfig } from "../../server/state";
 import { findModel, budgetForModel, UNKNOWN_CONTEXT_WINDOW, OUTPUT_RESERVE_TOKENS } from "../../server/providers/catalog";
 import { FULL_PROFILE, profileFor } from "../../server/eval/harness";
 
@@ -168,6 +171,53 @@ describe("write safety", () => {
       writeFileSync(join(workspace, "config.json"), '{"keep":"me"}\n', "utf8");
       const write = await executeTool(db, run, "build", { id: "w1", name: "write_file", input: { path: "config.json", content: "{}" } });
       expect(write.ok).toBe(false);
+    } finally {
+      db.close();
+    }
+  });
+});
+
+describe("fault tolerance", () => {
+  it("classifies only provider and network hiccups as retryable", () => {
+    // Wave 4: one 429 used to end a whole run, while a bad key must still fail at once.
+    expect(isTransient("429 Too Many Requests")).toBe(true);
+    expect(isTransient("provider overloaded, try again")).toBe(true);
+    expect(isTransient("socket hang up")).toBe(true);
+    expect(isTransient("502 bad gateway")).toBe(true);
+    expect(isTransient("invalid api key")).toBe(false);
+    expect(isTransient("model does not support tools")).toBe(false);
+  });
+
+  it("does not retry a deterministic fixture step", async () => {
+    // A fixture adapter is replayed by index, so retrying one would shift every later response
+    // and break the eval rungs. The guard is what makes the retry safe to add at all.
+    const workspace = tempDir("atelier-gap-retry-ws-");
+    writeFileSync(join(workspace, "notes.txt"), "42\n", "utf8");
+    const db = openDatabase(ensureHome(tempDir("atelier-gap-retry-home-")));
+    try {
+      const config = loadConfig(db.paths);
+      saveConfig(db.paths, {
+        ...config,
+        providers: [{ id: "fixture", name: "Fixture", protocol: "openai-chat", baseUrl: "http://127.0.0.1:1/v1", defaultModel: "fixture-model" }],
+        defaults: { provider: "fixture", model: "fixture-model" },
+      });
+      const session = createSession(db, "retry");
+      const run = createRun(db, session.id, null, null, workspace);
+      const adapter = new FixtureProviderAdapter({
+        provider: "fixture",
+        models: [{ id: "fixture-model" }],
+        responses: [
+          { events: [], error: { code: "RATE_LIMITED", message: "429 rate limit exceeded" } },
+          { events: [{ type: "text-delta", text: "recovered" }, { type: "finish", reason: "stop" }] },
+        ],
+      });
+      const loaded = getRun(db, run.id);
+      if (loaded === null) throw new Error("run missing");
+      const outcome = await runAgent(db, loadConfig(db.paths), loadSecrets(db.paths), loaded, "fixture", "fixture-model", new AbortController().signal, { adapter });
+      expect(outcome.status).toBe("blocked");
+      expect(outcome.reason).toMatch(/rate limit/i);
+      // Exactly one model call was made: the failure was reported, not retried.
+      expect(adapter.requests).toHaveLength(1);
     } finally {
       db.close();
     }
