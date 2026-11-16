@@ -875,5 +875,46 @@
     "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
     "final_snapshot_entries": 38,
     "surface_digest": "8263e3b8f7a804651af471eeeaf97811fe4d2a18cdc1db23d59127b160630441"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/PreviewPanel.tsx",
+      "src/theme.css"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "632d021a6024486408da523f23f1fb629fe89d52",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794811011.0865998,
+    "finished_at": 1794811195.4855793,
+    "strikes": 0,
+    "reviewer": "",
+    "allowed_removals": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "5e0025aba2cd60d85bb56c51276499f12649f9036facb9e81083b8dbf5b3c8fb"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [],
+    "no_visual_reason": "",
+    "no_change_reason": "Reviewed preview placeholder, panel-scoped banners, and empty state typography",
+    "baseline_commit": "cef732f1d33f1bbff17afeca2aa2d8f2ebd8624a",
+    "contract_hash": "345aa05e79ee9708ca322d9ef76de6aed398fb7f0572249d2c99fa7a37513336",
+    "started_at": 1794811637.052505,
+    "finished_at": 1794811763.5138445,
+    "strikes": 0,
+    "reviewer": "",
+    "allowed_removals": [],
+    "allowed_tests": [],
+    "final_snapshot_digest": "a4a57347f9dbc787d65cc23ed2b54ef948d99db10e90e455f2f792ddf49753e5",
+    "final_snapshot_entries": 38,
+    "surface_digest": "015de8674d546443d1d9b76bc03943d9e16f555c4cf3be32c7484974aa08bcaa"
   }
 ]
