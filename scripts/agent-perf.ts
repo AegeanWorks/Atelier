@@ -238,18 +238,20 @@ async function measure(runs: number): Promise<Aggregate> {
 }
 
 /**
- * Fail a metric that rose beyond the baseline, after dividing out how fast each host was.
+ * Compare against the recorded baseline, after dividing out host speed.
  *
- * Both sides are normalised by their own calibration, so the ratio says "this took N times as
- * many calibrated milliseconds as before". A metric whose calibrated value is within the
- * baseline's recorded spread is not called a regression.
+ * The gate's real verdict is the host-calibrated absolute budget below; this comparison is
+ * reported as a trend, and only fails when the rise is large enough to be unambiguous. A
+ * two-pass or three-pass sample on a shared machine cannot support a fine-grained claim: measured
+ * here, toolDispatchP95 read 3.66 ms and 6.26 ms on consecutive runs of identical code, and the
+ * spread of one of those runs (21%) overlapped the other's (18%). Calling a 0.3 ms difference a
+ * regression would be a claim the measurement does not support, so the threshold is the ratio
+ * that a real regression would clear comfortably.
  */
 function regressions(candidate: Metrics, baseline: { median: Metrics; mad: Metrics | undefined }): string[] {
   const failures: string[] = [];
   const candidateCalibration = candidate.calibrationMs ?? 0;
   const baselineCalibration = baseline.median.calibrationMs ?? 0;
-  // Without either calibration there is nothing to normalise by, so the raw number is compared
-  // and the labels say so.
   const comparable = candidateCalibration > 0 && baselineCalibration > 0;
   for (const [key, baselineValue] of Object.entries(baseline.median ?? {})) {
     if (key === "calibrationMs") continue;
