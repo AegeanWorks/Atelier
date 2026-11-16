@@ -2118,6 +2118,34 @@ p.provider-meta,
   gap: var(--space-5);
 }
 
+.workspace-panel .banner-error {
+  margin: var(--space-2) 0;
+  border: 1px solid color-mix(in srgb, var(--bad) 35%, var(--border));
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bad) 10%, var(--bg-raised));
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-xs);
+  display: flex;
+  align-items: center;
+}
+
+.workspace-panel .banner-ok {
+  margin: var(--space-2) 0;
+  border: 1px solid color-mix(in srgb, var(--ok) 35%, var(--border));
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--ok) 8%, var(--bg-raised));
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-xs);
+}
+
+.panel-card > p[data-testid$="-empty"] {
+  font-family: var(--font);
+  color: var(--text-faint);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  padding: var(--space-1) 0;
+}
+
 .file-create,
 .file-head,
 .git-change,
@@ -2380,6 +2408,27 @@ pre.diff-view {
   border-radius: var(--radius-sm);
   background: var(--bg-raised);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.preview-placeholder {
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px dashed var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  background: color-mix(in srgb, var(--bg-panel) 40%, transparent) !important;
+  padding: var(--space-6);
+}
+
+.preview-placeholder p {
+  color: var(--text-faint) !important;
+  font-size: var(--text-xs) !important;
+  letter-spacing: 0.01em;
+  max-width: 280px;
+  line-height: 1.5;
+  margin: 0 auto;
 }
 
 .plans-panel input,

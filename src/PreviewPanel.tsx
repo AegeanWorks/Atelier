@@ -169,7 +169,7 @@ export default function PreviewPanel(): React.JSX.Element {
         {error !== null ? <div className="banner-error" role="alert" data-testid="preview-error">{error}</div> : null}
       </div>
       {src === null ? (
-        <div className="panel-card panel-gap">
+        <div className="panel-card panel-gap preview-placeholder">
           <p className="provider-meta" data-testid="preview-empty">Enter a loopback URL and load it, or press Detect to find a running dev server.</p>
         </div>
       ) : (
