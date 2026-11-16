@@ -107,6 +107,8 @@ async function run(options: Options): Promise<void> {
       if (stopping) return;
       stopping = true;
       console.log(`atelier: ${signal}, releasing state`);
+      // A background task must not outlive the server that started it.
+      void import("./shellTasks.js").then(({ killAllTasks }) => killAllTasks()).catch(() => undefined);
       server.close(() => {
         lock.release();
         db?.close();

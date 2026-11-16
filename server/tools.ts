@@ -8,6 +8,7 @@ import { beginEffect, effectKey, finishEffect } from "./effects.js";
 import { checkPermission, isInside, type Mode } from "./permissions.js";
 import { checkpointPath } from "./checkpoints.js";
 import { checkEdit, checkWrite, recordRead, recordWrite } from "./readLedger.js";
+import { killTask, listTasks, readTaskOutput, startBackgroundTask } from "./shellTasks.js";
 import { scrubbedEnv } from "./shellEnv.js";
 import { loadConfig } from "./state.js";
 import { hashRequest } from "./providers/http.js";
@@ -33,6 +34,8 @@ interface ToolContext {
   mode: Mode;
   /** Environment for commands the tool starts: the server's, without credentials. */
   env: NodeJS.ProcessEnv;
+  /** Where a background task's log lives; inside the state home, never the project. */
+  logDir?: string;
 }
 
 interface ToolDefinition {
@@ -370,22 +373,75 @@ const TOOLS: Record<string, ToolDefinition> = {
   },
   bash: {
     name: "bash",
-    description: "Run a shell command in the workspace with a timeout and output cap.",
+    description: "Run a shell command in the workspace. Set run_in_background to start a long build or watch and read its output later with shell_output instead of blocking the loop.",
     parameters: {
       type: "object",
       required: ["command"],
       properties: {
         command: { type: "string" },
         timeoutMs: { type: "integer", minimum: 1000, maximum: 600000, description: "Wall-clock limit; default 30000" },
+        run_in_background: { type: "boolean", description: "Start detached and return a task id plus its log path" },
       },
     },
     action: "exec",
     readOnly: false,
     async run(args, context) {
+      const command = String(args.command);
+      if (args.run_in_background === true) {
+        const task = startBackgroundTask(command, {
+          workspace: context.workspace,
+          logDir: context.logDir ?? join(context.workspace, ".atelier-tasks"),
+          env: context.env,
+          timeoutMs: 30 * 60_000,
+        });
+        return `started ${task.id} in the background; read it with shell_output id=${task.id}, log ${task.logPath}`;
+      }
       const timeoutMs = Math.min(600_000, Math.max(1_000, Number(args.timeoutMs ?? 30_000)));
-      const result = await runShell(String(args.command), context.workspace, timeoutMs, context.env);
+      const result = await runShell(command, context.workspace, timeoutMs, context.env);
       if (result.timedOut) return clip(`timed out after ${timeoutMs} ms\n${result.output}`);
       return clip(`exit ${result.code ?? "signal"}\n${result.output}`);
+    },
+  },
+  shell_output: {
+    name: "shell_output",
+    description: "Read a background task's output from an offset, with a bounded window.",
+    parameters: {
+      type: "object",
+      required: ["id"],
+      properties: {
+        id: { type: "string" },
+        fromOffset: { type: "integer", minimum: 0, description: "Character offset to read from" },
+        maxChars: { type: "integer", minimum: 200, maximum: 160000 },
+      },
+    },
+    action: "read",
+    readOnly: true,
+    run(args) {
+      const result = readTaskOutput(String(args.id), Number(args.fromOffset ?? 0), Math.min(160_000, Math.max(200, Number(args.maxChars ?? 8_000))));
+      return result.output;
+    },
+  },
+  shell_tasks: {
+    name: "shell_tasks",
+    description: "List the background tasks this run started, newest first.",
+    parameters: { type: "object", properties: {} },
+    action: "read",
+    readOnly: true,
+    run() {
+      const tasks = listTasks();
+      if (tasks.length === 0) return "no background tasks";
+      return tasks.map((task) => `${task.id} ${task.status} exit=${task.exitCode ?? "-"} ${Math.round(task.elapsedMs / 1000)}s ${task.command.slice(0, 80)}`).join("\n");
+    },
+  },
+  kill_shell: {
+    name: "kill_shell",
+    description: "Stop a background task and its process tree.",
+    parameters: { type: "object", required: ["id"], properties: { id: { type: "string" } } },
+    action: "exec",
+    readOnly: false,
+    run(args) {
+      const result = killTask(String(args.id));
+      return `${result.id} ${result.status}`;
     },
   },
   delegate: {
@@ -502,7 +558,7 @@ export async function executeTool(
 
   if (tool.readOnly) {
     try {
-      const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: process.env });
+      const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: process.env, logDir: join(handle.paths.home, "artifacts", run.id, "tasks") });
       // Reading is what makes a later edit of this file allowed, so every read is recorded.
       if (call.name === "read_file" && typeof input.path === "string") recordRead(run.id, run.workspace ?? process.cwd(), input.path);
       return { ok: true, output };
@@ -537,7 +593,7 @@ export async function executeTool(
   }
   try {
     const config = loadConfig(handle.paths);
-    const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: scrubbedEnv(process.env, { providers: config.providers, passthrough: config.shellEnvPassthrough }) });
+    const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: scrubbedEnv(process.env, { providers: config.providers, passthrough: config.shellEnvPassthrough }), logDir: join(handle.paths.home, "artifacts", run.id, "tasks") });
     finishEffect(handle, key, "applied", output, path === null ? null : hashFile(path));
     // Its own write is known to this run, so a later edit of the same file is not refused.
     if (tool.action === "edit" && typeof input.path === "string") recordWrite(run.id, run.workspace ?? process.cwd(), input.path);

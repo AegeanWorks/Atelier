@@ -11,7 +11,7 @@ export const FULL_PROFILE: HarnessProfile = {
   id: "full-v1",
   promptVersion: "agents-md-v1",
   maxSteps: 40,
-  toolNames: ["read_file", "list_dir", "glob", "ripgrep", "write_file", "edit_file", "multi_edit", "todo_write", "bash", "wait", "delegate", "mcp", "git_status", "git_diff"],
+  toolNames: ["read_file", "list_dir", "glob", "ripgrep", "write_file", "edit_file", "multi_edit", "todo_write", "bash", "shell_output", "shell_tasks", "kill_shell", "wait", "delegate", "mcp", "git_status", "git_diff"],
   contextMessages: 200,
   doomLoopLimit: 3,
   compaction: "summary",
