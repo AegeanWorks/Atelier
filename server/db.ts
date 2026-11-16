@@ -385,28 +385,29 @@ export function rebuildMessages(handle: DbHandle): number {
   const rows = handle.db
     .prepare("SELECT id, session_id, seq, type, data, created FROM events WHERE type IN ('user.message', 'text.ended') ORDER BY session_id, seq")
     .all() as EventRow[];
+  // Tool turns have no prose event of their own, so they are kept as they are rather than
+  // rebuilt: a projection rebuild must not silently delete a run's working history.
+  const toolRows = handle.db
+    .prepare("SELECT id, session_id, seq, role, text, client_id, created, tool_call_id, tool_calls FROM messages WHERE role = 'tool' ORDER BY session_id, seq")
+    .all() as MessageRow[];
   const transaction = handle.db.transaction(() => {
     handle.db.prepare("DELETE FROM messages").run();
     const counters = new Map<string, number>();
+    const insert = handle.db.prepare("INSERT INTO messages (id, session_id, seq, role, text, client_id, created, tool_call_id, tool_calls) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     for (const row of rows) {
       const data = JSON.parse(row.data) as { messageId?: string; text?: string; clientId?: string | null };
       const seq = (counters.get(row.session_id) ?? 0) + 1;
       counters.set(row.session_id, seq);
-      handle.db
-        .prepare("INSERT INTO messages (id, session_id, seq, role, text, client_id, created) VALUES (?, ?, ?, ?, ?, ?, ?)")
-        .run(
-          typeof data.messageId === "string" ? data.messageId : randomUUID(),
-          row.session_id,
-          seq,
-          row.type === "user.message" ? "user" : "assistant",
-          data.text ?? "",
-          data.clientId ?? null,
-          row.created,
-        );
+      insert.run(typeof data.messageId === "string" ? data.messageId : randomUUID(), row.session_id, seq, row.type === "user.message" ? "user" : "assistant", data.text ?? "", data.clientId ?? null, row.created, null, null);
+    }
+    for (const row of toolRows) {
+      const seq = (counters.get(row.session_id) ?? 0) + 1;
+      counters.set(row.session_id, seq);
+      insert.run(row.id, row.session_id, seq, "tool", row.text, row.client_id, row.created, row.tool_call_id, row.tool_calls);
     }
   });
   transaction();
-  return rows.length;
+  return rows.length + toolRows.length;
 }
 
 export function recoverOnBoot(handle: DbHandle): RecoverySummary {
@@ -561,9 +562,12 @@ export function appendMessage(
   return transaction();
 }
 
-export function listMessages(handle: DbHandle, sessionId: string): MessageRow[] {
+export function listMessages(handle: DbHandle, sessionId: string, options: { includeTools?: boolean } = {}): MessageRow[] {
+  // A tool turn is working state for a resumed run, not a message a person wrote or read, so
+  // the transcript, the export and the summariser leave it out unless they ask for it.
+  const scope = options.includeTools === true ? "" : " AND role != 'tool'";
   return handle.db
-    .prepare("SELECT id, session_id, seq, role, text, client_id, created, tool_call_id, tool_calls FROM messages WHERE session_id = ? ORDER BY seq ASC")
+    .prepare(`SELECT id, session_id, seq, role, text, client_id, created, tool_call_id, tool_calls FROM messages WHERE session_id = ?${scope} ORDER BY seq ASC`)
     .all(sessionId) as MessageRow[];
 }
 

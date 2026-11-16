@@ -33,7 +33,9 @@ export interface AgentOutcome {
 }
 
 export function toMessages(handle: DbHandle, sessionId: string, limit: number): ChatMessage[] {
-  return listMessages(handle, sessionId)
+  // The agent is the one reader that needs the tool turns: a resumed run has to see what its
+  // tools already did, or it re-does the work blind.
+  return listMessages(handle, sessionId, { includeTools: true })
     .slice(-limit)
     .map((message): ChatMessage => {
       if (message.role === "tool") {
@@ -116,6 +118,21 @@ async function summariseWindow(
     return text.length === 0 ? null : text;
   } catch {
     return null;
+  }
+}
+
+/**
+ * Persist one tool result so a later run on the same conversation can see what was done.
+ *
+ * This writes the message projection only. It deliberately emits no `text.ended` event: the
+ * durable record of a tool call is the `tool.result` event, and a second prose event per call
+ * would make the transcript show tool output as if the assistant had written it.
+ */
+function recordToolTurn(handle: DbHandle, sessionId: string, callId: string, name: string, output: string): void {
+  try {
+    appendMessage(handle, sessionId, "tool", output, `${callId}:${name}`.slice(0, 100), { toolCallId: callId });
+  } catch {
+    // History is an optimisation for the next run; losing it must never fail this one.
   }
 }
 
@@ -322,11 +339,8 @@ export async function runAgent(
       if (unpriced) return { status: "blocked", text: "", reason: "budget unpriced", requestHash: lastHash, providerId: lastProvider };
       if (spentUsd >= options.maxBudgetUsd) return { status: "blocked", text: "", reason: "budget reached", requestHash: lastHash, providerId: lastProvider };
     }
-    messages.push({
-      role: "assistant",
-      content: result.text,
-      toolCalls: calls.map((call) => ({ id: call.id, name: call.name, input: call.input })),
-    });
+    const requested = calls.map((call) => ({ id: call.id, name: call.name, input: call.input }));
+    messages.push({ role: "assistant", content: result.text, toolCalls: requested });
     for (const call of calls) {
       const signature = `${call.name}:${JSON.stringify(call.input)}`;
       repeats = signature === lastSignature ? repeats + 1 : 0;
@@ -442,6 +456,7 @@ export async function runAgent(
         appendSessionEvent(handle, run.session_id, "artifact.offloaded", { runId: run.id, callId: call.id, name: call.name, path: bounded.path, bytes: outcome.output.length });
       }
       messages.push({ role: "tool", content: bounded.content, toolCallId: call.id, name: call.name });
+      recordToolTurn(handle, run.session_id, call.id, call.name, bounded.content);
     }
   }
   return { status: "blocked", text: "", reason: "step cap reached", requestHash: lastHash, providerId: lastProvider };

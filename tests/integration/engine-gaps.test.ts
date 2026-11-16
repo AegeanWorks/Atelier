@@ -14,13 +14,13 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { appendMessage, createSession, openDatabase } from "../../server/db";
+import { appendMessage, createSession, listMessages, openDatabase } from "../../server/db";
 import { ensureHome } from "../../server/config";
 import { createRun } from "../../server/runs";
 import { executeTool } from "../../server/tools";
 import { applyTextEdit } from "../../server/edits";
 import { compactMessages } from "../../server/compaction";
-import { isTransient, runAgent, toMessages } from "../../server/agent";
+import { isTransient, runAgent } from "../../server/agent";
 import { FixtureProviderAdapter } from "../../server/eval/fixtures";
 import { getRun } from "../../server/runs";
 import { loadConfig, loadSecrets, saveConfig } from "../../server/state";
@@ -225,22 +225,61 @@ describe("fault tolerance", () => {
 });
 
 describe("tool history", () => {
-  it.fails("needs a tool role in the message store before a resumed run can see tool results", async () => {
-    // Wave 1 dependency: today `appendMessage` accepts only 'user' | 'assistant'
-    // (server/db.ts:478-483), so tool results survive only as `tool.result` events
-    // and `toMessages` (agent.ts:34) rebuilds history as role+text. The gap is not a
-    // coercion bug to patch in the mapper: the store itself has no tool role.
+  it("keeps a tool role so a resumed run can see what its tools did", async () => {
+    const workspace = tempDir("atelier-gap-hist-ws-");
+    writeFileSync(join(workspace, "notes.txt"), "vault key: 42\n", "utf8");
     const db = openDatabase(ensureHome(tempDir("atelier-gap-hist-home-")));
     try {
+      const config = loadConfig(db.paths);
+      saveConfig(db.paths, {
+        ...config,
+        providers: [{ id: "fixture", name: "Fixture", protocol: "openai-chat", baseUrl: "http://127.0.0.1:1/v1", defaultModel: "fixture-model" }],
+        defaults: { provider: "fixture", model: "fixture-model" },
+      });
       const session = createSession(db, "history");
-      appendMessage(db, session.id, "user", "do the thing", null);
-      appendMessage(db, session.id, "assistant", "using a tool", null);
-      const toolRow = appendMessage(db, session.id, "tool" as "user", "tool output here", null);
-      const rebuilt = toMessages(db, session.id, 50);
-      // The desired end state: the tool row keeps its own role and its call id.
-      expect(toolRow.role).toBe("tool");
-      expect((toolRow as unknown as { tool_call_id?: string }).tool_call_id).toBeTruthy();
-      expect(rebuilt.map((message) => message.role)).toContain("tool");
+      appendMessage(db, session.id, "user", "read notes.txt", null);
+      const run = createRun(db, session.id, null, null, workspace);
+      const adapter = new FixtureProviderAdapter({
+        provider: "fixture",
+        models: [{ id: "fixture-model" }],
+        responses: [
+          { events: [{ type: "tool-call", id: "c1", name: "read_file", input: { path: "notes.txt" } }, { type: "finish", reason: "tool_calls" }] },
+          { events: [{ type: "text-delta", text: "42" }, { type: "finish", reason: "stop" }] },
+        ],
+      });
+      const loaded = getRun(db, run.id);
+      if (loaded === null) throw new Error("run missing");
+      await runAgent(db, loadConfig(db.paths), loadSecrets(db.paths), loaded, "fixture", "fixture-model", new AbortController().signal, { adapter });
+
+      // The turn that ran is durable...
+      const stored = listMessages(db, session.id, { includeTools: true }).find((message) => message.role === "tool");
+      expect(stored?.tool_call_id).toBe("c1");
+      expect(stored?.text).toContain("vault key: 42");
+
+      // ...and a second run on the same conversation is told about it.
+      const second = createRun(db, session.id, null, null, workspace);
+      const adapterTwo = new FixtureProviderAdapter({ provider: "fixture", models: [{ id: "fixture-model" }], responses: [{ events: [{ type: "text-delta", text: "ok" }, { type: "finish", reason: "stop" }] }] });
+      const loadedTwo = getRun(db, second.id);
+      if (loadedTwo === null) throw new Error("run missing");
+      await runAgent(db, loadConfig(db.paths), loadSecrets(db.paths), loadedTwo, "fixture", "fixture-model", new AbortController().signal, { adapter: adapterTwo });
+      const sent = adapterTwo.requests[0]?.messages ?? [];
+      expect(sent.some((message) => message.role === "tool")).toBe(true);
+      expect(sent.some((message) => message.content.includes("vault key: 42"))).toBe(true);
+    } finally {
+      db.close();
+    }
+  });
+
+  it("keeps tool turns out of the transcript a person reads", async () => {
+    // The durable tool result is working state; the conversation list, the export and the
+    // summariser must not render a tool output as if a participant had written it.
+    const db = openDatabase(ensureHome(tempDir("atelier-gap-hist-view-home-")));
+    try {
+      const session = createSession(db, "view");
+      appendMessage(db, session.id, "user", "hello", null);
+      appendMessage(db, session.id, "tool", "SECRET-TOOL-OUTPUT", "c1:read_file", { toolCallId: "c1" });
+      expect(listMessages(db, session.id).map((message) => message.role)).toEqual(["user"]);
+      expect(listMessages(db, session.id, { includeTools: true }).map((message) => message.role)).toEqual(["user", "tool"]);
     } finally {
       db.close();
     }
