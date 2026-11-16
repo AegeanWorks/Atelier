@@ -124,7 +124,10 @@ describe("system prompt", () => {
     mkdirSync(join(deep, ".git"));
     for (let level = 1; level <= 6; level += 1) writeFileSync(join(deep, `l${level}.md`), `L${level}\n@l${level + 1}.md`);
     const deepPrompt = buildSystemPrompt(deep);
-    expect(deepPrompt).toContain("L3");
-    expect(deepPrompt).not.toContain("L5");
+    // Assert on the whole line, not a bare token: the prompt embeds this temp workspace's
+    // absolute path, and mkdtemp's random suffix contains "L5" about once in 250 runs (measured),
+    // which made a bare toContain("L5") fail for a reason that had nothing to do with imports.
+    expect(deepPrompt).toContain("\nL3\n");
+    expect(deepPrompt).not.toContain("\nL5\n");
   });
 });
