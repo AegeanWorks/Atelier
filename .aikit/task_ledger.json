@@ -3,8 +3,8 @@
   "active_task": {
     "task_id": "atelier-stop-kills-shell",
     "last_phase": "phase 4",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1794946575.3636448,
     "owner": "kilo:1",
     "started_by": "kilo:1",
@@ -14,26 +14,12 @@
         "name": "atelier",
         "path": "projects/atelier"
       }
-    ]
+    ],
+    "completed_at": 1794946637.7297692,
+    "completed_head": "5403d75bd9a486c6693741a8793c80cdd2b3f6e0",
+    "completed_tree": "671b39e9ba8d596a4a8f655b2ba94faa356fe0db"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-perf-calibration",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-perf-calibration' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794859390.7152772,
-      "timestamp_str": "2026-11-16 23:03:10",
-      "agent": "commandcode:1",
-      "head": "c8c1cb54de7c14bf7eea2888c70c7198473cbc68",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
     {
       "task_id": "atelier-perf-gate-roles",
       "phase": "phase 1",
@@ -485,6 +471,23 @@
           "path": "projects/atelier"
         }
       ]
+    },
+    {
+      "task_id": "atelier-stop-kills-shell",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-stop-kills-shell' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794946637.8094115,
+      "timestamp_str": "2026-11-17 23:17:17",
+      "agent": "kilo:1",
+      "head": "5403d75bd9a486c6693741a8793c80cdd2b3f6e0",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
     }
   ]
 }
