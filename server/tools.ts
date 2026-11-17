@@ -36,6 +36,8 @@ interface ToolContext {
   env: NodeJS.ProcessEnv;
   /** Where a background task's log lives; inside the state home, never the project. */
   logDir?: string;
+  /** Aborts a long command when its run is stopped, so a stop is not left waiting for the shell. */
+  signal?: AbortSignal;
 }
 
 interface ToolDefinition {
@@ -74,9 +76,11 @@ interface ShellResult {
   output: string;
   code: number | null;
   timedOut: boolean;
+  stopped: boolean;
 }
 
-function runShell(command: string, cwd: string, timeoutMs: number, env: NodeJS.ProcessEnv): Promise<ShellResult> {
+function runShell(command: string, cwd: string, timeoutMs: number, env: NodeJS.ProcessEnv, signal?: AbortSignal): Promise<ShellResult> {
+  if (signal?.aborted === true) return Promise.resolve({ output: "", code: null, timedOut: false, stopped: true });
   return new Promise((resolve) => {
     const child = spawn(command, {
       cwd,
@@ -95,14 +99,23 @@ function runShell(command: string, cwd: string, timeoutMs: number, env: NodeJS.P
     child.stdout?.on("data", append);
     child.stderr?.on("data", append);
     let timedOut = false;
+    let stopped = false;
+    // A stop request kills the whole tree, exactly as a timeout does: the command must not
+    // outlive the run it was started for.
+    const onAbort = (): void => {
+      stopped = true;
+      killProcessTree(child.pid);
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
     const timer = setTimeout(() => {
       timedOut = true;
       killProcessTree(child.pid);
     }, timeoutMs);
     const finish = (code: number | null, extra = ""): void => {
       clearTimeout(timer);
+      signal?.removeEventListener("abort", onAbort);
       if (extra.length > 0) append(extra);
-      resolve({ output, code, timedOut });
+      resolve({ output, code, timedOut, stopped });
     };
     child.on("error", (error) => finish(null, `${error.message}\n`));
     child.on("close", (code) => finish(code));
@@ -397,7 +410,8 @@ const TOOLS: Record<string, ToolDefinition> = {
         return `started ${task.id} in the background; read it with shell_output id=${task.id}, log ${task.logPath}`;
       }
       const timeoutMs = Math.min(600_000, Math.max(1_000, Number(args.timeoutMs ?? 30_000)));
-      const result = await runShell(command, context.workspace, timeoutMs, context.env);
+      const result = await runShell(command, context.workspace, timeoutMs, context.env, context.signal);
+      if (result.stopped) return clip(`stopped by stop request\n${result.output}`);
       if (result.timedOut) return clip(`timed out after ${timeoutMs} ms\n${result.output}`);
       return clip(`exit ${result.code ?? "signal"}\n${result.output}`);
     },
@@ -539,6 +553,7 @@ export async function executeTool(
   run: RunRow,
   mode: Mode,
   call: ToolCall,
+  options: { signal?: AbortSignal } = {},
 ): Promise<ToolOutcome> {
   const tool = TOOLS[call.name];
   if (tool === undefined) return { ok: false, output: `Unknown tool '${call.name}'.` };
@@ -558,7 +573,7 @@ export async function executeTool(
 
   if (tool.readOnly) {
     try {
-      const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: process.env, logDir: join(handle.paths.home, "artifacts", run.id, "tasks") });
+      const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: process.env, logDir: join(handle.paths.home, "artifacts", run.id, "tasks"), ...(options.signal === undefined ? {} : { signal: options.signal }) });
       // Reading is what makes a later edit of this file allowed, so every read is recorded.
       if (call.name === "read_file" && typeof input.path === "string") recordRead(run.id, run.workspace ?? process.cwd(), input.path);
       return { ok: true, output };
@@ -593,7 +608,7 @@ export async function executeTool(
   }
   try {
     const config = loadConfig(handle.paths);
-    const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: scrubbedEnv(process.env, { providers: config.providers, passthrough: config.shellEnvPassthrough }), logDir: join(handle.paths.home, "artifacts", run.id, "tasks") });
+    const output = await tool.run(input, { workspace: run.workspace ?? process.cwd(), mode, env: scrubbedEnv(process.env, { providers: config.providers, passthrough: config.shellEnvPassthrough }), logDir: join(handle.paths.home, "artifacts", run.id, "tasks"), ...(options.signal === undefined ? {} : { signal: options.signal }) });
     finishEffect(handle, key, "applied", output, path === null ? null : hashFile(path));
     // Its own write is known to this run, so a later edit of the same file is not refused.
     if (tool.action === "edit" && typeof input.path === "string") recordWrite(run.id, run.workspace ?? process.cwd(), input.path);

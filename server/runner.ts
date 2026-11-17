@@ -110,6 +110,13 @@ async function runToCompletion(handle: DbHandle, runId: string, options: Execute
       });
       return;
     }
+    // A stop request already marked the run blocked; keep that reason instead of reporting the
+    // generic agent_blocked the loop returns when its signal is aborted.
+    const stopped = controller.signal.aborted && controller.signal.reason instanceof Error && controller.signal.reason.message === "stopped";
+    if (stopped) {
+      markRun(handle, run.id, "blocked", { blockedReason: "stopped", error: "stopped" });
+      return;
+    }
     markRun(handle, run.id, "blocked", { blockedReason: "agent_blocked", error: outcome.reason });
     appendSessionEvent(handle, run.session_id, "run.blocked", { runId: run.id, reason: outcome.reason ?? "agent blocked", requestHash: outcome.requestHash });
   } catch (error) {

@@ -383,6 +383,7 @@ export async function runAgent(
     const requested = calls.map((call) => ({ id: call.id, name: call.name, input: call.input }));
     messages.push({ role: "assistant", content: result.text, toolCalls: requested });
     for (const call of calls) {
+      if (signal.aborted) return { status: "blocked", text: "", reason: "stopped", requestHash: lastHash, providerId: lastProvider };
       const signature = `${call.name}:${JSON.stringify(call.input)}`;
       repeats = signature === lastSignature ? repeats + 1 : 0;
       lastSignature = signature;
@@ -477,7 +478,7 @@ export async function runAgent(
             ? await runDelegated(handle, config, secrets, run, providerId, model, call.input, call.id, signal, options)
             : mcpAllowed
               ? await callMcpTool(handle, run, mcp, call)
-              : await executeTool(handle, run, mode, { id: call.id, name: call.name, input: call.input });
+              : await executeTool(handle, run, mode, { id: call.id, name: call.name, input: call.input }, { signal });
       if (allowed && hookVeto === null && hookList.length > 0) {
         const post = await runHooks(workspace, hookList, "post_tool", { ...hookCall, outcome: { ok: outcome.ok, output: outcome.output } });
         recordHookResults(handle, { ...hookCall, outcome: { ok: outcome.ok, output: outcome.output } }, post.results);
@@ -498,6 +499,9 @@ export async function runAgent(
       }
       messages.push({ role: "tool", content: bounded.content, toolCallId: call.id, name: call.name });
       recordToolTurn(handle, run.session_id, call.id, call.name, bounded.content);
+      // The tool result above is written first, so the transcript keeps the stopped call; the
+      // loop then ends instead of asking the model again.
+      if (signal.aborted) return { status: "blocked", text: "", reason: "stopped", requestHash: lastHash, providerId: lastProvider };
     }
   }
   return { status: "blocked", text: "", reason: "step cap reached", requestHash: lastHash, providerId: lastProvider };
