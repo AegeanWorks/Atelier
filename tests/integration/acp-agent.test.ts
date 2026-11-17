@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { serveAcp } from "../../server/acp/agent";
 import { JsonRpcPeer, RpcError } from "../../server/acp/rpc";
 import { ensureHome } from "../../server/config";
-import { appendMessage, getSession, listMessages, openDatabase, type DbHandle } from "../../server/db";
+import { appendMessage, createSession, getSession, listMessages, openDatabase, type DbHandle } from "../../server/db";
 import { FixtureProviderAdapter } from "../../server/eval/fixtures";
 import { executeRun, stopSessionRun, whenRunsSettled } from "../../server/runner";
 import { createRun } from "../../server/runs";
@@ -160,7 +160,7 @@ describe("ACP agent: connection and sessions", () => {
     expect(result.protocolVersion).toBe(1);
     expect(result.agentInfo).toMatchObject({ name: "atelier", version: "0.1.0" });
     expect(result.authMethods).toEqual([]);
-    expect(result.agentCapabilities).toMatchObject({ loadSession: false, promptCapabilities: { image: true, audio: false, embeddedContext: false } });
+    expect(result.agentCapabilities).toMatchObject({ loadSession: true, promptCapabilities: { image: true, audio: false, embeddedContext: false } });
   });
 
   it("refuses anything but initialize first", async () => {
@@ -193,6 +193,73 @@ describe("ACP agent: connection and sessions", () => {
     await client.call("session/prompt", { sessionId: id, prompt: prompt("hi") });
     expect(client.rawLines.length).toBeGreaterThan(2);
     for (const line of client.rawLines) expect(JSON.parse(line)).toMatchObject({ jsonrpc: "2.0" });
+  });
+});
+
+describe("ACP agent: reopening a conversation and choosing a mode", () => {
+  function seeded(client: Client, messages: Array<["user" | "assistant", string]>): string {
+    const session = createSession(client.handle, "Earlier work");
+    for (const [role, text] of messages) appendMessage(client.handle, session.id, role, text, null);
+    return session.id;
+  }
+
+  it("advertises loadSession and reports Build and Plan when it opens a session", async () => {
+    const client = setup();
+    const result = (await client.call("initialize", { protocolVersion: 1, clientCapabilities: {}, clientInfo: { name: "t", version: "1" } })) as Record<string, any>;
+    expect(result.agentCapabilities.loadSession).toBe(true);
+    const created = (await client.call("session/new", { cwd: client.workspace, mcpServers: [] })) as { sessionId: string; modes: { currentModeId: string; availableModes: Array<{ id: string; name: string }> } };
+    expect(created.modes.currentModeId).toBe("build");
+    expect(created.modes.availableModes.map((mode) => mode.id)).toEqual(["build", "plan"]);
+    expect(created.modes.availableModes.every((mode) => typeof mode.name === "string" && mode.name.length > 0)).toBe(true);
+  });
+
+  it("replays the stored conversation when a client loads it, then continues it", async () => {
+    const client = setup(answers("still here"));
+    await client.call("initialize", { protocolVersion: 1, clientCapabilities: {}, clientInfo: { name: "test", version: "0" } });
+    const id = seeded(client, [
+      ["user", "first question"],
+      ["assistant", "first answer"],
+    ]);
+    const loaded = (await client.call("session/load", { sessionId: id, cwd: client.workspace, mcpServers: [] })) as { modes: { currentModeId: string } };
+    expect(loaded.modes.currentModeId).toBe("build");
+    const history = client.updates
+      .filter((entry) => entry.update.sessionUpdate === "user_message_chunk" || entry.update.sessionUpdate === "agent_message_chunk")
+      .map((entry) => [entry.sessionId, entry.update.sessionUpdate, (entry.update.content as { text: string }).text]);
+    expect(history).toEqual([
+      [id, "user_message_chunk", "first question"],
+      [id, "agent_message_chunk", "first answer"],
+    ]);
+    const result = (await client.call("session/prompt", { sessionId: id, prompt: prompt("next") })) as { stopReason: string };
+    expect(result.stopReason).toBe("end_turn");
+    expect(listMessages(client.handle, id).map((message) => [message.role, message.text])).toEqual([
+      ["user", "first question"],
+      ["assistant", "first answer"],
+      ["user", "next"],
+      ["assistant", "still here"],
+    ]);
+  });
+
+  it("refuses a conversation that is not there or a working directory that is not a directory", async () => {
+    const client = setup();
+    const id = await started(client);
+    const missing = await client.call("session/load", { sessionId: "sess_nope", cwd: client.workspace, mcpServers: [] }).catch((error: RpcError) => error);
+    expect(missing).toBeInstanceOf(RpcError);
+    expect((missing as RpcError).code).toBe(-32002);
+    expect((missing as RpcError).data).toMatchObject({ sessionId: "sess_nope" });
+    expect(await codeOf(client.call("session/load", { sessionId: id, cwd: "relative/path", mcpServers: [] }))).toBe(-32602);
+    expect(await codeOf(client.call("session/load", { sessionId: id, cwd: join(client.workspace, "missing"), mcpServers: [] }))).toBe(-32602);
+  });
+
+  it("runs the next prompt in the mode the client selects", async () => {
+    const client = setup(answers("planned"));
+    const id = await started(client);
+    const changed = await client.call("session/set_mode", { sessionId: id, modeId: "plan" });
+    expect(changed).toEqual({});
+    expect(client.updates.at(-1)?.update).toMatchObject({ sessionUpdate: "current_mode_update", currentModeId: "plan" });
+    await client.call("session/prompt", { sessionId: id, prompt: prompt("think it through") });
+    const run = client.handle.db.prepare("SELECT profile_id FROM runs WHERE session_id = ? ORDER BY created DESC LIMIT 1").get(id) as { profile_id: string };
+    expect(run.profile_id).toBe("plan");
+    expect(await codeOf(client.call("session/set_mode", { sessionId: id, modeId: "turbo" }))).toBe(-32602);
   });
 });
 

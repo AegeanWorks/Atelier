@@ -4,7 +4,7 @@ import type { Readable, Writable } from "node:stream";
 import { alwaysAllowRule } from "../../src/rules.js";
 import { attachMentionedFiles } from "../attachments.js";
 import { AtelierError } from "../config.js";
-import { createSession, getSession, listEvents, type DbHandle } from "../db.js";
+import { createSession, getSession, listEvents, listMessages, type DbHandle } from "../db.js";
 import { attachImages, saveImage } from "../images.js";
 import { subscribeLive } from "../liveStream.js";
 import { resolveApproval } from "../approvals.js";
@@ -26,7 +26,15 @@ interface SessionState {
   workspace: string;
   running: boolean;
   cancel: (() => void) | null;
+  mode: Mode;
 }
+
+type Mode = "plan" | "build";
+
+const MODES: Array<{ id: Mode; name: string; description: string }> = [
+  { id: "build", name: "Build", description: "Edit files and run commands, each behind your approval." },
+  { id: "plan", name: "Plan", description: "Read-only: inspect the workspace and answer with a plan." },
+];
 
 interface RunEvent {
   seq: number;
@@ -44,6 +52,24 @@ function field(params: unknown, name: string): unknown {
 
 function textOf(output: string): unknown[] {
   return output.length === 0 ? [] : [{ type: "content", content: { type: "text", text: output } }];
+}
+
+function modesFor(mode: Mode): { currentModeId: Mode; availableModes: typeof MODES } {
+  return { currentModeId: mode, availableModes: MODES };
+}
+
+/** The absolute, existing directory an ACP client sent as `cwd`. */
+function workingDirectory(params: unknown): string {
+  const cwd = field(params, "cwd");
+  if (typeof cwd !== "string" || !isAbsolute(cwd)) throw new RpcError(RPC_CODES.invalidParams, "cwd must be an absolute path.");
+  let isDirectory = false;
+  try {
+    isDirectory = statSync(cwd).isDirectory();
+  } catch {
+    isDirectory = false;
+  }
+  if (!isDirectory) throw new RpcError(RPC_CODES.invalidParams, "cwd must be an existing directory.");
+  return cwd;
 }
 
 /**
@@ -77,7 +103,7 @@ export function serveAcp(input: Readable, output: Writable, deps: AcpDeps): Prom
     return {
       protocolVersion: PROTOCOL_VERSION,
       agentCapabilities: {
-        loadSession: false,
+        loadSession: true,
         promptCapabilities: { image: true, audio: false, embeddedContext: false },
         mcpCapabilities: { http: false, sse: false },
       },
@@ -87,18 +113,44 @@ export function serveAcp(input: Readable, output: Writable, deps: AcpDeps): Prom
   }
 
   function newSession(params: unknown): unknown {
-    const cwd = field(params, "cwd");
-    if (typeof cwd !== "string" || !isAbsolute(cwd)) throw new RpcError(RPC_CODES.invalidParams, "cwd must be an absolute path.");
-    let isDirectory = false;
-    try {
-      isDirectory = statSync(cwd).isDirectory();
-    } catch {
-      isDirectory = false;
-    }
-    if (!isDirectory) throw new RpcError(RPC_CODES.invalidParams, "cwd must be an existing directory.");
+    const cwd = workingDirectory(params);
     const session = createSession(db, `ACP: ${basename(cwd)}`.slice(0, 80));
-    sessions.set(session.id, { workspace: cwd, running: false, cancel: null });
-    return { sessionId: session.id };
+    sessions.set(session.id, { workspace: cwd, running: false, cancel: null, mode: "build" });
+    return { sessionId: session.id, modes: modesFor("build") };
+  }
+
+  /** Register an existing conversation and replay its prose, so an editor that restarts can pick it up. */
+  function loadSession(params: unknown): unknown {
+    const sessionId = field(params, "sessionId");
+    if (typeof sessionId !== "string" || sessionId.length === 0) throw new RpcError(RPC_CODES.invalidParams, "sessionId is required.");
+    const cwd = workingDirectory(params);
+    if (getSession(db, sessionId) === null) {
+      sessions.delete(sessionId);
+      throw new RpcError(RPC_CODES.notFound, "Session not found.", { sessionId });
+    }
+    const state: SessionState = sessions.get(sessionId) ?? { workspace: cwd, running: false, cancel: null, mode: "build" };
+    state.workspace = cwd;
+    sessions.set(sessionId, state);
+    for (const message of listMessages(db, sessionId)) {
+      if (message.role !== "user" && message.role !== "assistant") continue;
+      update(sessionId, {
+        sessionUpdate: message.role === "user" ? "user_message_chunk" : "agent_message_chunk",
+        messageId: message.id,
+        content: { type: "text", text: message.text },
+      });
+    }
+    return { modes: modesFor(state.mode) };
+  }
+
+  function setMode(params: unknown): unknown {
+    const { id, state } = sessionFor(params);
+    const modeId = field(params, "modeId");
+    if (modeId !== "plan" && modeId !== "build") throw new RpcError(RPC_CODES.invalidParams, 'modeId must be "plan" or "build".');
+    if (state.mode !== modeId) {
+      state.mode = modeId;
+      update(id, { sessionUpdate: "current_mode_update", currentModeId: modeId });
+    }
+    return {};
   }
 
   function sessionFor(params: unknown): { id: string; state: SessionState } {
@@ -207,7 +259,7 @@ export function serveAcp(input: Readable, output: Writable, deps: AcpDeps): Prom
     };
 
     try {
-      startRun(sessionId, text, state.workspace, "build");
+      startRun(sessionId, text, state.workspace, state.mode);
       for (;;) {
         await new Promise((resolve) => setTimeout(resolve, pollMs));
         for (const event of listEvents(db, sessionId, lastSeq)) {
@@ -227,6 +279,8 @@ export function serveAcp(input: Readable, output: Writable, deps: AcpDeps): Prom
     if (method === "initialize") return initialize(params);
     if (!initialized) throw new RpcError(RPC_CODES.invalidRequest, "Send initialize first.");
     if (method === "session/new") return newSession(params);
+    if (method === "session/load") return loadSession(params);
+    if (method === "session/set_mode") return setMode(params);
     if (method === "session/prompt") return prompt(params);
     if (method === "session/cancel") {
       cancelSession(params);
