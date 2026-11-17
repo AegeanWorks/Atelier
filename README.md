@@ -64,6 +64,7 @@ npm run ui:before        # capture the unchanged UI into shots/before (G-007)
 npm run ui:after         # capture the changed UI into shots/after and compare
 npm run ui:shots         # 390/768/1440 screenshots in shots/ (overwrites)
 npm run ui:panels        # one screenshot per workspace panel in shots/panels
+npm run ui:clickmap      # drive every navigation control in the running UI into .aikit/clickmap.log
 npm run ui:audit         # measured overflow, tab bounds and hit targets at 390/768/1440
 npm run bench            # built CLI help latency
 npm run eval             # deterministic harness suite with RR/CSR/ES
@@ -186,7 +187,6 @@ atelier/
 │   └── types.ts
 ├── tests/                 <- unit, integration and jsdom UI suites
 ├── scripts/               <- dev, start, verify, dogfood, crash, browser, shots
-├── shots/                 <- generated screenshot evidence (git-ignored)
 ├── index.html
 ├── start.bat              <- one-click Windows start: preflight, build if stale, serve, open the app window
 ├── start.sh               <- one-click macOS/Linux start with the same behavior

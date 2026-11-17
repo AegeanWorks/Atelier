@@ -50,6 +50,7 @@
     "ui:before": "node scripts/ui-shots.mjs before",
     "ui:after": "node scripts/ui-shots.mjs after",
     "ui:panels": "node scripts/ui-panels.mjs",
+    "ui:clickmap": "node scripts/ui-clickmap.mjs",
     "ui:composer": "node scripts/ui-composer-shots.mjs",
     "ui:audit": "node scripts/ui-audit.mjs"
   },
