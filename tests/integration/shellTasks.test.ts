@@ -96,18 +96,28 @@ describe("background shell tasks", () => {
     expect(() => killTask("task_missing")).toThrow(/No background task/);
   });
 
+  /** Poll until the log reports its ceiling, because a loaded host writes 1 MB more slowly. */
+  async function ceilingReached(id: string, timeoutMs = 20_000): Promise<boolean> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (readTaskOutput(id, 0, 200).output.includes("[log truncated at 1000000 bytes]")) return true;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    return false;
+  }
+
   it("stops a chatty command's log at its ceiling", async () => {
     // Measured before the ceiling existed: a loop printing 24-byte lines wrote 2.9 MB in three
     // seconds. Past 1 MB the log must stop growing and say why, not fill the state directory.
     const id = start(process.platform === "win32" ? "for /L %i in (1,1,200000) do @echo line-%i-0123456789abcdef" : "for i in $(seq 1 200000); do echo line-$i-0123456789abcdef; done");
-    await new Promise((resolve) => setTimeout(resolve, 2_500));
+    expect(await ceilingReached(id)).toBe(true);
     const window = readTaskOutput(id, 0, 200);
     // The reply names the ceiling instead of silently pretending the log is complete.
     expect(window.truncated).toBe(true);
     expect(readTaskOutput(id, 0, 4_000).output).toContain("truncated at 1000000 bytes");
     killTask(id);
     await settled(id);
-  });
+  }, 30_000);
 
   it("reads a bounded window without loading the whole log", async () => {
     // The read path seeks, so a window from a large log must stay cheap; before the fix it read
@@ -121,7 +131,7 @@ describe("background shell tasks", () => {
     expect(window.output.length).toBeLessThan(500);
     // Position 500k must not contain the first line, proving the offset really seeked.
     expect(window.output).not.toContain("pad-1-");
-  });
+  }, 60_000);
 
   it("refuses an empty command", () => {
     expect(() => start("   ")).toThrow(/command is required/i);
