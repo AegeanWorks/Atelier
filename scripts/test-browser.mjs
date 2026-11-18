@@ -8,6 +8,11 @@ const WIDTHS = [
   { width: 1440, height: 900 },
 ];
 
+// Host-speed bounds, not assertions: a full gate run can make a cold engine's first
+// navigation far slower than an idle host, so give it room and let the checks below decide.
+const NAVIGATE_MS = 45_000;
+const SELECTOR_MS = 20_000;
+
 async function checkEngine(engine, base) {
   const browser = await launchEngine(engine);
   try {
@@ -17,12 +22,12 @@ async function checkEngine(engine, base) {
       if (message.type() === "error") errors.push(message.text());
     });
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto(base, { waitUntil: "domcontentloaded", timeout: 20_000 });
-    await page.waitForSelector('[data-testid="app-shell"]', { timeout: 10_000 });
+    await page.goto(base, { waitUntil: "domcontentloaded", timeout: NAVIGATE_MS });
+    await page.waitForSelector('[data-testid="app-shell"]', { timeout: SELECTOR_MS });
     const rootChildren = await page.evaluate(() => document.querySelector("#root")?.children.length ?? 0);
     if (rootChildren === 0) throw new Error("#root rendered no children");
     await page.getByTestId("new-conversation").click();
-    await page.waitForSelector('[data-testid="conversation-list"]', { timeout: 10_000 });
+    await page.waitForSelector('[data-testid="conversation-list"]', { timeout: SELECTOR_MS });
     for (const size of WIDTHS) {
       await page.setViewportSize(size);
       const wide = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
