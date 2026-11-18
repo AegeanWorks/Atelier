@@ -4,8 +4,6 @@
 
 Local-first agent workspace: multi-conversation chat, file editing, git diffs, terminal, browser preview, and plans in one fast UI for any model API.
 
-> **Archived**: Retired with its delivery goals met: ACP session loading and modes, the consecutive-failure guard, and gate load-tolerance fixes are delivered, and check --strict is green at the final commit. (archived 2026-11-18). This project is read-only; its GitHub repository is archived.
-
 ## ⚡ 30-Second Cold-Start Quick Reference
 
 - **Runtime Prerequisites**: Node.js **>=22.12** and npm **>=10**; SQLite is bundled by `better-sqlite3` (3.53.4). Windows 10+, macOS 13+, or a current Linux distribution.
