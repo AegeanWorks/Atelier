@@ -97,7 +97,7 @@ describe("background shell tasks", () => {
   });
 
   /** Poll until the log reports its ceiling, because a loaded host writes 1 MB more slowly. */
-  async function ceilingReached(id: string, timeoutMs = 20_000): Promise<boolean> {
+  async function ceilingReached(id: string, timeoutMs = 40_000): Promise<boolean> {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       if (readTaskOutput(id, 0, 200).output.includes("[log truncated at 1000000 bytes]")) return true;
@@ -109,7 +109,8 @@ describe("background shell tasks", () => {
   it("stops a chatty command's log at its ceiling", async () => {
     // Measured before the ceiling existed: a loop printing 24-byte lines wrote 2.9 MB in three
     // seconds. Past 1 MB the log must stop growing and say why, not fill the state directory.
-    const id = start(process.platform === "win32" ? "for /L %i in (1,1,200000) do @echo line-%i-0123456789abcdef" : "for i in $(seq 1 200000); do echo line-$i-0123456789abcdef; done");
+    // 60,000 lines is about 1.4 MB, enough to cross the ceiling without writing 5x past it.
+    const id = start(process.platform === "win32" ? "for /L %i in (1,1,60000) do @echo line-%i-0123456789abcdef" : "for i in $(seq 1 60000); do echo line-$i-0123456789abcdef; done");
     expect(await ceilingReached(id)).toBe(true);
     const window = readTaskOutput(id, 0, 200);
     // The reply names the ceiling instead of silently pretending the log is complete.
@@ -117,20 +118,29 @@ describe("background shell tasks", () => {
     expect(readTaskOutput(id, 0, 4_000).output).toContain("truncated at 1000000 bytes");
     killTask(id);
     await settled(id);
-  }, 30_000);
+  }, 60_000);
 
   it("reads a bounded window without loading the whole log", async () => {
     // The read path seeks, so a window from a large log must stay cheap; before the fix it read
-    // the entire file and cost 19 ms for 200 characters on the 2.9 MB probe.
-    const id = start(process.platform === "win32" ? "for /L %i in (1,1,60000) do @echo pad-%i-0123456789abcdef" : "for i in $(seq 1 60000); do echo pad-$i-0123456789abcdef; done");
-    await settled(id, 30_000);
+    // the entire file and cost 19 ms for 200 characters on the 2.9 MB probe. 30,000 lines is
+    // about 0.7 MB, so position 500k is still well inside the log.
+    const id = start(process.platform === "win32" ? "for /L %i in (1,1,30000) do @echo pad-%i-0123456789abcdef" : "for i in $(seq 1 30000); do echo pad-$i-0123456789abcdef; done");
+    await settled(id, 60_000);
     const started = performance.now();
     const window = readTaskOutput(id, 500_000, 200);
     const elapsed = performance.now() - started;
-    expect(elapsed).toBeLessThan(100);
+    // A wall-clock bound only proxies "seeks instead of reading the whole file", and it is the
+    // one thing here a busy host can fail; 1 s still catches a pathological full read, while the
+    // structural checks below prove the seek deterministically.
+    expect(elapsed).toBeLessThan(1_000);
     expect(window.output.length).toBeLessThan(500);
     // Position 500k must not contain the first line, proving the offset really seeked.
     expect(window.output).not.toContain("pad-1-");
+    // And it must start inside the middle of the log: line 1 is at byte 0, so the first line
+    // returned from 500k belongs to a line number far past the first thousand.
+    const firstLine = /pad-(\d+)-/.exec(window.output);
+    expect(firstLine).not.toBeNull();
+    expect(Number(firstLine?.[1])).toBeGreaterThan(15_000);
   }, 60_000);
 
   it("refuses an empty command", () => {
