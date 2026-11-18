@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-shell-probe-load",
+    "task_id": "atelier-browser-smoke-load",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794999817.3593397,
+    "updated_at": 1795005828.4184213,
     "owner": "kilo:1",
     "started_by": "kilo:1",
     "continuations": [],
@@ -15,81 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794999894.398606,
-    "completed_head": "7068c72c3c838c0484cac7f1d7f8988d1d645612",
-    "completed_tree": "f3d8fdffaca53b95d5d09e5b89763d32700e7565"
+    "completed_at": 1795005868.965953,
+    "completed_head": "3fa054fa658258e9d37f87d5869d1e5070f1c0ab",
+    "completed_tree": "2ca46039d12ed30553eba24a0b9aae4d0278072c"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-acp-session-load",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 1/1] Verified: five ACP tests failed first on exactly the missing surfaces (loadSession false, session/load and session/set_mode method-not-found, mode ignored), then 44 ACP unit+integration tests passed. Three mutations were each caught by the intended test: flipping the capability back to false, replacing the replay loop with an empty one, and forcing the run back to build. The full suite is 122 files / 668 tests green, and all 12 gates pass (test, lint, typecheck, build, agent-perf, agent-bench, a11y, browser, hygiene, guidelines, secrets, compat) on the tree that also carries the clickmap evidence and the shell-task probe fix. An editor can now reopen a conversation with its stored history and choose Plan or Build.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794942325.0043938,
-      "timestamp_str": "2026-11-17 22:05:25",
-      "agent": "kilo:1",
-      "measurements": [
-        {
-          "candidate": 0.0,
-          "baseline": 5.0,
-          "unit": "tests",
-          "metric": "ACP tests failing",
-          "command": "npx vitest run tests/integration/acp-agent.test.ts tests/unit/acp-mapping.test.ts tests/unit/acp-rpc.test.ts",
-          "qualified": "no"
-        },
-        {
-          "candidate": 12.0,
-          "baseline": 9.0,
-          "unit": "gates",
-          "metric": "gates passing",
-          "command": "python aikit.py check atelier",
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-acp-session-load",
-      "phase": "superseded",
-      "phase_num": 4,
-      "description": "Superseded by 'atelier-gate-evidence-integrity' without --complete or --reset",
-      "status": "superseded",
-      "timestamp": 1794942853.0800157,
-      "timestamp_str": "2026-11-17 22:14:13",
-      "agent": "kilo:1"
-    },
-    {
-      "task_id": "atelier-gate-evidence-integrity",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/2] Make the compat proof real and regenerable. compat.json names shots/atelier-before.png, shots/atelier-after.png and .aikit/clickmap.log; ui:shots already writes exactly the shot names, but nothing produced a clickmap and the only text that ever described one was the scaffold's placeholder (click save-btn -> on-save, a control this app does not have), so the compat gate failed on a missing hook. Add scripts/ui-clickmap.mjs (npm run ui:clickmap): it drives the running UI through every workspace tab, a new conversation and the terminal drawer, records each testid with the postcondition it verified, lists each visible control it did not drive as a skip with the reason, and exits non-zero when nothing could be driven. Remove the README tree entry for shots/ (a fresh tree has no such directory) and document the new command.\n\n[2/2] Stop two shell-task probes from failing on a loaded host. The ceiling probe waited a fixed 2.5 s for 1 MB of output and the bounded-read probe relied on vitest's 10 s default for a 60,000-line command, so the same code passed on a quiet host and timed out on a busy one (measured: the identical suite took 218 s and 353 s). Poll for the ceiling note itself up to 20 s and give the 60k-line probe its own 60 s bound; no assertion is weakened, and a log that never reaches the ceiling still fails.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794942853.0800157,
-      "timestamp_str": "2026-11-17 22:14:13",
-      "agent": "kilo:1",
-      "impact_assessment": {
-        "why": "The compat gate demanded evidence that did not exist, and two integration probes measured host speed rather than behaviour, so a green run depended on what else the machine was doing.",
-        "benefits": "The compat proof is produced by the project itself and names what it really drove, and the shell-task tests assert the same things at any host speed instead of failing under load.",
-        "risks": "contract: adds npm script ui:clickmap, leaves compat.json unchanged, no production code touched; dependency: none beyond the existing playwright-core and browser helper; concurrency: the clickmap script starts and stops its own temporary server; state: writes only the git-ignored .aikit/clickmap.log, and the test change only raises its own timeout and polls",
-        "mitigation": "The clickmap fails loudly when nothing was driven and its skip lines name why; the ceiling probe still fails when the notice never appears; the whole tree passed 12/12 gates with both changes in place, and the shell-task file was re-run alone after the edit"
-      },
-      "plan_digest": "2cd5501dd85eee0e5c478309fb7459ca3962d3f9d4516b08bc81c77dcc3c071a",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-gate-evidence-integrity",
       "phase": "phase 4",
@@ -494,6 +424,75 @@
       "timestamp_str": "2026-11-18 14:04:54",
       "agent": "kilo:1",
       "head": "7068c72c3c838c0484cac7f1d7f8988d1d645612",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-browser-smoke-load",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Stop the browser smoke from failing on a busy host. The gate keeps a flat 20 s navigation timeout and 10 s selector timeouts; under the full 12-gate run today Firefox exceeded 20 s on its first goto and failed the gate although chromium and webkit had just passed, and re-running the same script alone passed all three engines. The assertions stay exactly as they are (shell rendered, API reached, no sideways scroll at 390/768/1440, no console errors); only the host-speed bounds widen to 45 s for navigation and 20 s for selectors, so the gate measures the interface rather than the machine.\n",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795001686.1677556,
+      "timestamp_str": "2026-11-18 14:34:46",
+      "agent": "kilo:1",
+      "impact_assessment": {
+        "why": "The browser gate failed under a full gate run today (Firefox goto exceeded 20 s) and passed alone minutes later, so the one thing it asserts about the host is impossible to satisfy when the machine is busy.",
+        "benefits": "A rendered-shell, no-overflow, no-console-error proof that is about the interface and cannot be flipped by unrelated load, matching the shell probes fixed in ADR-122.",
+        "risks": "contract: none, script constants only; dependency: none; concurrency: unchanged, each engine gets its own browser; state: no product file touched",
+        "mitigation": "Only the two timeout constants change; every assertion stays; the script is re-run alone afterwards and the strict gate run is the verifier"
+      },
+      "plan_digest": "105727e1462a5f8a6e3d7b3197e51e682171bd11822168101ab07a5f7df0c9a5",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-browser-smoke-load",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[1/1] Verified: the browser smoke keeps every assertion (shell rendered, conversation list appears, no horizontal overflow at 390/768/1440 px, no console errors) and only its two timeout literals became named host-speed bounds (NAVIGATE_MS 45 s, SELECTOR_MS 20 s applied to both waits). The script passed all three engines alone before the edit; the full gate run that previously failed on Firefox now passes 12/12 with browser at 78.5 s. ADR-123 records why the old flat 20 s made the gate measure host load. checklists: passed.\n",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795005828.4184213,
+      "timestamp_str": "2026-11-18 15:43:48",
+      "agent": "kilo:1",
+      "measurements": [
+        {
+          "baseline": 11.0,
+          "command": "python aikit.py check atelier --allow-dirty",
+          "unit": "gates",
+          "candidate": 12.0,
+          "metric": "gates passing",
+          "qualified": "no"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-browser-smoke-load",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-browser-smoke-load' completed successfully.",
+      "status": "completed",
+      "timestamp": 1795005869.0306108,
+      "timestamp_str": "2026-11-18 15:44:29",
+      "agent": "kilo:1",
+      "head": "3fa054fa658258e9d37f87d5869d1e5070f1c0ab",
       "delivery": {
         "roots": [
           "."
