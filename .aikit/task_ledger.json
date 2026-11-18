@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-stop-kills-shell",
+    "task_id": "atelier-failure-streak",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794946575.3636448,
+    "updated_at": 1794991017.5759888,
     "owner": "kilo:1",
     "started_by": "kilo:1",
     "continuations": [],
@@ -15,83 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794946637.7297692,
-    "completed_head": "5403d75bd9a486c6693741a8793c80cdd2b3f6e0",
-    "completed_tree": "671b39e9ba8d596a4a8f655b2ba94faa356fe0db"
+    "completed_at": 1794991079.7348113,
+    "completed_head": "9686a8bf3723d5d77387fb8c932cb08681e26187",
+    "completed_tree": "b942ebff8ed2760f124745818a8106ebd461e43b"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-perf-gate-roles",
-      "phase": "phase 1",
-      "phase_num": 1,
-      "description": "[plan] Open a task for the two commits made after atelier-perf-calibration closed: the gate-role clarification (bf959e7) and its ADR. The ledger flagged them as unverified commits following a completed task, which is correct process feedback: I committed code after closing the task that should have owned it.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794860501.6878195,
-      "timestamp_str": "2026-11-16 23:21:41",
-      "agent": "unidentified",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-perf-gate-roles",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] State the perf gate's two roles in the code: the host-calibrated absolute budget is the verdict, and the baseline comparison fails only past max(1.5x, baseline plus six baseline MADs). Records why a candidate-spread guard was tried and rejected (at six MADs it would absorb 7.98ms on a 3.66ms metric, a gate that never fails), and why sub-50% drift cannot be enforced from three passes on a shared host.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794860511.8268487,
-      "timestamp_str": "2026-11-16 23:21:51",
-      "agent": "commandcode:1",
-      "impact_assessment": {
-        "why": "One gate run still failed after calibration at hostScale 1.05; measuring showed the ledger stat costs 0.02ms, direct dispatch measures 4.06ms, and a re-run of identical code gave 3.66ms with 0.04 MAD against the failing run's 1.33 MAD. Same code, different samples.",
-        "benefits": "A reader can see which check is binding and which is advisory, and the gate cannot silently become a rubber stamp.",
-        "risks": "contract: none; dependency: none; concurrency: none; state: none",
-        "mitigation": "Verified the gate still fails a real regression by tightening the budget to 0.5ms: ok False with the host-equivalent limit named"
-      },
-      "plan_digest": "c1663f557015df236fe287018dc3a66c7c5d32d29c09fcee4ccd2578d3a85d77",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ],
-      "continued_from": "unidentified"
-    },
-    {
-      "task_id": "atelier-perf-gate-roles",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 1/1] Verified: 12/12 gates pass on the committed tree (bf959e7). The gate's roles are stated in code, the rejected candidate-spread alternative is recorded with its number, and a real regression still fails (tightened budget to 0.5ms reported ok False naming the host-equivalent limit). 121 test files green.",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794860738.2211387,
-      "timestamp_str": "2026-11-16 23:25:38",
-      "agent": "commandcode:1",
-      "measurements": [
-        {
-          "workload": "aikit check --strict",
-          "candidate": 12.0,
-          "command": "python aikit.py check atelier --strict",
-          "unit": "gates",
-          "baseline": 11.0,
-          "artifact": ".aikit/decisions.md",
-          "drift": "closed",
-          "metric": "gates passing on the committed tree"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-perf-gate-roles",
       "phase": "completed",
@@ -482,6 +410,83 @@
       "timestamp_str": "2026-11-17 23:17:17",
       "agent": "kilo:1",
       "head": "5403d75bd9a486c6693741a8793c80cdd2b3f6e0",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-failure-streak",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Stop a run that keeps failing tool calls with different inputs. Fresh harness-vs-atelier pass after the harness reforge: atelier's only loop guard is the doom loop, which fires on an identical call signature (name plus JSON input), so a model that retries with slightly different arguments can burn every step and dollar on calls that all fail (unknown tool, disabled tool, denied approval, a tool exception). Harness stops such a run: its loop counts consecutive failed results and ends the run after two, resetting on any success. Port that guard with a limit of three (atelier's default doomLoopLimit), counting only tool outcomes with ok=false so a failing test command (exit 1, ok=true) never trips it and the fail-fix-test loop still works. Test-first: a run whose model makes three different failing calls ends blocked with a consecutive-failures reason after exactly three tool results, while failures separated by one successful call finish normally.\n",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794989440.3042176,
+      "timestamp_str": "2026-11-18 11:10:40",
+      "agent": "kilo:1",
+      "impact_assessment": {
+        "why": "Fresh harness-vs-atelier pass after the reforge: atelier stops identical repeated calls but not a spiral of different calls that all fail, so a model can burn its whole step and dollar budget on errors.",
+        "benefits": "A run that is not converging ends early with a clear reason after three failed calls in a row, and stops costing money; successful calls (including a failing test command, which is a successful tool call) reset the count, so the fail-fix-test loop is untouched.",
+        "risks": "contract: one new blocked reason (consecutive tool failures) on the run row and session event; dependency: none; concurrency: the counter is local to the run loop; state: no schema change, no new persistence",
+        "mitigation": "Test-first with a fixture provider: three different unknown-tool calls must block after exactly three results, and a failure-success-failure sequence must finish; the constant sits beside the doom-loop check in the same loop; the full suite and gates run after"
+      },
+      "plan_digest": "cfb02f145f81be92cbaefbe64ded0a0c8d21472cb035a54009011a945e0c8afc",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-failure-streak",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[milestone 1/1] Verified: with a fixture model making four different failing calls, the run finished normally before the guard (the model answered after the calls); with the guard it blocks after exactly three tool results with reason 'consecutive tool failures'. Removing the two guard lines makes the first test finish again, so the counter is what is under test, and a failure-success-failure sequence still finishes, proving a success resets the count. 2/2 new tests pass; the full suite is 124 files/672 tests green; 12/12 gates pass (hygiene, guidelines, secrets, compat, test, lint, typecheck, build, agent-perf, agent-bench, a11y, browser). Docs name the new blocked reason and ADR-121 records the decision. checklists: passed.\n",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794991017.5759888,
+      "timestamp_str": "2026-11-18 11:36:57",
+      "agent": "kilo:1",
+      "measurements": [
+        {
+          "metric": "tool results before a non-converging run ends",
+          "baseline": 4.0,
+          "command": "npx vitest run tests/integration/failure-streak.test.ts",
+          "unit": "results",
+          "candidate": 3.0,
+          "qualified": "no"
+        },
+        {
+          "metric": "full suite tests passing",
+          "baseline": 670.0,
+          "command": "npm test",
+          "unit": "tests",
+          "candidate": 672.0,
+          "qualified": "no"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-failure-streak",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-failure-streak' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794991080.094223,
+      "timestamp_str": "2026-11-18 11:38:00",
+      "agent": "kilo:1",
+      "head": "9686a8bf3723d5d77387fb8c932cb08681e26187",
       "delivery": {
         "roots": [
           "."
