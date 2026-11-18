@@ -277,6 +277,11 @@ export async function runAgent(
   const outputLimit = providerConfig === undefined ? null : findModel(providerConfig, model)?.maxOutput ?? null;
   let lastSignature = "";
   let repeats = 0;
+  // A different failing call each step is not a doom loop, but it converges just as badly:
+  // three failed tool outcomes in a row end the run instead of spending every step on errors.
+  // A failing command is a successful tool call (ok true, exit code in the text), so the
+  // fail, fix, test loop still resets the count the moment any call succeeds.
+  let failures = 0;
   let lastHash: string | null = null;
   let lastProvider = providerId;
   let lastCompaction = "";
@@ -502,6 +507,8 @@ export async function runAgent(
       // The tool result above is written first, so the transcript keeps the stopped call; the
       // loop then ends instead of asking the model again.
       if (signal.aborted) return { status: "blocked", text: "", reason: "stopped", requestHash: lastHash, providerId: lastProvider };
+      failures = outcome.ok ? 0 : failures + 1;
+      if (failures >= 3) return { status: "blocked", text: "", reason: "consecutive tool failures", requestHash: lastHash, providerId: lastProvider };
     }
   }
   return { status: "blocked", text: "", reason: "step cap reached", requestHash: lastHash, providerId: lastProvider };
