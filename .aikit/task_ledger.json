@@ -1,11 +1,11 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ledger-repair",
+    "task_id": "atelier-shell-probe-load",
     "last_phase": "phase 4",
     "active_phase": 5,
     "status": "completed",
-    "updated_at": 1794992717.6604042,
+    "updated_at": 1794999817.3593397,
     "owner": "kilo:1",
     "started_by": "kilo:1",
     "continuations": [],
@@ -15,70 +15,11 @@
         "path": "projects/atelier"
       }
     ],
-    "completed_at": 1794992737.403386,
-    "completed_head": "6a49ae4b9015b337c664ea01daa6d6b2b46efbfb",
-    "completed_tree": "e5f049e94eaa292092ca2b8587e7725f2ba9d9fd"
+    "completed_at": 1794999894.398606,
+    "completed_head": "7068c72c3c838c0484cac7f1d7f8988d1d645612",
+    "completed_tree": "f3d8fdffaca53b95d5d09e5b89763d32700e7565"
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-bench-calibration",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-bench-calibration' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794861751.450226,
-      "timestamp_str": "2026-11-16 23:42:31",
-      "agent": "commandcode:1",
-      "head": "d72ef718f72759019cea9030ade725330165663f",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-acp-session-load",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/2] Reopen a conversation over ACP and let an editor choose its mode. The ACP agent advertises loadSession false and always runs Build, so an editor that restarts loses the conversation it was working in, and a client can never ask for the read-only Plan mode. Pin both behaviours with failing tests first: initialize advertises loadSession, session/load validates cwd and session, replays the stored prose as user/agent message chunks, and continues with a prompt; session/new reports the available modes, session/set_mode switches between Build and Plan, and the next run uses the selected mode.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794935649.6591606,
-      "timestamp_str": "2026-11-17 20:14:09",
-      "agent": "kilo:1",
-      "impact_assessment": {
-        "why": "An editor that restarts cannot reopen the conversation it was in, and ACP advertises that gap as loadSession false, so the only agent surface documented as not supporting resume stays that way.",
-        "benefits": "A reopened conversation keeps its history and context, Plan mode becomes reachable from an editor, and the advertised capability matches what the agent implements.",
-        "risks": "contract: initialize reports loadSession true and session/new/session/load gain a modes object; dependency: none; concurrency: the sessions map is per process and a load during a running turn keeps the run lease; state: replay reads stored messages without writing any",
-        "mitigation": "Test-first on the protocol surface, then the implementation; replay uses the existing listMessages default so tool rows stay hidden; docs and a new ADR record what is now supported and what still is not"
-      },
-      "plan_digest": "bfe01f29268282d947b1635c34d22d1f62086902ae2320d157a2c063523ab26b",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-acp-session-load",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Reopen a conversation over ACP and let an editor choose its mode (re-planned from [1/2]: the test-first step and the implementation are one surface and land together). The ACP agent advertised loadSession false and always ran Build, so an editor that restarts lost the conversation it was working in, and a client could never ask for the read-only Plan mode. The failing-first tests are in place: initialize advertises loadSession, session/load validates cwd and session, replays the stored prose as user/agent message chunks, and continues with a prompt; session/new reports the available modes, session/set_mode switches Build and Plan, and the next run uses the selected mode.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794937971.5243108,
-      "timestamp_str": "2026-11-17 20:52:51",
-      "agent": "kilo:1",
-      "plan_digest": "7bd108ccfaf84d0fb743af387d6842e70c2434e2deba80319e4116d7753225a2",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "atelier-acp-session-load",
       "phase": "phase 4",
@@ -475,6 +416,84 @@
       "timestamp_str": "2026-11-18 12:05:38",
       "agent": "kilo:1",
       "head": "6a49ae4b9015b337c664ea01daa6d6b2b46efbfb",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-shell-probe-load",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/1] Right-size the two shell-task probes so a loaded host cannot fail them. Both probes overshoot what they must prove and flake when the machine is busy: the ceiling probe starts a 200,000-line echo (about 4.8 MB, nearly 5x the 1 MB ceiling it must cross) and waits a flat 20 s, and the bounded-window probe starts 60,000 lines and allows 30 s to settle. The same file that passes alone in 4.2 s failed under heavy load twice in this session: before the polling fix at the flat 2.5 s wait, and today at the current bounds when strict ran while the host was busy. Keep both assertions exactly as they are - the truncation note must appear and the window must seek past 500 KB without containing the first line - but start 60,000 and 30,000 lines (about 1.4 MB and 0.7 MB, still past each threshold) and widen only the host-speed bounds to 60 s.\n",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794993681.8115656,
+      "timestamp_str": "2026-11-18 12:21:21",
+      "agent": "kilo:1",
+      "impact_assessment": {
+        "why": "The two probes measured host speed as much as behaviour: today the same file passed alone in 4.2 s but failed inside the strict gate run because the machine was busy, and the earlier flat-wait version failed the same way.",
+        "benefits": "The truncation and seek behaviour is still proven, and a busy host or a parallel gate run cannot turn that proof into a failure that has nothing to do with the code.",
+        "risks": "contract: none, test-only; dependency: none; concurrency: unchanged, each probe runs its own process and cleans up; state: no product or state file touched",
+        "mitigation": "The thresholds stay the same and only the workload and time bounds change; a log that never reaches 1 MB or a read that does not seek still fails; run the file alone and inside the full suite after the edit"
+      },
+      "plan_digest": "7f9f2b7f7f61113b965deb1396e3c6a746146a74df1e1f076daa91b8d359b3b4",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-shell-probe-load",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[1/1] Verified: both probes are sized to what they must cross (60,000 lines about 1.4 MB for the 1 MB ceiling, 30,000 lines about 0.7 MB for the 500 KB offset) and only host-speed bounds widened; the seek proof is now structural (first line at offset 500,000 must be line 15000+, which only a real seek can return) plus the unchanged truncation note, bounded length and absence of line 1. The file passes alone in 3.5-4.3 s and the full suite is 124 files / 672 tests green in 87 s. ADR-122 records the change and names the relaxed timer. checklists: passed.\n",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1794999817.3593397,
+      "timestamp_str": "2026-11-18 14:03:37",
+      "agent": "kilo:1",
+      "measurements": [
+        {
+          "candidate": 3.55,
+          "drift": "workload=smaller loops (60000 and 30000 lines instead of 200000 and 60000), same machine",
+          "command": "npx vitest run tests/integration/shellTasks.test.ts",
+          "unit": "s",
+          "baseline": 4.34,
+          "metric": "probe file duration",
+          "qualified": "no"
+        },
+        {
+          "candidate": 672.0,
+          "command": "npm test",
+          "unit": "tests",
+          "baseline": 672.0,
+          "metric": "full suite tests passing",
+          "qualified": "no"
+        }
+      ],
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-shell-probe-load",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-shell-probe-load' completed successfully.",
+      "status": "completed",
+      "timestamp": 1794999894.4648666,
+      "timestamp_str": "2026-11-18 14:04:54",
+      "agent": "kilo:1",
+      "head": "7068c72c3c838c0484cac7f1d7f8988d1d645612",
       "delivery": {
         "roots": [
           "."
