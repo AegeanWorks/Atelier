@@ -35,5 +35,11 @@
     "shots/atelier-before.png"
   ],
   "ui_checked_at": "2026-11-18",
-  "ui_source": "detected"
+  "ui_source": "detected",
+  "archived": true,
+  "archived_at": "2026-11-18",
+  "archive_reason": "Retired with its delivery goals met: ACP session loading and modes, the consecutive-failure guard, and gate load-tolerance fixes are delivered, and check --strict is green at the final commit.",
+  "archive_repo": "AegeanWorks/Atelier",
+  "archive_description": "[ARCHIVED] Local-first agent workspace: multi-conversation chat, file editing, git diffs, terminal, browser preview, and plans in one fast UI for any model API.",
+  "archive_origin": "projects/atelier"
 }
