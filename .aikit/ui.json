@@ -15,7 +15,8 @@
   ],
   "commands": {
     "fast": "npm run build",
-    "snapshot": "npm run ui:shots"
+    "snapshot": "npm run ui:shots",
+    "snapshot_timeout": 300
   },
   "style": {
     "theme_paths": [
