@@ -3,8 +3,8 @@
   "active_task": {
     "task_id": "atelier-ui-eval-id",
     "last_phase": "phase 4",
-    "active_phase": 4,
-    "status": "in_progress",
+    "active_phase": 5,
+    "status": "completed",
     "updated_at": 1795288262.7153382,
     "owner": "opencode:1",
     "lease_until": 1795295462.7153382,
@@ -15,7 +15,10 @@
         "name": "atelier",
         "path": "projects/atelier"
       }
-    ]
+    ],
+    "completed_at": 1795288517.5349517,
+    "completed_head": "bb1c5f07b5abf2fa80e9932d973ac4cd450bfd1d",
+    "completed_tree": "a3e393953333560987e78d63db2dd451ea9a77a0"
   },
   "checkpoints": [
     {
@@ -91,18 +94,6 @@
           "path": "projects/atelier"
         }
       ]
-    },
-    {
-      "task_id": "reforge:run-1",
-      "phase": "reforge stage 62",
-      "phase_num": 3,
-      "description": "Reforge stage 62: stage 62 host review reviewed; run active; coverage 20/20",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1795276336.2677994,
-      "timestamp_str": "2026-11-21 18:52:16",
-      "agent": "opencode",
-      "operator_task": "atelier-ui-eval-id"
     },
     {
       "task_id": "reforge:run-1",
@@ -313,6 +304,23 @@
           "path": "projects/atelier"
         }
       ]
+    },
+    {
+      "task_id": "atelier-ui-eval-id",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-ui-eval-id' completed successfully.",
+      "status": "completed",
+      "timestamp": 1795288517.6419916,
+      "timestamp_str": "2026-11-21 22:15:17",
+      "agent": "opencode:1",
+      "head": "bb1c5f07b5abf2fa80e9932d973ac4cd450bfd1d",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
     }
   ]
 }
