@@ -1,13 +1,13 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-ui-eval-id",
+    "task_id": "atelier-workbench-layout",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1795288262.7153382,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1795294221.0646844,
     "owner": "opencode:1",
-    "lease_until": 1795295462.7153382,
+    "lease_until": 1795301421.0646844,
     "started_by": "opencode:1",
     "continuations": [],
     "workspaces": [
@@ -15,86 +15,9 @@
         "name": "atelier",
         "path": "projects/atelier"
       }
-    ],
-    "completed_at": 1795288517.5349517,
-    "completed_head": "bb1c5f07b5abf2fa80e9932d973ac4cd450bfd1d",
-    "completed_tree": "a3e393953333560987e78d63db2dd451ea9a77a0"
+    ]
   },
   "checkpoints": [
-    {
-      "task_id": "atelier-ui-eval-id",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/2] Plan: mark truncated eval run IDs clearly. EvalsPanel renders run.id.slice(0, 18) in a run row with no ellipsis, so a shortened ID looks like a complete one. Show an ellipsis only when the ID is actually longer than the slice, keeping the full ID in the title/heading and all testids and handlers unchanged. Add a git-ignored scenario that stubs /api/evals/runs with a long ID, capture before/after at 390/1440, vision-review, then ui verify, gates and a Phase 4 checkpoint.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1795263383.8994486,
-      "timestamp_str": "2026-11-21 15:16:23",
-      "agent": "opencode:1",
-      "impact_assessment": {
-        "why": "The user wants a polished UI; a silently truncated ID looks like a complete value.",
-        "benefits": "Truncated IDs are visibly marked; full ID still available in the detail heading.",
-        "risks": "contract: testids, handlers and the full ID heading unchanged; dependency: none; concurrency: none; state: short IDs must not get an ellipsis",
-        "mitigation": "Conditional ellipsis in JSX only; verify with a stubbed runs scenario, gates and a11y."
-      },
-      "plan_digest": "afe5a60a3a03cf30c758bbaa898f6f200b9ff429a3d7b5967ad5eeabe23cc574",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ui-eval-id",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[2/2] G-007/G-010 vision review COMPLETE. Edited src/EvalsPanel.tsx only: the Pareto run label now appends an ellipsis when an eval run ID is truncated beyond 18 characters, and shows the full ID when it is short. A git-ignored eval-id-scenario stubbed /api/evals/runs with a long ID and captured before/after at 390/1440: the Pareto label changed from 'ev_0123456789abcde' to 'ev_0123456789abcde\u2026'; the full ID remains in the detail heading and no handlers, testids or labels changed. ui verify passed. All twelve gates passed directly: hygiene 0, guidelines 0, secrets 0, compat 0, npm test 672/672, lint 0, typecheck 0, build 0, agent-perf 0, agent-bench 0, a11y 0, browser 0.\n",
-      "files_affected": [
-        "src/EvalsPanel.tsx"
-      ],
-      "status": "in_progress",
-      "timestamp": 1795264138.1488564,
-      "timestamp_str": "2026-11-21 15:28:58",
-      "agent": "opencode:1",
-      "measurements": [
-        {
-          "drift": "workload=1 eval runs state",
-          "baseline": 1.0,
-          "artifact": "shots/after/eval-id-desktop.png",
-          "command": "node shots/eval-id-scenario.mjs before/after",
-          "candidate": 0.0,
-          "unit": "labels",
-          "metric": "truncated eval IDs without ellipsis",
-          "qualified": "no"
-        },
-        {
-          "baseline": 0.0,
-          "artifact": "shots/after/eval-id-narrow.png",
-          "command": "npm test",
-          "candidate": 672.0,
-          "unit": "tests",
-          "metric": "tests passing",
-          "qualified": "no"
-        },
-        {
-          "baseline": 0.0,
-          "artifact": "shots/audit/report.json",
-          "command": "direct gate commands",
-          "candidate": 12.0,
-          "unit": "gates",
-          "metric": "gates passing individually",
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
     {
       "task_id": "reforge:run-1",
       "phase": "reforge stage 63",
@@ -321,6 +244,47 @@
         ],
         "forced": false
       }
+    },
+    {
+      "task_id": "atelier-workbench-layout",
+      "phase": "phase 1",
+      "phase_num": 1,
+      "description": "[1/2] Desktop workbench: first-class editor, browser and terminal in the right pane; unified lower-left Workspace section.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795294220.5638413,
+      "timestamp_str": "2026-11-21 23:50:20",
+      "agent": "opencode:1",
+      "impact_assessment": {
+        "why": "The right pane and lower-left rail were cramped and lacked dedicated editor/browser/terminal surfaces; desktop is the target (G-011).",
+        "benefits": "Clearer tool access, side-by-side editor, browser navigation, terminal tab.",
+        "risks": "contract: tab order and Alt shortcuts; dependency: none; concurrency: none; state: none",
+        "mitigation": "Preserve testids and Alt mapping, keep original tab labels for screenshot inventory, verify with UI shots and tests."
+      },
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-workbench-layout",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "Desktop workbench implemented: Files pane is a side-by-side Explorer+editor; Preview pane is a Browser with Back/Forward/Reload/Detect; terminal is a first-class tab; lower-left is one Workspace section. G-007/G-010 vision review of before/after shots at desktop/narrow/tablet, dark and light: no clipping, overlap, contrast or stale copy; desktop target per G-011. npm test: 125 files / 678 tests passed.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795294221.0646844,
+      "timestamp_str": "2026-11-21 23:50:21",
+      "agent": "opencode:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
     }
   ]
 }

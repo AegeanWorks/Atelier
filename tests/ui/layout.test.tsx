@@ -93,4 +93,19 @@ describe("resizable three-pane layout", () => {
     expect((await screen.findByTestId("resize-rail")).getAttribute("aria-valuenow")).toBe("340");
     expect((await screen.findByTestId("resize-workspace")).getAttribute("aria-valuenow")).toBe("320");
   });
+
+  it("opens the terminal as a first-class right-pane tab", async () => {
+    render(<App />);
+    fireEvent.click(await screen.findByTestId("tab-terminal"));
+    expect(await screen.findByTestId("terminal-panel")).toBeTruthy();
+    expect(screen.getByTestId("terminal-input")).toBeTruthy();
+  });
+
+  it("gives the browser back and forward controls", async () => {
+    render(<App />);
+    fireEvent.click(await screen.findByTestId("tab-preview"));
+    expect(await screen.findByTestId("browser-back")).toBeTruthy();
+    expect(screen.getByTestId("browser-forward")).toBeTruthy();
+    expect((screen.getByTestId("browser-back") as HTMLButtonElement).disabled).toBe(true);
+  });
 });

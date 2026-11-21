@@ -139,10 +139,11 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
   }
 
   return (
-    <div className="files-panel" data-testid="files-panel">
+    <div className="files-panel files-workbench" data-testid="files-panel">
+      <aside className="files-sidebar">
       <div className="panel-card">
         <div className="file-head">
-          <h2>Files</h2>
+          <h2>Explorer</h2>
           <button className="small-button" type="button" onClick={() => void refresh()} data-testid="files-refresh">Refresh</button>
         </div>
         <div className="file-create">
@@ -171,7 +172,9 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
           ))}
         </ul>
       </div>
+      </aside>
 
+      <section className="files-editor">
       {current !== null ? (
         <div className="panel-card">
           <div className="file-head">
@@ -198,6 +201,7 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
       ) : (
         <div className="panel-card file-preview-placeholder"><p>Select a file to open it.</p></div>
       )}
+      </section>
 
       {message !== null ? <div className="banner-ok" role="status" data-testid="files-message">{message}</div> : null}
       {error !== null ? <div className="banner-error" role="alert" data-testid="files-error">{error}</div> : null}

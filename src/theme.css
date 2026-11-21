@@ -682,7 +682,8 @@ summary:focus-visible,
 }
 
 /* The real chord, shown as a quiet keycap instead of a platform-agnostic glyph. */
-.rail-footer kbd {
+.rail-footer kbd,
+.rail-settings-item kbd {
   margin-left: auto;
   padding: var(--hairline) var(--space-2);
   border: var(--hairline) solid var(--border);
@@ -693,6 +694,29 @@ summary:focus-visible,
   font-weight: 600;
   line-height: 1.5;
   white-space: nowrap;
+}
+
+/* One coherent lower-left tools section: workspace utilities and app controls share
+   the same rows instead of a cramped strip above a separate footer. */
+.rail-tools {
+  margin-top: auto;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-raised) 55%, transparent);
+}
+
+.rail-tools .rail-head {
+  padding-top: 0;
+}
+
+.rail-tools .rail-settings-item {
+  min-height: 32px;
+}
+
+.rail-tools-divider {
+  height: var(--hairline);
+  margin: var(--space-4) var(--space-4);
+  background: var(--border-strong);
 }
 
 .conversation {
@@ -2604,6 +2628,51 @@ p.provider-meta,
   gap: var(--space-5);
 }
 
+/* The editor is a workbench: a narrow explorer beside a full-height editor, not two
+   stacked cards that waste the right pane's width. */
+.files-panel.files-workbench {
+  grid-template-columns: minmax(150px, 200px) minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--space-4);
+  height: 100%;
+}
+
+.files-sidebar,
+.files-editor {
+  min-width: 0;
+}
+
+.files-sidebar .panel-card {
+  position: sticky;
+  top: 0;
+}
+
+.files-editor {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.files-editor .editor {
+  min-height: 60vh;
+  resize: none;
+}
+
+.files-workbench > .banner-ok,
+.files-workbench > .banner-error {
+  grid-column: 1 / -1;
+}
+
+/* Browser navigation sits on one compact row under the address bar. */
+.browser-bar {
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.browser-bar .small-button {
+  flex: 0 0 auto;
+}
+
 .workspace-panel .banner-error {
   margin: var(--space-2) 0;
   border: 1px solid color-mix(in srgb, var(--bad) 35%, var(--border));
@@ -2892,6 +2961,13 @@ pre.diff-view {
   gap: var(--space-4);
   min-height: 0;
   padding: var(--space-5) var(--space-6);
+}
+
+/* As a right-pane workbench tab the terminal fills the panel instead of floating
+   above the conversation. */
+.workspace-panel > .terminal-panel {
+  height: 100%;
+  grid-template-rows: minmax(0, 1fr) auto auto auto;
 }
 
 .terminal-output {

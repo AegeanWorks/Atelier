@@ -55,6 +55,8 @@ async function probe(target: string): Promise<boolean> {
 
 export default function PreviewPanel(): React.JSX.Element {
   const [url, setUrl] = useState(readUrl);
+  const [history, setHistory] = useState<string[]>(() => [readUrl()]);
+  const [at, setAt] = useState(0);
   const [src, setSrc] = useState<string | null>(null);
   const [nonce, setNonce] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +85,26 @@ export default function PreviewPanel(): React.JSX.Element {
     setLoading(true);
     try {
       await open(trimmed);
+      setHistory((current) => [...current.slice(0, at + 1), trimmed]);
+      setAt((current) => current + 1);
       setNotice(null);
+    } catch (caught) {
+      setError(messageOf(caught));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function visit(index: number): Promise<void> {
+    if (index < 0 || index >= history.length) return;
+    const target = history[index];
+    if (target === undefined) return;
+    setUrl(target);
+    setAt(index);
+    setLoading(true);
+    try {
+      await open(target);
+      setError(null);
     } catch (caught) {
       setError(messageOf(caught));
     } finally {
@@ -133,8 +154,8 @@ export default function PreviewPanel(): React.JSX.Element {
   return (
     <div data-testid="preview-panel">
       <div className="panel-card">
-        <h2>Preview</h2>
-        <p>Load a loopback dev server through the sandboxed directory proxy. External hosts and redirects are refused.</p>
+        <h2>Browser</h2>
+        <p>Browse a loopback dev server through the sandboxed proxy. External hosts and redirects are refused.</p>
         <form className="preview-form" onSubmit={(event) => void load(event)}>
           <label className="sr-only" htmlFor="preview-url">Preview URL</label>
           <input
@@ -147,7 +168,9 @@ export default function PreviewPanel(): React.JSX.Element {
           />
           <button className="send-button" type="submit" disabled={loading} data-testid="preview-load">{loading ? "Loading…" : "Load"}</button>
         </form>
-        <div className="file-create">
+        <div className="file-create browser-bar">
+          <button className="small-button" type="button" onClick={() => void visit(at - 1)} disabled={loading || at === 0} aria-label="Back" data-testid="browser-back">← Back</button>
+          <button className="small-button" type="button" onClick={() => void visit(at + 1)} disabled={loading || at >= history.length - 1} aria-label="Forward" data-testid="browser-forward">Forward →</button>
           <button className="small-button" type="button" onClick={() => void reload()} disabled={loading || src === null} data-testid="preview-reload">Reload</button>
           <button className="small-button" type="button" onClick={openInTab} disabled={src === null} data-testid="preview-tab">Open in new tab</button>
           <button className="small-button" type="button" onClick={() => void detect()} disabled={detecting} data-testid="preview-detect">{detecting ? "Detecting…" : "Detect"}</button>

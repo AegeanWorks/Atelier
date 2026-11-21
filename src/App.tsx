@@ -27,7 +27,7 @@ import TodoStrip from "./TodoStrip";
 import DiffView from "./DiffView";
 
 type Mode = "plan" | "build";
-type WorkspaceTab = "files" | "git" | "history" | "plans" | "preview" | "task" | "usage" | "settings" | "evals";
+type WorkspaceTab = "files" | "preview" | "terminal" | "git" | "history" | "plans" | "task" | "usage" | "settings" | "evals";
 type Theme = "dark" | "light";
 type Pane = "rail" | "workspace";
 type PaneWidths = Record<Pane, number>;
@@ -54,16 +54,18 @@ interface ErrorState {
   fix: string;
 }
 
-// Tabs read in one flat row, so a thin token-coloured rule marks the first tab of
-// each later group: workspace tools, run activity, then setup. This gives the bar a
-// scannable structure without adding controls, labels or chrome (G-008).
+// The right pane is a desktop workbench: an editor, a browser and a terminal come
+// first, then version/activity tools. A thin token-coloured rule marks the later
+// group so the row stays scannable without extra chrome (G-008). Setup panels live
+// in the rail, not here.
 const WORKSPACE_TABS: ReadonlyArray<{ id: WorkspaceTab; label: string; groupStart?: boolean }> = [
   { id: "files", label: "Files" },
   { id: "git", label: "Git" },
-  { id: "history", label: "History" },
-  { id: "plans", label: "Plans" },
   { id: "preview", label: "Preview" },
-  { id: "task", label: "Task", groupStart: true },
+  { id: "terminal", label: "Terminal" },
+  { id: "history", label: "History", groupStart: true },
+  { id: "plans", label: "Plans" },
+  { id: "task", label: "Task" },
   { id: "usage", label: "Usage" },
   { id: "settings", label: "Settings", groupStart: true },
   { id: "evals", label: "Evals" },
@@ -73,6 +75,10 @@ const WORKSPACE_TABS: ReadonlyArray<{ id: WorkspaceTab; label: string; groupStar
 const SETTINGS_TAB_IDS = new Set<WorkspaceTab>(["usage", "settings", "evals"]);
 const PRIMARY_TABS = WORKSPACE_TABS.filter((item) => !SETTINGS_TAB_IDS.has(item.id));
 const SETTINGS_TABS = WORKSPACE_TABS.filter((item) => SETTINGS_TAB_IDS.has(item.id));
+
+// Alt+N keeps its long-standing mapping (Editor, Git, History, Plans, Browser, Terminal,
+// Task) even though the visible tab order now leads with the three workbench tools.
+const ALT_TAB_ORDER: WorkspaceTab[] = ["files", "git", "history", "plans", "preview", "terminal", "task"];
 
 function SettingsIcon({ id }: { id: WorkspaceTab }): React.JSX.Element {
   const common = {
@@ -688,10 +694,10 @@ export default function App(): React.JSX.Element {
         const target = event.target as HTMLElement | null;
         const typing = target !== null && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable);
         if (typing) return;
-        const next = WORKSPACE_TABS[Number(event.key) - 1];
+        const next = ALT_TAB_ORDER[Number(event.key) - 1];
         if (next !== undefined) {
           event.preventDefault();
-          navigateTo(next.id);
+          navigateTo(next);
         }
       } else if (event.key === "Escape") {
         setPaletteOpen(false);
@@ -1339,9 +1345,9 @@ export default function App(): React.JSX.Element {
             onArchive={(id, archived) => void setArchived(id, archived)}
             onSearch={searchMessages}
           />
-          <div className="rail-section rail-settings">
+          <div className="rail-section rail-tools">
             <div className="rail-head">
-              <span className="rail-head-title">More</span>
+              <span className="rail-head-title">Workspace</span>
             </div>
             <div className="rail-settings-list">
               {SETTINGS_TABS.map((item) => (
@@ -1360,21 +1366,22 @@ export default function App(): React.JSX.Element {
               ))}
             </div>
           </div>
-          <div className="rail-footer">
-            <button type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} data-testid="theme-toggle">
-              {theme === "dark" ? (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-              ) : (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
-              )}
-              <span className="rail-footer-label">{theme === "dark" ? "Light theme" : "Dark theme"}</span>
-            </button>
-            <button type="button" onClick={() => setPaletteOpen(true)} aria-keyshortcuts="Control+K Meta+K" data-testid="command-palette-open">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-              <span className="rail-footer-label">Command palette</span>
-              <kbd>{PALETTE_MODIFIER} K</kbd>
-            </button>
-          </div>
+            <div className="rail-tools-divider" />
+            <div className="rail-settings-list">
+              <button className="rail-settings-item" type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} data-testid="theme-toggle">
+                {theme === "dark" ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4-1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+                )}
+                <span>{theme === "dark" ? "Light theme" : "Dark theme"}</span>
+              </button>
+              <button className="rail-settings-item" type="button" onClick={() => setPaletteOpen(true)} aria-keyshortcuts="Control+K Meta+K" data-testid="command-palette-open">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <span>Command palette</span>
+                <kbd>{PALETTE_MODIFIER} K</kbd>
+              </button>
+            </div>
         </aside>
 
         <main className="conversation" aria-label="Conversation">
@@ -1817,7 +1824,7 @@ export default function App(): React.JSX.Element {
           </button>
           </div>
           <div className="workspace-panel" id="workspace-panel" role="tabpanel" aria-labelledby={`workspace-tab-${tab}`} data-testid="workspace-panel">
-            {tab === "settings" ? <SettingsPanel /> : tab === "files" ? <FilesPanel openRequest={openRequest} /> : tab === "git" ? <GitPanel /> : tab === "evals" ? <EvalsPanel /> : tab === "preview" ? <PreviewPanel /> : tab === "usage" ? <UsagePanel sessionId={activeId} /> : tab === "history" ? <HistoryPanel refreshTick={historyTick} /> : tab === "plans" ? <PlansPanel sessionId={activeId} refreshTick={planTick} /> : <TaskPanel sessionId={activeId} refreshTick={taskTick} />}
+            {tab === "settings" ? <SettingsPanel /> : tab === "files" ? <FilesPanel openRequest={openRequest} /> : tab === "terminal" ? <TerminalPanel /> : tab === "git" ? <GitPanel /> : tab === "evals" ? <EvalsPanel /> : tab === "preview" ? <PreviewPanel /> : tab === "usage" ? <UsagePanel sessionId={activeId} /> : tab === "history" ? <HistoryPanel refreshTick={historyTick} /> : tab === "plans" ? <PlansPanel sessionId={activeId} refreshTick={planTick} /> : <TaskPanel sessionId={activeId} refreshTick={taskTick} />}
           </div>
         </section>
 

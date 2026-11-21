@@ -4727,5 +4727,53 @@
     "final_snapshot_entries": 29,
     "surface_digest": "472417350e92f71d34e79d6044a9428ce8621ee37c97d6c172e9de3e20b218ff",
     "baseline_digest": "8dbb00ca98843c25b7d1361bbef68793a6795ab8d8fe0f3319aa062500cc6404"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/App.tsx",
+      "src/FilesPanel.tsx",
+      "src/PreviewPanel.tsx",
+      "src/theme.css",
+      "tests/ui/layout.test.tsx"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "5a5710c4e39782b710839698eb1499a5ad976f1c",
+    "contract_hash": "532d27b0250ac9c359a0aab70f356421285e9bd09d30e73a5941d6eb90c4a900",
+    "started_at": 1795291788.6784797,
+    "finished_at": 1795294200.2456255,
+    "strikes": 1,
+    "reviewer": "agent:opencode:1",
+    "review": {
+      "reviewer": "agent:opencode:1",
+      "surface": "app",
+      "surface_digest": "5565da5d3204244eb692921cd9003d67380fc52dc46df4ea2d4a0bf7eca26fd5",
+      "snapshot_digest": "77abbacbcc9583a4fa2762ad034f1ffb1c12fea94c53eb0506f05c296636a702",
+      "snapshot_entries": 32,
+      "visual": true,
+      "reviewed_at": 1795294200.2456274,
+      "scoped_paths": [
+        "src/App.tsx",
+        "src/FilesPanel.tsx",
+        "src/PreviewPanel.tsx",
+        "src/theme.css",
+        "tests/ui/layout.test.tsx"
+      ],
+      "scoped_digest": "a29d3e4f002cf4f543d8bf6450dd025830ae965e2257769feadebc2a36681ed5"
+    },
+    "allowed_removals": [],
+    "allowed_tests": [
+      {
+        "path": "tests/ui/layout.test.tsx",
+        "reason": "Extended the layout tests to cover the new Terminal workbench tab and Browser back/forward controls."
+      }
+    ],
+    "final_snapshot_digest": "77abbacbcc9583a4fa2762ad034f1ffb1c12fea94c53eb0506f05c296636a702",
+    "final_snapshot_entries": 32,
+    "surface_digest": "5565da5d3204244eb692921cd9003d67380fc52dc46df4ea2d4a0bf7eca26fd5",
+    "baseline_digest": "472417350e92f71d34e79d6044a9428ce8621ee37c97d6c172e9de3e20b218ff"
   }
 ]
