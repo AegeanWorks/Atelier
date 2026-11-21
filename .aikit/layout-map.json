@@ -7,7 +7,7 @@
     { "name": "send-button", "role": "button" },
     { "name": "workspace-tabs", "role": "tablist" },
     { "name": "statusbar", "role": "contentinfo" },
-    { "name": "open-palette", "role": "button" },
+    { "name": "command-palette-open", "role": "button" },
     { "name": "command-palette", "role": "dialog" },
     { "name": "terminal-drawer", "role": "region" },
     { "name": "settings-panel", "role": "region" },
