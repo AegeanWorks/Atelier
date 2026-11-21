@@ -1,13 +1,13 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-desktop-only",
+    "task_id": "atelier-ui-polish",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1795297366.8728116,
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1795300897.4056015,
     "owner": "opencode:1",
-    "lease_until": 1795304566.8728116,
+    "lease_until": 1795308097.4056015,
     "started_by": "opencode:1",
     "continuations": [],
     "workspaces": [
@@ -15,36 +15,9 @@
         "name": "atelier",
         "path": "projects/atelier"
       }
-    ],
-    "completed_at": 1795299731.1651669,
-    "completed_head": "553d93c782c4ff7448a27bed739283f0e9b1e7ed",
-    "completed_tree": "e5fbd26c3ac2f3ab17f8962be2e0ebcc6014ad68"
+    ]
   },
   "checkpoints": [
-    {
-      "task_id": "reforge:run-1",
-      "phase": "reforge stage 65",
-      "phase_num": 3,
-      "description": "Reforge stage 65: window 195, 3 commit(s), 20 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1795276933.0772555,
-      "timestamp_str": "2026-11-21 19:02:13",
-      "agent": "opencode",
-      "operator_task": "atelier-ui-eval-id"
-    },
-    {
-      "task_id": "reforge:run-1",
-      "phase": "reforge stage 65",
-      "phase_num": 3,
-      "description": "Reforge stage 65: stage 65 host review reviewed; run active; coverage 29/29",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1795277111.1088507,
-      "timestamp_str": "2026-11-21 19:05:11",
-      "agent": "opencode",
-      "operator_task": "atelier-ui-eval-id"
-    },
     {
       "task_id": "reforge:run-1",
       "phase": "reforge stage 66",
@@ -315,6 +288,47 @@
         ],
         "forced": false
       }
+    },
+    {
+      "task_id": "atelier-ui-polish",
+      "phase": "phase 1",
+      "phase_num": 1,
+      "description": "[1/3] UI polish from subagent reports: divider affordance/focus rings, fill workbench panes, first-run hierarchy.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795299744.467221,
+      "timestamp_str": "2026-11-22 01:22:24",
+      "agent": "opencode:1",
+      "impact_assessment": {
+        "why": "Three design subagents found dead space, disabled Explorer, removed focus rings and weak hierarchy; these degrade the desktop workbench.",
+        "benefits": "Discoverable resizing, fuller panes, clearer first-run guidance; no new deps.",
+        "risks": "contract: resizer/testids stable; dependency: none; concurrency: none; state: none",
+        "mitigation": "Token-only CSS changes plus additive aria attributes; verify with axe, browser and before/after screenshots."
+      },
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-polish",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "Subagent-driven UI polish packages A+B: token-based --focus-ring applied to 8 focus rules; resizers have a resting grip (0.3 opacity), strong hover/focus state and a real 2px focus outline, plus drag/reset tooltips. Files editor has a full-height guided empty state (no file open) and the Browser iframe/empty state now fills the right pane. G-007/G-010 vision review of before/after 1440px pairs: cramped top-anchored placeholder replaced by a purposeful full-height surface; no clipping/overlap; a11y 14 scans 0 violations after fixing the empty-state glyph contrast with --text. npm test 125 files / 678 tests.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795300897.4056015,
+      "timestamp_str": "2026-11-22 01:41:37",
+      "agent": "opencode:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
     }
   ]
 }

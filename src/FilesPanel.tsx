@@ -199,7 +199,11 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
           <small>{current.size} bytes · {dirty ? "unsaved — Cmd/Ctrl+S to save" : "saved"}</small>
         </div>
       ) : (
-        <div className="panel-card file-preview-placeholder"><p>Select a file to open it.</p></div>
+        <div className="panel-card file-preview-placeholder" data-testid="editor-empty">
+          <span className="editor-empty-mark" aria-hidden="true">▤</span>
+          <h3>No file open</h3>
+          <p>Choose a file in the Explorer, or create one above, to edit it here. Cmd/Ctrl+S saves your changes.</p>
+        </div>
       )}
       </section>
 

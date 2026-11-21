@@ -1278,6 +1278,7 @@ export default function App(): React.JSX.Element {
           role="separator"
           aria-orientation="vertical"
           aria-label="Resize conversation list"
+          title="Drag to resize · double-click to reset"
           aria-valuemin={PANE_BOUNDS.rail[0]}
           aria-valuemax={PANE_BOUNDS.rail[1]}
           aria-valuenow={paneWidths.rail}
@@ -1292,6 +1293,7 @@ export default function App(): React.JSX.Element {
           role="separator"
           aria-orientation="vertical"
           aria-label="Resize workspace panel"
+          title="Drag to resize · double-click to reset"
           aria-valuemin={PANE_BOUNDS.workspace[0]}
           aria-valuemax={PANE_BOUNDS.workspace[1]}
           aria-valuenow={paneWidths.workspace}

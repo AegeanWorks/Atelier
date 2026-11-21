@@ -14,6 +14,7 @@
   --accent-text: var(--accent);
   --accent-2: #38e1c6;
   --accent-soft: rgba(120, 124, 255, 0.15);
+  --focus-ring: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
   --ok: #4ade80;
   --warn: #f6c85f;
   --bad: #ff7a90;
@@ -228,17 +229,18 @@ summary:focus-visible,
   left: 4px;
   right: 4px;
   background: var(--accent);
-  opacity: 0;
+  opacity: 0.3;
   transition: opacity var(--ease);
 }
 
 .pane-resizer:hover::after,
 .pane-resizer:focus-visible::after {
-  opacity: 0.55;
+  opacity: 0.85;
 }
 
 .pane-resizer:focus-visible {
-  outline: none;
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .pane-resizer-rail {
@@ -1369,7 +1371,7 @@ summary:focus-visible,
 
 .approval-note:focus {
   border-color: var(--accent);
-  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .approval-note::placeholder {
@@ -2407,7 +2409,7 @@ p.provider-meta,
 .field select:focus,
 .field textarea:focus {
   border-color: var(--accent);
-  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .role-grid {
@@ -2487,8 +2489,9 @@ p.provider-meta,
 
 .files-editor {
   display: grid;
+  grid-template-rows: minmax(0, 1fr);
   gap: var(--space-4);
-  align-content: start;
+  min-height: 0;
 }
 
 .files-editor .editor {
@@ -2597,7 +2600,7 @@ p.provider-meta,
 .git-panel input:focus,
 .history-dir:focus {
   border-color: var(--accent);
-  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .file-tree {
@@ -2617,16 +2620,36 @@ p.provider-meta,
 }
 
 .file-preview-placeholder {
-  min-height: 120px;
+  min-height: 60vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--space-4);
   text-align: center;
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-sm);
   background: var(--bg-panel);
-  margin-top: var(--space-4);
-  padding: var(--space-6);
+  padding: var(--space-9) var(--space-6);
+}
+
+.editor-empty-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: var(--text-lg);
+}
+
+.file-preview-placeholder h3 {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text);
 }
 
 .file-preview-placeholder p {
@@ -2775,7 +2798,7 @@ p.provider-meta,
 
 .editor:focus {
   border-color: var(--accent);
-  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 pre.diff-view {
@@ -2834,7 +2857,7 @@ pre.diff-view {
 
 .terminal-form input:focus {
   border-color: var(--accent);
-  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .terminal-hint {
@@ -2866,7 +2889,7 @@ pre.diff-view {
 
 .preview-input:focus {
   border-color: var(--accent);
-  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .preview-form .send-button {
@@ -2878,10 +2901,19 @@ pre.diff-view {
   border-radius: var(--radius-xs);
 }
 
+[data-testid="preview-panel"] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--space-4);
+  height: 100%;
+  min-height: 0;
+}
+
 .preview-frame {
   width: 100%;
-  height: 420px;
-  margin-top: var(--space-5);
+  height: 100%;
+  min-height: 360px;
+  margin-top: 0;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--bg-raised);
@@ -2889,7 +2921,8 @@ pre.diff-view {
 }
 
 .preview-placeholder {
-  min-height: 140px;
+  min-height: 240px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2927,7 +2960,7 @@ pre.diff-view {
 .plans-panel input:focus,
 .plans-panel textarea:focus {
   border-color: var(--accent);
-  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .plans-panel textarea {
