@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, ApiError } from "./api";
+import DiffView from "./DiffView";
 
 interface GitChange {
   status: string;
@@ -152,7 +153,19 @@ export default function GitPanel(): React.JSX.Element {
                 onClick={() => void showDiff(change)}
                 data-testid="git-file"
               >
-                <span className="git-code" title="index / worktree">
+                <span
+                  className="git-code"
+                  title="index / worktree"
+                  data-kind={
+                    `${codeLetter(change.index)}${codeLetter(change.worktree)}`.includes("?")
+                      ? "untracked"
+                      : `${codeLetter(change.index)}${codeLetter(change.worktree)}`.includes("A")
+                        ? "added"
+                        : `${codeLetter(change.index)}${codeLetter(change.worktree)}`.includes("D")
+                          ? "deleted"
+                          : "modified"
+                  }
+                >
                   {codeLetter(change.index)}{codeLetter(change.worktree)}
                 </span> {change.path}
               </button>
@@ -182,7 +195,9 @@ export default function GitPanel(): React.JSX.Element {
       {selected !== null ? (
         <div className="panel-card">
           <h2>Diff · {selected}{diffStaged ? " · staged" : ""}</h2>
-          <pre className="diff-view" data-testid="git-diff">{diff || "No diff."}</pre>
+          <div className="git-diff-wrap" data-testid="git-diff">
+            {diff ? <DiffView diff={diff} defaultOpen /> : <p className="provider-meta">No diff.</p>}
+          </div>
         </div>
       ) : null}
 

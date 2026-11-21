@@ -138,7 +138,7 @@ export default function HistoryPanel({ refreshTick }: { refreshTick: number }): 
         <p className="provider-meta">Restores the latest checkpoint of every file under this directory. Current files are checkpointed first.</p>
         {pending ? (
           <div className="file-create">
-            <button className="small-button" type="button" onClick={() => void restoreDir()} disabled={busy} data-testid="history-confirm-dir">
+            <button className="small-button danger" type="button" onClick={() => void restoreDir()} disabled={busy} data-testid="history-confirm-dir">
               {busy ? "Restoring…" : `Confirm restore ${dir.length > 0 ? dir : "workspace root"}`}
             </button>
             <button className="small-button" type="button" onClick={() => setPending(false)} data-testid="history-cancel-dir">Cancel</button>

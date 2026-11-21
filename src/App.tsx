@@ -30,29 +30,57 @@ type Mode = "plan" | "build";
 type WorkspaceTab = "files" | "git" | "history" | "plans" | "preview" | "task" | "usage" | "settings" | "evals";
 type Theme = "dark" | "light";
 
+// The palette chord is Ctrl+K off macOS and ⌘K on macOS. Name what the platform
+// actually uses instead of shipping a Mac glyph to every user (G-008: truthful labels).
+const PALETTE_MODIFIER =
+  typeof navigator !== "undefined" && /Mac|iP(hone|ad|od)/.test(`${navigator.platform} ${navigator.userAgent}`)
+    ? "⌘"
+    : "Ctrl";
+
 interface ErrorState {
   what: string;
   why: string;
   fix: string;
 }
 
-const WORKSPACE_TABS: ReadonlyArray<{ id: WorkspaceTab; label: string }> = [
+// Tabs read in one flat row, so a thin token-coloured rule marks the first tab of
+// each later group: workspace tools, run activity, then setup. This gives the bar a
+// scannable structure without adding controls, labels or chrome (G-008).
+const WORKSPACE_TABS: ReadonlyArray<{ id: WorkspaceTab; label: string; groupStart?: boolean }> = [
   { id: "files", label: "Files" },
   { id: "git", label: "Git" },
   { id: "history", label: "History" },
   { id: "plans", label: "Plans" },
   { id: "preview", label: "Preview" },
-  { id: "task", label: "Task" },
+  { id: "task", label: "Task", groupStart: true },
   { id: "usage", label: "Usage" },
-  { id: "settings", label: "Settings" },
+  { id: "settings", label: "Settings", groupStart: true },
   { id: "evals", label: "Evals" },
 ];
 
-const QUICK_PROMPTS: ReadonlyArray<{ title: string; prompt: string }> = [
-  { title: "Explain this repository", prompt: "Map this repository and explain its architecture." },
-  { title: "Fix a failing test", prompt: "Run the test suite, find the first failure, and fix it." },
-  { title: "Review my changes", prompt: "Review the current diff for correctness and regressions." },
-  { title: "Write a plan", prompt: "Write a short implementation plan for the next feature." },
+// Utility panels live in a Settings section in the rail, not in the workspace tab strip.
+const SETTINGS_TAB_IDS = new Set<WorkspaceTab>(["usage", "settings", "evals"]);
+const PRIMARY_TABS = WORKSPACE_TABS.filter((item) => !SETTINGS_TAB_IDS.has(item.id));
+const SETTINGS_TABS = WORKSPACE_TABS.filter((item) => SETTINGS_TAB_IDS.has(item.id));
+
+function SettingsIcon({ id }: { id: WorkspaceTab }): React.JSX.Element {
+  const common = {
+    width: 14, height: 14, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+    strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const,
+    "aria-hidden": true,
+  };
+  if (id === "usage") return <svg {...common}><path d="M4 20v-6M10 20V6M16 20v-9M22 20H2" /></svg>;
+  if (id === "settings") return <svg {...common}><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2" /><circle cx="15" cy="17" r="2" /></svg>;
+  return <svg {...common}><path d="M4 19h16M6 16l4-5 3 3 5-7" /></svg>;
+}
+
+// Each starter names what it will put in the composer, so a first-run user does not
+// have to guess what the card does before committing to it (G-008: truthful labels).
+const QUICK_PROMPTS: ReadonlyArray<{ title: string; hint: string; prompt: string }> = [
+  { title: "Explain this repository", hint: "Map the code and architecture", prompt: "Map this repository and explain its architecture." },
+  { title: "Fix a failing test", hint: "Run the suite and repair the first failure", prompt: "Run the test suite, find the first failure, and fix it." },
+  { title: "Review my changes", hint: "Inspect the current diff for regressions", prompt: "Review the current diff for correctness and regressions." },
+  { title: "Write a plan", hint: "Draft the next implementation step", prompt: "Write a short implementation plan for the next feature." },
 ];
 
 function toErrorState(error: unknown): ErrorState {
@@ -175,11 +203,13 @@ export default function App(): React.JSX.Element {
   const [stopping, setStopping] = useState(false);
   const [sending, setSending] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [paletteQuery, setPaletteQuery] = useState("");
   const [paletteIndex, setPaletteIndex] = useState(0);
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [railOpen, setRailOpen] = useState(false);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
+  const [workspaceCollapsed, setWorkspaceCollapsed] = useState(false);
   const [live, setLive] = useState(false);
   const [stick, setStick] = useState(true);
   const [showJump, setShowJump] = useState(false);
@@ -200,6 +230,7 @@ export default function App(): React.JSX.Element {
   const [approvalBusy, setApprovalBusy] = useState<string[]>([]);
   const composerRef = useRef<HTMLTextAreaElement>(null);
   const paletteInputRef = useRef<HTMLInputElement>(null);
+  const settingsDialogRef = useRef<HTMLElement>(null);
   const messagesRef = useRef<HTMLElement>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -602,12 +633,12 @@ export default function App(): React.JSX.Element {
         const next = WORKSPACE_TABS[Number(event.key) - 1];
         if (next !== undefined) {
           event.preventDefault();
-          setTab(next.id);
-          setWorkspaceOpen(true);
+          navigateTo(next.id);
         }
       } else if (event.key === "Escape") {
         setPaletteOpen(false);
         setTerminalOpen(false);
+        setSettingsOpen(false);
         setWorkspaceOpen(false);
       }
     };
@@ -622,6 +653,32 @@ export default function App(): React.JSX.Element {
       paletteInputRef.current?.focus();
     }
   }, [paletteOpen]);
+
+  useEffect(() => {
+    if (!settingsOpen) return undefined;
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    settingsDialogRef.current?.focus();
+    return () => { opener?.focus(); };
+  }, [settingsOpen]);
+
+  function onSettingsKeyDown(event: React.KeyboardEvent<HTMLElement>): void {
+    if (event.key !== "Tab") return;
+    const root = settingsDialogRef.current;
+    if (root === null) return;
+    const focusable = Array.from(root.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+    )).filter((element) => element.getClientRects().length > 0);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (first === undefined || last === undefined) return;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
 
   async function createConversation(): Promise<void> {
     try {
@@ -1080,15 +1137,26 @@ export default function App(): React.JSX.Element {
     }
   }
 
+  // Settings lives in its own window now, so every "go to tab" entry point must
+  // open the window for it instead of selecting a tab that no longer renders.
+  function navigateTo(id: WorkspaceTab): void {
+    if (id === "settings") {
+      setSettingsOpen(true);
+      return;
+    }
+    setTab(id);
+    setWorkspaceOpen(true);
+  }
+
   const paletteActions: Array<{ id: string; label: string; hint?: string; run: () => void }> = [
     { id: "new", label: "New conversation", run: () => void createConversation() },
     ...WORKSPACE_TABS.map((item, index) => ({
       id: `go-${item.id}`,
       label: `Go to ${item.label}`,
       hint: `Alt+${index + 1}`,
-      run: () => setTab(item.id),
+      run: () => navigateTo(item.id),
     })),
-    { id: "terminal", label: terminalOpen ? "Hide terminal" : "Show terminal", hint: "⌘J", run: () => setTerminalOpen((open) => !open) },
+    { id: "terminal", label: terminalOpen ? "Hide terminal" : "Show terminal", hint: `${PALETTE_MODIFIER}+J`, run: () => setTerminalOpen((open) => !open) },
     { id: "export", label: "Export transcript as markdown", run: () => {
       if (activeSession === null || messages.length === 0) return;
       const ok = downloadTranscript(activeSession.title, messages);
@@ -1111,9 +1179,9 @@ export default function App(): React.JSX.Element {
     event.preventDefault();
     const target = WORKSPACE_TABS[next];
     if (target === undefined) return;
-    setTab(target.id);
-    const buttons = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
-    buttons?.[next]?.focus();
+    navigateTo(target.id);
+    const targetButton = document.querySelector<HTMLButtonElement>(`[data-testid="tab-${target.id}"]`);
+    targetButton?.focus();
   }
 
   function runPaletteAction(action: { run: () => void }): void {
@@ -1142,7 +1210,7 @@ export default function App(): React.JSX.Element {
       <a className="skip-link" href="#composer">
         Skip to composer
       </a>
-      <div className="app-shell" data-testid="app-shell">
+      <div className="app-shell" data-testid="app-shell" data-workspace-collapsed={workspaceCollapsed}>
         <aside className="rail" data-open={railOpen} aria-label="Conversations" data-testid="rail">
           <div className="brand-row">
             <span className="brand-mark" aria-hidden="true">A</span>
@@ -1180,12 +1248,40 @@ export default function App(): React.JSX.Element {
             onArchive={(id, archived) => void setArchived(id, archived)}
             onSearch={searchMessages}
           />
+          <div className="rail-section rail-settings">
+            <div className="rail-head">
+              <span className="rail-head-title">More</span>
+            </div>
+            <div className="rail-settings-list">
+              {SETTINGS_TABS.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={tab === item.id ? "rail-settings-item active" : "rail-settings-item"}
+                  aria-current={tab === item.id ? "page" : undefined}
+                  onClick={() => navigateTo(item.id)}
+                  onKeyDown={item.id === "settings" ? undefined : onTabKeyDown}
+                  data-testid={`tab-${item.id}`}
+                >
+                  <SettingsIcon id={item.id} />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="rail-footer">
-            <button type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-              <span aria-hidden="true">{theme === "dark" ? "◐" : "◑"}</span> {theme === "dark" ? "Light theme" : "Dark theme"}
+            <button type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} data-testid="theme-toggle">
+              {theme === "dark" ? (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+              ) : (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+              )}
+              <span className="rail-footer-label">{theme === "dark" ? "Light theme" : "Dark theme"}</span>
             </button>
-            <button type="button" onClick={() => setPaletteOpen(true)}>
-              <span aria-hidden="true">⌘</span> Command palette
+            <button type="button" onClick={() => setPaletteOpen(true)} aria-keyshortcuts="Control+K Meta+K" data-testid="command-palette-open">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <span className="rail-footer-label">Command palette</span>
+              <kbd>{PALETTE_MODIFIER} K</kbd>
             </button>
           </div>
         </aside>
@@ -1210,13 +1306,13 @@ export default function App(): React.JSX.Element {
               </button>
             ) : null}
             <button
-              className="icon-button mobile-only"
+              className="icon-button mobile-only workspace-reopen"
               type="button"
               aria-label="Open workspace"
               title="Open workspace panels"
               aria-expanded={workspaceOpen}
               data-testid="open-workspace"
-              onClick={() => setWorkspaceOpen(true)}
+              onClick={() => { setWorkspaceOpen(true); setWorkspaceCollapsed(false); }}
             >
               ▤
             </button>
@@ -1234,10 +1330,10 @@ export default function App(): React.JSX.Element {
               }}
               data-testid="export-conversation"
             >
-              ⤓
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>
             </button>
-            <button className="icon-button mobile-only" type="button" aria-label="⌘K command palette" onClick={() => setPaletteOpen(true)} data-testid="open-palette">
-              ⌘K
+            <button className="icon-button palette-shortcut mobile-only" type="button" aria-label={`${PALETTE_MODIFIER} K command palette`} onClick={() => setPaletteOpen(true)} data-testid="open-palette">
+              {PALETTE_MODIFIER} K
             </button>
           </header>
 
@@ -1282,13 +1378,15 @@ export default function App(): React.JSX.Element {
             </div>
           ) : null}
 
-          {needsProvider ? (
+          {/* A blocked run already spells out the exact provider fix; a second identical
+              hint above it is noise. It returns as soon as that error is dismissed. */}
+          {needsProvider && error?.what !== "Run blocked" ? (
             <div className="banner-hint" role="status" data-testid="provider-notice">
               <div className="banner-copy">
                 <strong>No provider key yet</strong>
                 <div>Add a provider and its key in Settings, or set the key in the atelier environment, before sending a message.</div>
               </div>
-              <button className="small-button" type="button" onClick={() => { setTab("settings"); setWorkspaceOpen(true); }} data-testid="provider-settings">
+              <button className="small-button" type="button" onClick={() => { setSettingsOpen(true); setWorkspaceOpen(true); }} data-testid="provider-settings">
                 Open Settings
               </button>
             </div>
@@ -1302,9 +1400,13 @@ export default function App(): React.JSX.Element {
             ref={messagesRef}
             onScroll={onMessagesScroll}
           >
-            {messages.length === 0 ? (
+            {/* A live run owns the transcript: showing the first-run hero beside a streaming
+                reply leaves stale copy on screen. It returns when the run ends with no messages. */}
+            {messages.length === 0 && runStatus !== "running" ? (
               <div className="empty-state">
-                <div className="empty-icon" aria-hidden="true">◆</div>
+                <div className="empty-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.9 5.6L19.5 10.5 13.9 12.4 12 18l-1.9-5.6L4.5 10.5l5.6-1.9L12 3Z"/><path d="M19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7L19 16Z"/></svg>
+                </div>
                 <h2>What are we building?</h2>
                 <p>
                   Chat, files, git, terminal, preview and plans in one local workspace. Every message is durable,
@@ -1321,7 +1423,8 @@ export default function App(): React.JSX.Element {
                         composerRef.current?.focus();
                       }}
                     >
-                      {item.title}
+                      <span className="quick-title">{item.title}</span>
+                      <span className="quick-hint">{item.hint}</span>
                     </button>
                   ))}
                 </div>
@@ -1337,7 +1440,7 @@ export default function App(): React.JSX.Element {
                     )}
                   </div>
                   <div className="message-meta">
-                    <span>{message.role} · seq {message.seq}</span>
+                    <span>{message.role === "user" ? "You" : "Assistant"} · {new Date(message.created).toLocaleTimeString()}</span>
                     <button
                       type="button"
                       className={copiedId === message.id ? "message-action copied" : "message-action"}
@@ -1411,6 +1514,7 @@ export default function App(): React.JSX.Element {
                     ) : null}
                   </p>
                   {approval.preview === null || approval.preview.length === 0 ? null : <DiffView diff={approval.preview} defaultOpen />}
+                  <div className="approval-actions">
                   <input
                     className="approval-note"
                     value={approvalNotes[approval.id] ?? ""}
@@ -1453,6 +1557,7 @@ export default function App(): React.JSX.Element {
                   >
                     Deny
                   </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -1496,7 +1601,7 @@ export default function App(): React.JSX.Element {
                   <li key={command.name} role="option" aria-selected={index === slashActive}>
                     <button type="button" tabIndex={-1} data-active={index === slashActive} data-testid="slash-option" onMouseDown={(event) => { event.preventDefault(); chooseSlash(command); }}>
                       <span><strong>/{command.name}</strong> <em>{command.description}</em></span>
-                      <kbd>{command.kind === "custom" ? "prompt" : "action"}</kbd>
+                      {command.kind === "custom" ? <kbd>prompt</kbd> : null}
                     </button>
                   </li>
                 ))}
@@ -1523,6 +1628,8 @@ export default function App(): React.JSX.Element {
               onKeyDown={onComposerKeyDown}
               onPaste={onComposerPaste}
               aria-autocomplete="list"
+              role="combobox"
+              aria-expanded={slashMatches.length > 0 || mentionMatches.length > 0}
               aria-controls={slashMatches.length > 0 ? "slash-menu-list" : mentionMatches.length > 0 ? "mention-menu-list" : undefined}
               placeholder="Ask, edit, run, or plan. / for commands, @ for files. Cmd/Ctrl+Enter sends."
               rows={1}
@@ -1587,8 +1694,9 @@ export default function App(): React.JSX.Element {
           <button className="workspace-back mobile-only" type="button" onClick={() => setWorkspaceOpen(false)} data-testid="workspace-back">
             <span aria-hidden="true">←</span> Back to conversation
           </button>
+          <div className="workspace-tabbar">
           <div className="workspace-tabs" role="tablist" aria-label="Workspace panels" data-testid="workspace-tabs">
-            {WORKSPACE_TABS.map((item) => (
+            {PRIMARY_TABS.map((item) => (
               <button
                 key={item.id}
                 id={`workspace-tab-${item.id}`}
@@ -1599,11 +1707,23 @@ export default function App(): React.JSX.Element {
                 tabIndex={tab === item.id ? 0 : -1}
                 onClick={() => setTab(item.id)}
                 onKeyDown={onTabKeyDown}
+                data-group-start={item.groupStart ? "true" : undefined}
                 data-testid={`tab-${item.id}`}
               >
                 {item.label}
               </button>
             ))}
+          </div>
+          <button
+            className="workspace-collapse"
+            type="button"
+            aria-label="Collapse workspace"
+            title="Collapse workspace"
+            onClick={() => setWorkspaceCollapsed(true)}
+            data-testid="workspace-collapse"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+          </button>
           </div>
           <div className="workspace-panel" id="workspace-panel" role="tabpanel" aria-labelledby={`workspace-tab-${tab}`} data-testid="workspace-panel">
             {tab === "settings" ? <SettingsPanel /> : tab === "files" ? <FilesPanel openRequest={openRequest} /> : tab === "git" ? <GitPanel /> : tab === "evals" ? <EvalsPanel /> : tab === "preview" ? <PreviewPanel /> : tab === "usage" ? <UsagePanel sessionId={activeId} /> : tab === "history" ? <HistoryPanel refreshTick={historyTick} /> : tab === "plans" ? <PlansPanel sessionId={activeId} refreshTick={planTick} /> : <TaskPanel sessionId={activeId} refreshTick={taskTick} />}
@@ -1683,6 +1803,29 @@ export default function App(): React.JSX.Element {
               ) : null}
             </ul>
           </div>
+        </div>
+      ) : null}
+
+      {settingsOpen ? (
+        <div className="settings-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSettingsOpen(false); }}>
+          <section
+            ref={settingsDialogRef}
+            tabIndex={-1}
+            className="settings-window"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Settings"
+            data-testid="settings-window"
+            onKeyDown={onSettingsKeyDown}
+          >
+            <header className="settings-window-head">
+              <h2>Settings</h2>
+              <button className="icon-button" type="button" aria-label="Close settings" onClick={() => setSettingsOpen(false)} data-testid="close-settings">×</button>
+            </header>
+            <div className="settings-window-body">
+              <SettingsPanel />
+            </div>
+          </section>
         </div>
       ) : null}
     </>

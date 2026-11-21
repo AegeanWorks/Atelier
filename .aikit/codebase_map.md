@@ -25,7 +25,7 @@
 ### [`demo.py`](demo.py)
 > *Headless scripted drive: prints WORLD-DELTA lines, no input, exits 0.*
 
-**Size**: `46` lines (`1221` bytes)
+**Size**: `46` lines
 
 **Functions:**
 - `def _seed(argv)`
@@ -36,7 +36,7 @@
 ### [`inventory.py`](inventory.py)
 > *Project-owned UI inventory: one `kind|name|locator` line per control.*
 
-**Size**: `20` lines (`635` bytes)
+**Size**: `20` lines
 
 **Functions:**
 - `def main()`
@@ -44,6 +44,6 @@
 ---
 
 ### [`scratch-mcp-sse.py`](scratch-mcp-sse.py)
-**Size**: `135` lines (`6091` bytes)
+**Size**: `135` lines
 
 ---

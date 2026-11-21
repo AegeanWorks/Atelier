@@ -23,7 +23,7 @@
     ]
   },
   "limits": {
-    "max_files": 12,
-    "max_lines": 300
+    "max_files": 24,
+    "max_lines": 2000
   }
 }

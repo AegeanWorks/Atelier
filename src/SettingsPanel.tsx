@@ -35,6 +35,7 @@ export default function SettingsPanel(): React.JSX.Element {
   const [busy, setBusy] = useState(false);
   const [testing, setTesting] = useState<string | null>(null);
   const [models, setModels] = useState<ModelOption[]>([]);
+  const [section, setSection] = useState<"providers" | "model" | "tools" | "rules">("providers");
 
   const [mcp, setMcp] = useState({ name: "", transport: "stdio" as McpTransport, command: "", args: "", url: "" });
   const [mcpBusy, setMcpBusy] = useState(false);
@@ -383,6 +384,26 @@ export default function SettingsPanel(): React.JSX.Element {
 
   return (
     <div className="settings-panel" data-testid="settings-panel">
+      <nav className="settings-nav" aria-label="Settings sections">
+        {([
+          ["providers", "Providers"],
+          ["model", "Model"],
+          ["tools", "Tools"],
+          ["rules", "Rules"],
+        ] as const).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            className={section === id ? "settings-nav-item active" : "settings-nav-item"}
+            aria-current={section === id ? "page" : undefined}
+            onClick={() => setSection(id)}
+            data-testid={`settings-nav-${id}`}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+      <div className="settings-section" data-active={section === "providers" ? "true" : "false"}>
       <div className="panel-card">
         <h2>Providers</h2>
         <p>API keys stay on this machine; only set or missing is shown.</p>
@@ -477,7 +498,8 @@ export default function SettingsPanel(): React.JSX.Element {
         </label>
         <button className="send-button" type="submit" disabled={busy} data-testid="save-provider">{busy ? "Saving…" : "Add provider"}</button>
       </form>
-
+      </div>
+      <div className="settings-section" data-active={section === "model" ? "true" : "false"}>
       <div className="panel-card" data-testid="defaults-card">
         <h2>Default model</h2>
         <p>A new run uses this provider and model unless a role overrides them. Type any model id when the endpoint does not list models.</p>
@@ -534,7 +556,8 @@ export default function SettingsPanel(): React.JSX.Element {
         </div>
         <button className="small-button" type="button" onClick={() => void saveRoles()} disabled={busy || config === null} data-testid="save-roles">Save roles</button>
       </div>
-
+      </div>
+      <div className="settings-section" data-active={section === "tools" ? "true" : "false"}>
       <div className="panel-card" data-testid="mcp-card">
         <h2>MCP servers</h2>
         <p>Servers the agent may expose as tools. A stdio server needs a command; http and sse servers need a URL.</p>
@@ -591,7 +614,8 @@ export default function SettingsPanel(): React.JSX.Element {
           <button className="small-button" type="submit" disabled={mcpBusy || config === null} data-testid="save-mcp">Add MCP server</button>
         </form>
       </div>
-
+      </div>
+      <div className="settings-section" data-active={section === "rules" ? "true" : "false"}>
       <div className="panel-card" data-testid="rules-card">
         <h2>Permission rules</h2>
         <p>Decide in advance what Build mode may do without asking. An allow rule skips the approval prompt for matching commands or paths; a deny rule refuses them even when you approve everything. * matches any text. A deny always wins, and an allow never covers a command that chains (&amp;&amp;, ;, |), redirects or substitutes, so those still ask. Secrets, paths outside the workspace and destructive commands stay blocked whatever the rules say.</p>
@@ -687,6 +711,7 @@ export default function SettingsPanel(): React.JSX.Element {
           </label>
           <button className="small-button" type="submit" disabled={hookBusy || config === null} data-testid="save-hook">Add hook</button>
         </form>
+      </div>
       </div>
 
       {message !== null ? <div className="banner-ok" role="status" data-testid="settings-message">{message}</div> : null}

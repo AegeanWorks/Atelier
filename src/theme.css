@@ -26,6 +26,7 @@
   --radius: 12px;
   --radius-lg: 16px;
   --control: 30px;
+  --control-sm: 24px;
   --ease: 140ms ease;
   --glow-a: rgba(99, 102, 241, 0.06);
   --glow-b: rgba(56, 225, 198, 0.03);
@@ -55,7 +56,7 @@
   --radius-pill: 999px;
   --on-accent: #09090b;
   --rail: 248px;
-  --workspace: 412px;
+  --workspace: 456px;
   --status: 28px;
 }
 
@@ -237,17 +238,16 @@ summary:focus-visible,
   width: 24px;
   height: 24px;
   border-radius: var(--radius-xs);
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background: var(--accent);
   color: var(--on-accent);
   font-weight: 900;
   font-size: var(--text-xs);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 .brand-version {
   margin-left: auto;
-  color: var(--text-faint);
-  font-family: var(--mono);
+  color: var(--text-muted);
+  font-family: var(--font);
   font-size: var(--text-xs);
 }
 
@@ -260,11 +260,11 @@ summary:focus-visible,
   align-items: center;
   justify-content: space-between;
   padding: var(--space-2) var(--space-4) var(--space-4);
-  color: var(--text-faint);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .rail-head {
@@ -276,26 +276,26 @@ summary:focus-visible,
 }
 
 .rail-head-title {
-  color: var(--text-faint);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .rail-count {
   margin-left: auto;
-  color: var(--text-faint);
-  font-family: var(--mono);
-  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
 }
 
 .rail-add {
   display: inline-grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
+  width: var(--control-sm);
+  height: var(--control-sm);
   border: 1px solid transparent;
   border-radius: var(--radius-xs);
   background: transparent;
@@ -352,13 +352,13 @@ summary:focus-visible,
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 550;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   letter-spacing: -0.01em;
 }
 
 .conversation-meta {
-  color: var(--text-faint);
-  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
 }
 
 .rail-search {
@@ -456,17 +456,30 @@ summary:focus-visible,
 .conversation-row:hover .conversation-actions,
 .conversation-row:focus-within .conversation-actions {
   opacity: 1;
-  pointer-events: auto;
 }
 
 .conversation-action {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
   border: 0;
   border-radius: var(--radius-xs);
   background: transparent;
   color: var(--text-faint);
+  padding: 0;
+  pointer-events: auto;
+}
+
+.conversation-action.confirming {
+  width: auto;
+  padding: 0 var(--space-2);
+}
+
+.delete-confirm-label {
   font-size: var(--text-xs);
-  line-height: 1;
-  padding: 3px 5px;
+  font-weight: 650;
+  white-space: nowrap;
 }
 
 .conversation-action:hover {
@@ -538,10 +551,45 @@ summary:focus-visible,
 
 .rail-empty {
   padding: var(--space-6) var(--space-5);
-  color: var(--text-faint);
-  font-size: var(--text-xs);
-  line-height: 1.55;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.6;
   text-align: center;
+}
+
+/* Settings section lives in the rail, leaving the workspace strip to workspace tools. */
+.rail-settings {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.rail-settings-list {
+  display: grid;
+  gap: var(--hairline);
+}
+
+.rail-settings-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--control-sm);
+  text-align: left;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0 var(--space-4);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 550;
+  transition: background var(--ease), color var(--ease);
+}
+
+.rail-settings-item:hover,
+.rail-settings-item.active {
+  background: var(--bg-panel-strong);
+  color: var(--text);
 }
 
 .rail-footer {
@@ -570,6 +618,25 @@ summary:focus-visible,
 .rail-footer button:hover {
   background: var(--bg-panel);
   color: var(--text);
+}
+
+.rail-footer-label {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The real chord, shown as a quiet keycap instead of a platform-agnostic glyph. */
+.rail-footer kbd {
+  margin-left: auto;
+  padding: var(--hairline) var(--space-2);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text-faint);
+  font-family: var(--font);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
 }
 
 .conversation {
@@ -609,10 +676,10 @@ summary:focus-visible,
 }
 
 .header-sub {
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-size: var(--text-xs);
-  font-family: var(--mono);
-  letter-spacing: 0.02em;
+  font-family: var(--font);
+  letter-spacing: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -638,7 +705,7 @@ summary:focus-visible,
   padding: var(--space-2) var(--space-4);
   background: transparent;
   color: var(--text-muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-weight: 650;
   min-height: 26px;
 }
@@ -646,7 +713,6 @@ summary:focus-visible,
 .mode-group button[aria-pressed="true"] {
   background: var(--bg-panel-strong);
   color: var(--text);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
 }
 
 
@@ -664,6 +730,16 @@ summary:focus-visible,
 .icon-button:hover {
   color: var(--text);
   background: var(--bg-panel-strong);
+}
+
+/* The header shortcut is text rather than a single glyph, so let it keep its own width
+   instead of wrapping inside the fixed-size icon button at 390px. */
+.palette-shortcut {
+  width: auto;
+  min-width: var(--control);
+  padding: 0 var(--space-2);
+  white-space: nowrap;
+  font-size: var(--text-2xs);
 }
 
 .messages {
@@ -691,11 +767,10 @@ summary:focus-visible,
   border-radius: var(--radius-sm);
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 18%, transparent), color-mix(in srgb, var(--accent-2) 12%, transparent));
-  border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--border));
+  background: var(--accent-soft);
+  border: 1px solid var(--border-strong);
   font-size: var(--text-base);
   color: var(--accent);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
 .empty-state h2 {
@@ -709,7 +784,7 @@ summary:focus-visible,
 .empty-state p {
   margin: 0;
   color: var(--text-muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   line-height: 1.6;
   max-width: 48ch;
 }
@@ -726,6 +801,7 @@ summary:focus-visible,
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: var(--space-1);
   min-height: 42px;
   text-align: left;
   border: 1px solid var(--border);
@@ -736,16 +812,24 @@ summary:focus-visible,
   font-size: var(--text-xs);
   font-weight: 500;
   line-height: 1.4;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: border-color var(--ease), background var(--ease), transform var(--ease), box-shadow var(--ease);
+  transition: border-color var(--ease), background var(--ease), color var(--ease);
+}
+
+.quick-title {
+  color: var(--text);
+  font-weight: 550;
+}
+
+.quick-hint {
+  color: var(--text-faint);
+  font-size: var(--text-xs);
+  font-weight: 450;
 }
 
 .quick-card:hover {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
   background: var(--bg-panel-strong);
   color: var(--text);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .message {
@@ -779,7 +863,6 @@ summary:focus-visible,
   border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border));
   border-radius: var(--radius-md);
   padding: var(--space-4) var(--space-6);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   color: var(--text);
 }
 
@@ -879,7 +962,6 @@ summary:focus-visible,
   border-radius: var(--radius-sm);
   overflow: hidden;
   background: color-mix(in srgb, var(--bg) 85%, transparent);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
 }
 
 .code-head {
@@ -932,8 +1014,8 @@ summary:focus-visible,
 }
 
 .message-meta {
-  color: var(--text-faint);
-  font-family: var(--mono);
+  color: var(--text-muted);
+  font-family: var(--font);
   font-size: var(--text-xs);
   display: flex;
   align-items: center;
@@ -945,10 +1027,10 @@ summary:focus-visible,
   border-radius: var(--radius-xs);
   background: color-mix(in srgb, var(--bg-panel) 80%, transparent);
   color: var(--text-muted);
-  font-family: var(--mono);
-  font-size: var(--text-2xs);
-  padding: 2px var(--space-3);
-  min-height: 22px;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  padding: 0 var(--space-3);
+  min-height: var(--control-sm);
   opacity: 0;
   transition: opacity 120ms ease, background var(--ease), color var(--ease), border-color var(--ease);
 }
@@ -1076,9 +1158,15 @@ summary:focus-visible,
 }
 
 .approval-item {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.approval-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-5);
+  justify-content: flex-end;
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 
@@ -1102,9 +1190,17 @@ summary:focus-visible,
   margin-top: var(--space-1);
 }
 
+/* Keep a wide diff from stretching the workspace panel (grid items default to min-width:auto). */
+.git-diff-wrap {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .diff-view {
   flex: 1 0 100%;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--bg-input);
@@ -1154,6 +1250,7 @@ summary:focus-visible,
   margin: 0;
   padding: 0 0 var(--space-2);
   max-height: 240px;
+  max-width: 100%;
   overflow: auto;
   font-family: var(--mono);
   font-size: var(--text-xs);
@@ -1183,6 +1280,7 @@ summary:focus-visible,
 
 .approval-note {
   flex: 1 1 220px;
+  max-width: 320px;
   min-width: 160px;
   border: 1px solid var(--border);
   border-radius: var(--radius-xs);
@@ -1242,23 +1340,22 @@ summary:focus-visible,
 
 .composer {
   margin: 0 clamp(var(--space-6), 4vw, var(--space-8)) var(--space-6);
-  border: 1px solid color-mix(in srgb, var(--border-strong) 75%, transparent);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), var(--composer-shadow);
-  backdrop-filter: blur(16px);
+  background: var(--bg-input);
+  box-shadow: var(--composer-shadow);
   overflow: hidden;
   transition: border-color var(--ease), box-shadow var(--ease);
 }
 
 .composer:focus-within {
-  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent), var(--composer-focus-shadow);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent), var(--composer-focus-shadow);
 }
 
 .composer textarea {
   width: 100%;
-  min-height: 56px;
+  min-height: var(--space-10);
   max-height: 240px;
   resize: none;
   border: 0;
@@ -1308,8 +1405,8 @@ summary:focus-visible,
   border-radius: var(--radius-pill);
   background: var(--bg-panel);
   color: var(--text-muted);
-  font-family: var(--mono);
-  font-size: var(--text-2xs);
+  font-family: var(--font);
+  font-size: var(--text-xs);
   padding: 0 var(--space-4);
   min-height: 22px;
   overflow: hidden;
@@ -1430,18 +1527,25 @@ summary:focus-visible,
   min-height: 0;
 }
 
-.workspace-tabs {
+.workspace-tabbar {
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
-  gap: var(--space-1);
   height: 50px;
   padding: 0 var(--space-4);
   border-bottom: 1px solid var(--border);
   box-sizing: border-box;
   background: color-mix(in srgb, var(--bg-input) 65%, transparent);
+}
+
+.workspace-tabs {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: var(--space-1);
 }
 
 .workspace-tabs::-webkit-scrollbar {
@@ -1453,11 +1557,11 @@ summary:focus-visible,
   position: relative;
   border: 1px solid transparent;
   border-radius: var(--radius-xs);
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-4);
   background: transparent;
   color: var(--text-muted);
-  font-size: var(--text-xs);
-  font-weight: 550;
+  font-size: var(--text-sm);
+  font-weight: 600;
   letter-spacing: 0.01em;
   height: 28px;
   display: inline-flex;
@@ -1480,10 +1584,56 @@ summary:focus-visible,
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
+/* Category rule: a single token-coloured stroke sits in the existing gap before the
+   first tab of each later group. It adds no width, so the last tab never clips. */
+.workspace-tabs button[data-group-start="true"]::before {
+  content: "";
+  position: absolute;
+  left: calc(-1px - var(--space-1) / 2);
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--border-strong);
+  border-radius: 1px;
+}
+
+/* Focus mode: collapse the workspace and give the conversation its width. */
+.workspace-collapse {
+  margin-left: var(--space-2);
+  flex: 0 0 auto;
+  width: var(--control-sm);
+  height: var(--control-sm);
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--text-faint);
+}
+
+.workspace-collapse:hover {
+  background: var(--bg-panel-strong);
+  color: var(--text);
+}
+
+.app-shell[data-workspace-collapsed="true"] .workspace-reopen {
+  display: inline-grid;
+}
+
+.app-shell[data-workspace-collapsed="true"] .workspace {
+  display: none;
+}
+
+@media (min-width: 981px) {
+  .app-shell[data-workspace-collapsed="true"] {
+    grid-template-columns: var(--rail) minmax(0, 1fr) 0;
+  }
+}
+
 .workspace-panel {
   min-height: 0;
   overflow-y: auto;
-  padding: 0 var(--space-5);
+  padding: 0 var(--space-6);
 }
 
 .panel-card {
@@ -1491,9 +1641,9 @@ summary:focus-visible,
   border-bottom: 1px solid var(--border);
   border-radius: 0;
   background: transparent;
-  padding: var(--space-4) 0;
+  padding: var(--space-5) 0;
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .panel-card:last-child {
@@ -1502,11 +1652,11 @@ summary:focus-visible,
 
 .panel-card h2 {
   margin: 0;
-  font-size: var(--text-2xs);
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-faint);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
 }
 
 .panel-card p {
@@ -1539,8 +1689,8 @@ summary:focus-visible,
   gap: var(--space-4);
   padding: var(--space-3) var(--space-5);
   color: var(--text-muted);
-  font-family: var(--mono);
-  font-size: var(--text-xs);
+  font-family: var(--font);
+  font-size: var(--text-sm);
   border: 0;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
   background: transparent;
@@ -1570,8 +1720,8 @@ summary:focus-visible,
   padding: 0 var(--space-6);
   border-top: 1px solid var(--border);
   background: var(--bg-raised);
-  color: var(--text-faint);
-  font-family: var(--mono);
+  color: var(--text-muted);
+  font-family: var(--font);
   font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -1671,7 +1821,7 @@ summary:focus-visible,
 .terminal-body {
   overflow: auto;
   padding: var(--space-6);
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-family: var(--mono);
   font-size: var(--text-sm);
   white-space: pre-wrap;
@@ -1772,7 +1922,7 @@ summary:focus-visible,
   border-radius: 0;
   padding: var(--space-3) var(--space-7);
   color: var(--text);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-4);
@@ -1833,7 +1983,7 @@ summary:focus-visible,
   border-radius: 0;
   padding: var(--space-3) var(--space-7);
   color: var(--text);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1861,7 +2011,6 @@ summary:focus-visible,
   font-weight: 600;
   border-radius: var(--radius-sm);
   padding: var(--space-2) var(--space-5);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
 .banner-hint .small-button:hover:not(:disabled) {
@@ -1887,7 +2036,7 @@ summary:focus-visible,
 @media (max-width: 1180px) {
   :root {
     --rail: 220px;
-    --workspace: 412px;
+    --workspace: 456px;
   }
 }
 
@@ -2004,8 +2153,23 @@ summary:focus-visible,
     grid-template-columns: 1fr;
   }
 
+  /* Keep every labelled tab reachable at 390px instead of scrolling the last one off. */
+  .workspace-tabbar {
+    padding: 0 var(--space-3);
+  }
 
+  .workspace-tabs {
+    gap: var(--hairline);
+  }
 
+  .workspace-tabs button {
+    padding: 0 var(--space-2);
+  }
+
+  /* Let the whole command list breathe at 390px instead of clipping its last row. */
+  .palette ul {
+    max-height: 60vh;
+  }
 
   .statusbar {
     gap: var(--space-4);
@@ -2031,6 +2195,87 @@ summary:focus-visible,
 .settings-panel {
   display: grid;
   gap: var(--space-5);
+}
+
+/* Settings opens in its own window rather than as a workspace tab. */
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  padding: var(--space-8);
+  background: var(--scrim);
+  backdrop-filter: blur(4px);
+}
+
+.settings-window {
+  width: min(760px, 100%);
+  max-height: min(86vh, 900px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.settings-window-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-7);
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-window-head h2 {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: 700;
+}
+
+.settings-window-body {
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-6) var(--space-7);
+}
+
+/* Settings menu: one calm category at a time instead of one long scrolling form. */
+.settings-nav {
+  display: flex;
+  gap: var(--hairline);
+  padding: var(--hairline);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+}
+
+.settings-nav-item {
+  flex: 1;
+  min-height: var(--control-sm);
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition: background var(--ease), color var(--ease);
+}
+
+.settings-nav-item:hover,
+.settings-nav-item.active {
+  background: var(--bg-panel-strong);
+  color: var(--text);
+}
+
+.settings-section {
+  display: grid;
+}
+
+.settings-section[data-active="false"] {
+  display: none;
 }
 
 .provider-list {
@@ -2111,12 +2356,21 @@ p.provider-meta,
   overflow-wrap: anywhere;
 }
 
+/* Standalone empty-state copy is prose, not inline provider metadata: keep the
+   mono treatment for ids and badges, but let sentences read as product copy. */
+p.provider-meta,
+.provider-meta.empty-meta {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
 .key-badge {
   border-radius: var(--radius-pill);
   padding: var(--space-1) var(--space-4);
-  font-family: var(--mono);
-  font-size: var(--text-2xs);
-  font-weight: 700;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  font-weight: 650;
   white-space: nowrap;
 }
 
@@ -2165,6 +2419,13 @@ p.provider-meta,
   background: color-mix(in srgb, var(--bad) 8%, transparent);
 }
 
+/* A disabled destructive control cannot act, so it should not shout. */
+.small-button.danger:disabled {
+  color: var(--text-faint);
+  border-color: var(--border);
+  background: transparent;
+}
+
 .small-button.danger:hover:not(:disabled) {
   background: color-mix(in srgb, var(--bad) 18%, transparent);
   border-color: var(--bad);
@@ -2181,9 +2442,9 @@ p.provider-meta,
 }
 
 .field > span {
-  color: var(--text-muted);
-  font-size: var(--text-xs);
-  font-weight: 650;
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 600;
   text-transform: capitalize;
 }
 
@@ -2200,8 +2461,20 @@ p.provider-meta,
   transition: border-color var(--ease);
 }
 
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--bg-input);
+  color: var(--text);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+  transition: border-color var(--ease);
+}
+
 .field input:focus,
-.field select:focus {
+.field select:focus,
+.field textarea:focus {
   border-color: var(--accent);
   outline: none;
 }
@@ -2323,14 +2596,14 @@ p.provider-meta,
 }
 
 .file-head .small-button {
-  min-height: 22px;
-  height: 22px;
+  min-height: var(--control-sm);
+  height: var(--control-sm);
   padding: 0 var(--space-3);
-  font-size: var(--text-2xs);
-  font-weight: 550;
+  font-size: var(--text-xs);
+  font-weight: 600;
   border-color: transparent;
   background: transparent;
-  color: var(--text-faint);
+  color: var(--text-muted);
   border-radius: var(--radius-xs);
 }
 
@@ -2386,35 +2659,43 @@ p.provider-meta,
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-sm) !important;
-  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--text) 2%, transparent) 0%, transparent 80%), color-mix(in srgb, var(--bg-panel) 35%, transparent) !important;
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
   margin-top: var(--space-4);
   padding: var(--space-6);
 }
 
 .file-preview-placeholder p {
-  color: var(--text-faint);
-  font-size: var(--text-xs);
-  letter-spacing: 0.01em;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  letter-spacing: 0;
 }
 
 .file-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   width: 100%;
   border: 0;
   border-radius: var(--radius-xs);
   background: transparent;
   color: var(--text-muted);
   text-align: left;
-  padding: var(--space-2) var(--space-3);
-  font-family: var(--mono);
-  font-size: var(--text-xs);
-  line-height: 1.4;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.5;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: background var(--ease), color var(--ease);
+}
+
+.file-item svg {
+  flex: 0 0 auto;
+  color: var(--text-faint);
 }
 
 .file-item:hover:not(:disabled) {
@@ -2438,7 +2719,7 @@ p.provider-meta,
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--space-2);
-  padding: 3px var(--space-2);
+  padding: var(--space-2);
   border-radius: var(--radius-xs);
   transition: background var(--ease);
 }
@@ -2448,10 +2729,10 @@ p.provider-meta,
 }
 
 .git-change .small-button {
-  padding: 2px var(--space-3);
-  font-size: var(--text-2xs);
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
   font-weight: 600;
-  min-height: 20px;
+  min-height: var(--control-sm);
   border-radius: var(--radius-xs);
   border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
   background: color-mix(in srgb, var(--bg-panel-strong) 40%, transparent);
@@ -2472,11 +2753,34 @@ p.provider-meta,
 .git-code {
   display: inline-block;
   min-width: 22px;
-  letter-spacing: 0.08em;
+  text-align: center;
+  padding: var(--hairline) var(--space-2);
+  border: 1px solid color-mix(in srgb, var(--warn) 32%, transparent);
+  border-radius: var(--radius-xs);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  letter-spacing: 0.04em;
   color: var(--warn);
   font-family: var(--mono);
   font-weight: 700;
   font-size: var(--text-xs);
+}
+
+.git-code[data-kind="untracked"] {
+  border-color: var(--border);
+  background: var(--bg-panel);
+  color: var(--text-muted);
+}
+
+.git-code[data-kind="added"] {
+  border-color: color-mix(in srgb, var(--ok) 32%, transparent);
+  background: color-mix(in srgb, var(--ok) 10%, transparent);
+  color: var(--ok);
+}
+
+.git-code[data-kind="deleted"] {
+  border-color: color-mix(in srgb, var(--bad) 32%, transparent);
+  background: color-mix(in srgb, var(--bad) 10%, transparent);
+  color: var(--bad);
 }
 
 .git-legend {
@@ -2484,10 +2788,10 @@ p.provider-meta,
   padding: 0;
   background: transparent;
   border: none;
-  color: var(--text-faint);
-  font-family: var(--mono);
-  font-size: var(--text-2xs);
-  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  letter-spacing: 0;
 }
 
 .editor {
@@ -2565,9 +2869,9 @@ pre.diff-view {
 
 .terminal-hint {
   margin: 0;
-  color: var(--text-faint);
-  font-family: var(--mono);
-  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: var(--text-sm);
 }
 
 .preview-form {
@@ -2620,19 +2924,18 @@ pre.diff-view {
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-sm) !important;
-  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--text) 2%, transparent) 0%, transparent 80%), color-mix(in srgb, var(--bg-panel) 35%, transparent) !important;
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
   padding: var(--space-6);
 }
 
 .preview-placeholder p {
-  color: var(--text-faint) !important;
-  font-size: var(--text-xs) !important;
-  letter-spacing: 0.01em;
-  max-width: 280px;
-  line-height: 1.5;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  letter-spacing: 0;
+  max-width: 32ch;
+  line-height: 1.6;
   margin: 0 auto;
 }
 
@@ -2646,7 +2949,7 @@ pre.diff-view {
   color: var(--text);
   padding: var(--space-2) var(--space-4);
   font: inherit;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   margin-bottom: var(--space-4);
   transition: border-color var(--ease);
 }
@@ -2659,7 +2962,8 @@ pre.diff-view {
 
 .plans-panel textarea {
   resize: vertical;
-  font-family: var(--mono);
+  font-family: var(--font);
+  line-height: 1.6;
 }
 
 .plan-body {
@@ -2669,9 +2973,9 @@ pre.diff-view {
   border-radius: var(--radius-xs);
   background: var(--bg-panel);
   color: var(--text);
-  font-family: var(--mono);
-  font-size: var(--text-xs);
-  line-height: 1.5;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   max-height: 360px;
@@ -2686,7 +2990,6 @@ pre.diff-view {
   padding: var(--space-3) var(--space-5);
   display: grid;
   gap: var(--space-3);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .todo-strip[data-done="true"] {
@@ -2707,9 +3010,9 @@ pre.diff-view {
 }
 
 .todo-count {
-  font-family: var(--mono);
+  font-family: var(--font);
   font-size: var(--text-xs);
-  color: var(--text-faint);
+  color: var(--text-muted);
 }
 
 .pbar {
@@ -2908,8 +3211,8 @@ pre.diff-view {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: var(--mono);
-  font-size: var(--text-2xs);
+  font-family: var(--font);
+  font-size: var(--text-xs);
   color: var(--text-faint);
   border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
   background: color-mix(in srgb, var(--bg-input) 60%, transparent);
@@ -3003,8 +3306,8 @@ pre.diff-view {
   border-radius: var(--radius-xs);
   padding: 2px var(--space-3);
   font-family: var(--mono);
-  font-size: var(--text-2xs);
-  color: var(--text-faint);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
   background: color-mix(in srgb, var(--bg-input) 60%, transparent);
   overflow-wrap: anywhere;
 }

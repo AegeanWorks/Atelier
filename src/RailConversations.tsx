@@ -181,7 +181,11 @@ export default function RailConversations({
                         data-testid={session.pinned === 1 ? "conversation-unpin" : "conversation-pin"}
                         onClick={() => onPin(session.id, session.pinned !== 1)}
                       >
-                        {session.pinned === 1 ? "★" : "☆"}
+                        {session.pinned === 1 ? (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3-1-6Z"/></svg>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3-1-6Z"/></svg>
+                        )}
                       </button>
                       <button
                         type="button"
@@ -190,7 +194,11 @@ export default function RailConversations({
                         data-testid={archived ? "conversation-unarchive" : "conversation-archive"}
                         onClick={() => onArchive(session.id, !archived)}
                       >
-                        {archived ? "↩" : "▣"}
+                        {archived ? (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/><path d="M12 15V3"/><path d="m8 7 4-4 4 4"/></svg>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><path d="M10 12h4"/></svg>
+                        )}
                       </button>
                       <button
                         type="button"
@@ -199,11 +207,11 @@ export default function RailConversations({
                         data-testid="conversation-rename"
                         onClick={() => startRename(session)}
                       >
-                        ✎
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                       </button>
                       <button
                         type="button"
-                        className="conversation-action destructive"
+                        className={confirmingId === session.id ? "conversation-action destructive confirming" : "conversation-action destructive"}
                         aria-label={confirmingId === session.id ? `Confirm delete ${session.title}` : `Delete ${session.title}`}
                         data-testid={confirmingId === session.id ? "conversation-delete-confirm" : "conversation-delete"}
                         onClick={() => {
@@ -215,7 +223,11 @@ export default function RailConversations({
                           }
                         }}
                       >
-                        {confirmingId === session.id ? "delete?" : "×"}
+                        {confirmingId === session.id ? (
+                          <span className="delete-confirm-label">delete?</span>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg>
+                        )}
                       </button>
                     </div>
                   </>

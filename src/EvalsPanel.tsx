@@ -105,7 +105,7 @@ export default function EvalsPanel(): React.JSX.Element {
         </div>
         <p>Fixture runs are paired to an immutable baseline; the test split is release-only.</p>
         <ul className="provider-list" data-testid="evals-runs">
-          {runs.length === 0 ? <li className="provider-row" data-testid="evals-empty"><span className="provider-meta">No eval runs yet. Use <code>npm run eval</code>.</span></li> : null}
+          {runs.length === 0 ? <li className="provider-row" data-testid="evals-empty"><span className="provider-meta empty-meta">No eval runs yet. Use <code>npm run eval</code>.</span></li> : null}
           {runs.map((run) => (
             <li className="provider-row" key={run.id} data-testid="eval-run">
               <button
@@ -182,7 +182,7 @@ export default function EvalsPanel(): React.JSX.Element {
           <h2>Pareto: mean vs p95</h2>
           {runs.map((run) => (
             <div className="git-change" key={run.id}>
-              <span className="provider-meta">{run.id.slice(0, 18)}</span>
+              <span className="provider-meta">{run.id.length > 18 ? `${run.id.slice(0, 18)}…` : run.id}</span>
               <div className="pbar"><i style={{ width: `${Math.round((run.metrics.mean ?? 0) * 100)}%` }} /></div>
               <span className="provider-meta">mean {run.metrics.mean?.toFixed(2) ?? "?"} · p95 {run.metrics.p95Ms ?? 0} ms</span>
             </div>

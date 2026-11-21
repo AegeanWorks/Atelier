@@ -33,7 +33,8 @@ try {
       const pageOverflow = doc.scrollWidth - doc.clientWidth;
       const workspace = document.querySelector('[data-testid="workspace"]');
       const workspaceRect = workspace instanceof HTMLElement ? workspace.getBoundingClientRect() : null;
-      const tabs = [...document.querySelectorAll('[data-testid^="tab-"]')].map((node) => {
+      // Scope to the workspace strip: utility tabs now live in the rail's Settings section.
+      const tabs = [...document.querySelectorAll('[data-testid="workspace-tabs"] [data-testid^="tab-"]')].map((node) => {
         const rect = node.getBoundingClientRect();
         const inside = workspaceRect === null
           ? null
@@ -68,7 +69,7 @@ try {
   await page.waitForSelector('[data-testid="conversation-list"]', { timeout: 10_000 });
 
   report.panels = [];
-  for (const tab of ["files", "git", "history", "plans", "preview", "task", "usage", "settings", "evals"]) {
+  for (const tab of ["files", "git", "history", "plans", "preview", "task"]) {
     await page.getByTestId(`tab-${tab}`).click();
     await page.waitForSelector(`[data-testid="tab-${tab}"][aria-selected="true"]`, { timeout: 5_000 });
     await page.waitForTimeout(350);

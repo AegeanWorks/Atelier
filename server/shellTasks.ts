@@ -118,7 +118,7 @@ export function startBackgroundTask(command: string, options: StartOptions): Bac
       const room = Math.max(0, MAX_LOG_BYTES - task.bytes);
       if (room > 0) {
         try {
-          writeFileSync(logPath, text.slice(0, room), { flag: "a" });
+          writeFileSync(logPath, Buffer.from(text).subarray(0, room), { flag: "a" });
         } catch {
           // A log that cannot grow must not take the task down with it.
         }

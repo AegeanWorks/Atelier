@@ -1,477 +1,86 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-browser-smoke-load",
+    "task_id": "atelier-ui-eval-id",
     "last_phase": "phase 4",
-    "active_phase": 5,
-    "status": "completed",
-    "updated_at": 1795005828.4184213,
-    "owner": "kilo:1",
-    "started_by": "kilo:1",
+    "active_phase": 4,
+    "status": "in_progress",
+    "updated_at": 1795264138.1488564,
+    "owner": "opencode:1",
+    "lease_until": 1795271338.1488564,
+    "started_by": "opencode:1",
     "continuations": [],
     "workspaces": [
       {
         "name": "atelier",
         "path": "projects/atelier"
       }
-    ],
-    "completed_at": 1795005868.965953,
-    "completed_head": "3fa054fa658258e9d37f87d5869d1e5070f1c0ab",
-    "completed_tree": "2ca46039d12ed30553eba24a0b9aae4d0278072c"
+    ]
   },
   "checkpoints": [
     {
-      "task_id": "atelier-gate-evidence-integrity",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 1/2] Verified: npm run ui:clickmap drove and named 11 controls (new-conversation, nine workspace tabs, toggle-terminal) and wrote .aikit/clickmap.log with the postcondition each click proved plus a reasoned skip line for every visible control it did not drive; npm run ui:shots wrote the two shot names compat expects, and project_compat.py --verify reports 'compat proof holds'. ADR-119 records why the evidence is generated rather than committed. The 12/12 gate run covered this change in the tree; the decisions register was re-checked after the ADR landed.\n",
+      "task_id": "atelier-ui-eval-id",
+      "phase": "phase 2",
+      "phase_num": 2,
+      "description": "[1/2] Plan: mark truncated eval run IDs clearly. EvalsPanel renders run.id.slice(0, 18) in a run row with no ellipsis, so a shortened ID looks like a complete one. Show an ellipsis only when the ID is actually longer than the slice, keeping the full ID in the title/heading and all testids and handlers unchanged. Add a git-ignored scenario that stubs /api/evals/runs with a long ID, capture before/after at 390/1440, vision-review, then ui verify, gates and a Phase 4 checkpoint.\n",
       "files_affected": [],
       "status": "in_progress",
-      "timestamp": 1794943084.7194912,
-      "timestamp_str": "2026-11-17 22:18:04",
-      "agent": "kilo:1",
+      "timestamp": 1795263383.8994486,
+      "timestamp_str": "2026-11-21 15:16:23",
+      "agent": "opencode:1",
+      "impact_assessment": {
+        "why": "The user wants a polished UI; a silently truncated ID looks like a complete value.",
+        "benefits": "Truncated IDs are visibly marked; full ID still available in the detail heading.",
+        "risks": "contract: testids, handlers and the full ID heading unchanged; dependency: none; concurrency: none; state: short IDs must not get an ellipsis",
+        "mitigation": "Conditional ellipsis in JSX only; verify with a stubbed runs scenario, gates and a11y."
+      },
+      "plan_digest": "afe5a60a3a03cf30c758bbaa898f6f200b9ff429a3d7b5967ad5eeabe23cc574",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-ui-eval-id",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "[2/2] G-007/G-010 vision review COMPLETE. Edited src/EvalsPanel.tsx only: the Pareto run label now appends an ellipsis when an eval run ID is truncated beyond 18 characters, and shows the full ID when it is short. A git-ignored eval-id-scenario stubbed /api/evals/runs with a long ID and captured before/after at 390/1440: the Pareto label changed from 'ev_0123456789abcde' to 'ev_0123456789abcde\u2026'; the full ID remains in the detail heading and no handlers, testids or labels changed. ui verify passed. All twelve gates passed directly: hygiene 0, guidelines 0, secrets 0, compat 0, npm test 672/672, lint 0, typecheck 0, build 0, agent-perf 0, agent-bench 0, a11y 0, browser 0.\n",
+      "files_affected": [
+        "src/EvalsPanel.tsx"
+      ],
+      "status": "in_progress",
+      "timestamp": 1795264138.1488564,
+      "timestamp_str": "2026-11-21 15:28:58",
+      "agent": "opencode:1",
       "measurements": [
         {
-          "metric": "controls verified by the clickmap",
+          "drift": "workload=1 eval runs state",
+          "baseline": 1.0,
+          "artifact": "shots/after/eval-id-desktop.png",
+          "command": "node shots/eval-id-scenario.mjs before/after",
+          "candidate": 0.0,
+          "unit": "labels",
+          "metric": "truncated eval IDs without ellipsis",
+          "qualified": "no"
+        },
+        {
           "baseline": 0.0,
-          "unit": "controls",
-          "command": "npm run ui:clickmap",
-          "candidate": 11.0,
-          "qualified": "no"
-        },
-        {
-          "metric": "compat findings",
-          "baseline": 3.0,
-          "unit": "findings",
-          "command": "python scripts/project_compat.py --verify --root projects/atelier",
-          "candidate": 0.0,
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-gate-evidence-integrity",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 2/2] Verified: the ceiling probe now polls for the truncation note it asserts (up to 20 s) and the 60,000-line probe has a 60 s bound; tests/integration/shellTasks.test.ts passes 8/8 in 5-6 s after the edit, and the full suite passed inside the 12/12 gate run (106 s) on the same host whose loaded runs had timed out these two probes at the 10 s default. No assertion was weakened: a log that never reports the ceiling still fails, and the seek assertions are unchanged.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794943108.1894243,
-      "timestamp_str": "2026-11-17 22:18:28",
-      "agent": "kilo:1",
-      "measurements": [
-        {
-          "candidate": 8.0,
-          "metric": "shellTasks tests passing",
-          "baseline": 6.0,
-          "command": "npx vitest run tests/integration/shellTasks.test.ts",
-          "unit": "tests",
-          "qualified": "no"
-        },
-        {
-          "candidate": 106.0,
-          "metric": "full suite duration under load",
-          "baseline": 353.0,
-          "command": "python aikit.py check atelier",
-          "unit": "s",
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-gate-evidence-integrity",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-gate-evidence-integrity' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794943138.6128974,
-      "timestamp_str": "2026-11-17 22:18:58",
-      "agent": "kilo:1",
-      "head": "5baae1f849ccb33478cd352333d14fe597d0c32a",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-acp-session-load",
-      "phase": "resumed",
-      "phase_num": 4,
-      "description": "Resumed 'atelier-acp-session-load' after a pause",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794943195.129686,
-      "timestamp_str": "2026-11-17 22:19:55",
-      "agent": "kilo:1"
-    },
-    {
-      "task_id": "atelier-acp-session-load",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-acp-session-load' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794943195.635372,
-      "timestamp_str": "2026-11-17 22:19:55",
-      "agent": "kilo:1",
-      "head": "eeef4df190bc5007875e013bc1ec671cb4e189d4",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-stop-kills-shell",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Make stopping a run stop its in-flight shell. Analysed projects/harness against atelier: most of the harness's ideas are already here (the r0-r9 ladder including injection refusal, budget death and hallucinated-tool refusal; doom-loop detection; bounded logs; artifact spill; provider failover), but its runner polls the stop switch while a child process runs and kills it, and atelier does not. stopSessionRun aborts the run's AbortController, yet runShell has no signal, so a running bash call (timeoutMs up to 600000) keeps running after the UI says stopped and executeRun stays pending until it exits. Thread the run's signal through executeTool into runShell: on abort kill the process tree, resolve the tool with 'stopped by stop request', and return the run as blocked with reason stopped as soon as the tool result is recorded. Test-first: an aborted run settles in seconds instead of waiting for its 30 s command, and a normal command still completes.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794944590.2135732,
-      "timestamp_str": "2026-11-17 22:43:10",
-      "agent": "kilo:1",
-      "impact_assessment": {
-        "why": "Harness analysis found one capability gap that matters for a local agent: a stop that leaves the command it started running is not a stop, and the run stays pending behind it.",
-        "benefits": "Stop means stop for foreground commands too; the run settles in seconds, the process tree is killed, and the transcript records why the call ended.",
-        "risks": "contract: executeTool gains an optional signal argument and ToolContext an optional signal field, both backwards compatible; dependency: none; concurrency: an abort listener per shell call, removed when it settles; state: one extra tool.result output line (stopped by stop request)",
-        "mitigation": "Test-first at both levels (executeTool with a signal and a real run stopped through stopSessionRun); killing reuses the existing taskkill process-tree helper; a normal command and the existing timeout path are re-run by the full suite"
-      },
-      "plan_digest": "0ae8bf0bd990903b6a6fce11fb47905f250b4d162cf6168f45909c0cdc616455",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-stop-kills-shell",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 1/1] Verified: the two failing-first tests hung for the command's full life (test 2 hit its 20 s timeout, and teardown failed with EPERM because the 30 s child was still holding the workspace); after the change both pass in 1.7 s. Removing the abort listener again makes both fail by timeout, so the listener is the thing under test. A normal command still runs, and the existing timeout, background-task, streaming and ACP suites pass. 12/12 gates pass (test, lint, typecheck, build, agent-perf, agent-bench, a11y, browser, hygiene, guidelines, secrets, compat). Harness analysis conclusion recorded in ADR-120 and the task plan: the ladder, doom-loop detection, bounded logs, artifact spill and failover were already here; the stop gap was the one behaviour worth porting.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794946575.3636448,
-      "timestamp_str": "2026-11-17 23:16:15",
-      "agent": "kilo:1",
-      "measurements": [
-        {
-          "command": "npx vitest run tests/integration/stop-shell.test.ts",
-          "baseline": 57.88,
-          "unit": "s",
-          "drift": "workload=identical file and machine, failing-first without the abort listener",
-          "candidate": 1.71,
-          "metric": "stop tests total duration",
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-stop-kills-shell",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-stop-kills-shell' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794946637.8094115,
-      "timestamp_str": "2026-11-17 23:17:17",
-      "agent": "kilo:1",
-      "head": "5403d75bd9a486c6693741a8793c80cdd2b3f6e0",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-failure-streak",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Stop a run that keeps failing tool calls with different inputs. Fresh harness-vs-atelier pass after the harness reforge: atelier's only loop guard is the doom loop, which fires on an identical call signature (name plus JSON input), so a model that retries with slightly different arguments can burn every step and dollar on calls that all fail (unknown tool, disabled tool, denied approval, a tool exception). Harness stops such a run: its loop counts consecutive failed results and ends the run after two, resetting on any success. Port that guard with a limit of three (atelier's default doomLoopLimit), counting only tool outcomes with ok=false so a failing test command (exit 1, ok=true) never trips it and the fail-fix-test loop still works. Test-first: a run whose model makes three different failing calls ends blocked with a consecutive-failures reason after exactly three tool results, while failures separated by one successful call finish normally.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794989440.3042176,
-      "timestamp_str": "2026-11-18 11:10:40",
-      "agent": "kilo:1",
-      "impact_assessment": {
-        "why": "Fresh harness-vs-atelier pass after the reforge: atelier stops identical repeated calls but not a spiral of different calls that all fail, so a model can burn its whole step and dollar budget on errors.",
-        "benefits": "A run that is not converging ends early with a clear reason after three failed calls in a row, and stops costing money; successful calls (including a failing test command, which is a successful tool call) reset the count, so the fail-fix-test loop is untouched.",
-        "risks": "contract: one new blocked reason (consecutive tool failures) on the run row and session event; dependency: none; concurrency: the counter is local to the run loop; state: no schema change, no new persistence",
-        "mitigation": "Test-first with a fixture provider: three different unknown-tool calls must block after exactly three results, and a failure-success-failure sequence must finish; the constant sits beside the doom-loop check in the same loop; the full suite and gates run after"
-      },
-      "plan_digest": "cfb02f145f81be92cbaefbe64ded0a0c8d21472cb035a54009011a945e0c8afc",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-failure-streak",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[milestone 1/1] Verified: with a fixture model making four different failing calls, the run finished normally before the guard (the model answered after the calls); with the guard it blocks after exactly three tool results with reason 'consecutive tool failures'. Removing the two guard lines makes the first test finish again, so the counter is what is under test, and a failure-success-failure sequence still finishes, proving a success resets the count. 2/2 new tests pass; the full suite is 124 files/672 tests green; 12/12 gates pass (hygiene, guidelines, secrets, compat, test, lint, typecheck, build, agent-perf, agent-bench, a11y, browser). Docs name the new blocked reason and ADR-121 records the decision. checklists: passed.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794991017.5759888,
-      "timestamp_str": "2026-11-18 11:36:57",
-      "agent": "kilo:1",
-      "measurements": [
-        {
-          "metric": "tool results before a non-converging run ends",
-          "baseline": 4.0,
-          "command": "npx vitest run tests/integration/failure-streak.test.ts",
-          "unit": "results",
-          "candidate": 3.0,
-          "qualified": "no"
-        },
-        {
-          "metric": "full suite tests passing",
-          "baseline": 670.0,
+          "artifact": "shots/after/eval-id-narrow.png",
           "command": "npm test",
-          "unit": "tests",
           "candidate": 672.0,
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-failure-streak",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-failure-streak' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794991080.094223,
-      "timestamp_str": "2026-11-18 11:38:00",
-      "agent": "kilo:1",
-      "head": "9686a8bf3723d5d77387fb8c932cb08681e26187",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-ledger-repair",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Repair the ledger so strict delivery can be proven again. Two bookkeeping defects were blocking `check --strict`: the ACP task's completion had recorded head 5baae1f, which was a later ledger commit, so two consecutive completions shared a head and the check reported \"committed nothing\" on a task that did commit eeef4df; and the detected-UI-date refresh (71cda6f) had no task owning it, so the completed failure-streak task showed one later non-bookkeeping commit. Set the ACP completion head to the commit it delivered and open this task to own the stamp, with no code changes.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794992690.1408896,
-      "timestamp_str": "2026-11-18 12:04:50",
-      "agent": "kilo:1",
-      "impact_assessment": {
-        "why": "Strict delivery refused a truthful ledger: the ACP completion recorded a later commit as its head, so it looked like a task that committed nothing, and a detection stamp had no owning task so the last completed task looked stale.",
-        "benefits": "The ledger records where each task really ended, strict delivery can describe the committed tree again, and nothing in the code or tests changes.",
-        "risks": "contract: none, ledger values only; dependency: none; concurrency: the ledger write is atomic and no other writer is active; state: one completion head corrected to the commit the task delivered, plus one task record",
-        "mitigation": "The corrected head is the ACP feature commit eeef4df that the task delivered, verified in git; the check that reported the defect is the verifier; the full gate run already passed on this tree"
-      },
-      "plan_digest": "76e6ce2df767729c1c517ff055df3d7a68594f4c5c046642d27f7e802134ab27",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ledger-repair",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[1/1] Verified: the ACP completion head now names eeef4df190bc5, the commit that task delivered, so the two consecutive completions no longer share a head and the \"committed nothing\" finding is gone from strict. The failing streak work keeps its own head 9686a8b, and this task owns the detected-UI-date stamp (71cda6f). No production file, test or map changed; the 12/12 gate run passed on this tree before the bookkeeping edits. checklists: passed.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794992717.6604042,
-      "timestamp_str": "2026-11-18 12:05:17",
-      "agent": "kilo:1",
-      "measurements": [
-        {
-          "metric": "strict findings blocking delivery",
-          "baseline": 2.0,
-          "unit": "findings",
-          "candidate": 0.0,
-          "command": "python aikit.py check --strict atelier",
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-ledger-repair",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-ledger-repair' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794992738.4066246,
-      "timestamp_str": "2026-11-18 12:05:38",
-      "agent": "kilo:1",
-      "head": "6a49ae4b9015b337c664ea01daa6d6b2b46efbfb",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-shell-probe-load",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Right-size the two shell-task probes so a loaded host cannot fail them. Both probes overshoot what they must prove and flake when the machine is busy: the ceiling probe starts a 200,000-line echo (about 4.8 MB, nearly 5x the 1 MB ceiling it must cross) and waits a flat 20 s, and the bounded-window probe starts 60,000 lines and allows 30 s to settle. The same file that passes alone in 4.2 s failed under heavy load twice in this session: before the polling fix at the flat 2.5 s wait, and today at the current bounds when strict ran while the host was busy. Keep both assertions exactly as they are - the truncation note must appear and the window must seek past 500 KB without containing the first line - but start 60,000 and 30,000 lines (about 1.4 MB and 0.7 MB, still past each threshold) and widen only the host-speed bounds to 60 s.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794993681.8115656,
-      "timestamp_str": "2026-11-18 12:21:21",
-      "agent": "kilo:1",
-      "impact_assessment": {
-        "why": "The two probes measured host speed as much as behaviour: today the same file passed alone in 4.2 s but failed inside the strict gate run because the machine was busy, and the earlier flat-wait version failed the same way.",
-        "benefits": "The truncation and seek behaviour is still proven, and a busy host or a parallel gate run cannot turn that proof into a failure that has nothing to do with the code.",
-        "risks": "contract: none, test-only; dependency: none; concurrency: unchanged, each probe runs its own process and cleans up; state: no product or state file touched",
-        "mitigation": "The thresholds stay the same and only the workload and time bounds change; a log that never reaches 1 MB or a read that does not seek still fails; run the file alone and inside the full suite after the edit"
-      },
-      "plan_digest": "7f9f2b7f7f61113b965deb1396e3c6a746146a74df1e1f076daa91b8d359b3b4",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-shell-probe-load",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[1/1] Verified: both probes are sized to what they must cross (60,000 lines about 1.4 MB for the 1 MB ceiling, 30,000 lines about 0.7 MB for the 500 KB offset) and only host-speed bounds widened; the seek proof is now structural (first line at offset 500,000 must be line 15000+, which only a real seek can return) plus the unchanged truncation note, bounded length and absence of line 1. The file passes alone in 3.5-4.3 s and the full suite is 124 files / 672 tests green in 87 s. ADR-122 records the change and names the relaxed timer. checklists: passed.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1794999817.3593397,
-      "timestamp_str": "2026-11-18 14:03:37",
-      "agent": "kilo:1",
-      "measurements": [
-        {
-          "candidate": 3.55,
-          "drift": "workload=smaller loops (60000 and 30000 lines instead of 200000 and 60000), same machine",
-          "command": "npx vitest run tests/integration/shellTasks.test.ts",
-          "unit": "s",
-          "baseline": 4.34,
-          "metric": "probe file duration",
+          "unit": "tests",
+          "metric": "tests passing",
           "qualified": "no"
         },
         {
-          "candidate": 672.0,
-          "command": "npm test",
-          "unit": "tests",
-          "baseline": 672.0,
-          "metric": "full suite tests passing",
-          "qualified": "no"
-        }
-      ],
-      "checklists": "passed",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-shell-probe-load",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-shell-probe-load' completed successfully.",
-      "status": "completed",
-      "timestamp": 1794999894.4648666,
-      "timestamp_str": "2026-11-18 14:04:54",
-      "agent": "kilo:1",
-      "head": "7068c72c3c838c0484cac7f1d7f8988d1d645612",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
-    },
-    {
-      "task_id": "atelier-browser-smoke-load",
-      "phase": "phase 2",
-      "phase_num": 2,
-      "description": "[1/1] Stop the browser smoke from failing on a busy host. The gate keeps a flat 20 s navigation timeout and 10 s selector timeouts; under the full 12-gate run today Firefox exceeded 20 s on its first goto and failed the gate although chromium and webkit had just passed, and re-running the same script alone passed all three engines. The assertions stay exactly as they are (shell rendered, API reached, no sideways scroll at 390/768/1440, no console errors); only the host-speed bounds widen to 45 s for navigation and 20 s for selectors, so the gate measures the interface rather than the machine.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1795001686.1677556,
-      "timestamp_str": "2026-11-18 14:34:46",
-      "agent": "kilo:1",
-      "impact_assessment": {
-        "why": "The browser gate failed under a full gate run today (Firefox goto exceeded 20 s) and passed alone minutes later, so the one thing it asserts about the host is impossible to satisfy when the machine is busy.",
-        "benefits": "A rendered-shell, no-overflow, no-console-error proof that is about the interface and cannot be flipped by unrelated load, matching the shell probes fixed in ADR-122.",
-        "risks": "contract: none, script constants only; dependency: none; concurrency: unchanged, each engine gets its own browser; state: no product file touched",
-        "mitigation": "Only the two timeout constants change; every assertion stays; the script is re-run alone afterwards and the strict gate run is the verifier"
-      },
-      "plan_digest": "105727e1462a5f8a6e3d7b3197e51e682171bd11822168101ab07a5f7df0c9a5",
-      "workspaces": [
-        {
-          "name": "atelier",
-          "path": "projects/atelier"
-        }
-      ]
-    },
-    {
-      "task_id": "atelier-browser-smoke-load",
-      "phase": "phase 4",
-      "phase_num": 4,
-      "description": "[1/1] Verified: the browser smoke keeps every assertion (shell rendered, conversation list appears, no horizontal overflow at 390/768/1440 px, no console errors) and only its two timeout literals became named host-speed bounds (NAVIGATE_MS 45 s, SELECTOR_MS 20 s applied to both waits). The script passed all three engines alone before the edit; the full gate run that previously failed on Firefox now passes 12/12 with browser at 78.5 s. ADR-123 records why the old flat 20 s made the gate measure host load. checklists: passed.\n",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1795005828.4184213,
-      "timestamp_str": "2026-11-18 15:43:48",
-      "agent": "kilo:1",
-      "measurements": [
-        {
-          "baseline": 11.0,
-          "command": "python aikit.py check atelier --allow-dirty",
-          "unit": "gates",
+          "baseline": 0.0,
+          "artifact": "shots/audit/report.json",
+          "command": "direct gate commands",
           "candidate": 12.0,
-          "metric": "gates passing",
+          "unit": "gates",
+          "metric": "gates passing individually",
           "qualified": "no"
         }
       ],
@@ -484,21 +93,220 @@
       ]
     },
     {
-      "task_id": "atelier-browser-smoke-load",
-      "phase": "completed",
-      "phase_num": 5,
-      "description": "Task 'atelier-browser-smoke-load' completed successfully.",
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 62",
+      "phase_num": 3,
+      "description": "Reforge stage 62: window 186, 3 commit(s), 9 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795276244.314037,
+      "timestamp_str": "2026-11-21 18:50:44",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 62",
+      "phase_num": 3,
+      "description": "Reforge stage 62: stage 62 host review reviewed; run active; coverage 20/20",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795276336.2677994,
+      "timestamp_str": "2026-11-21 18:52:16",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 63",
+      "phase_num": 3,
+      "description": "Reforge stage 63: window 189, 3 commit(s), 10 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795276456.021492,
+      "timestamp_str": "2026-11-21 18:54:16",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 63",
+      "phase_num": 3,
+      "description": "Reforge stage 63: stage 63 host review reviewed; run active; coverage 42/42",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795276676.362702,
+      "timestamp_str": "2026-11-21 18:57:56",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 64",
+      "phase_num": 3,
+      "description": "Reforge stage 64: window 192, 3 commit(s), 1 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795276786.157873,
+      "timestamp_str": "2026-11-21 18:59:46",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 64",
+      "phase_num": 3,
+      "description": "Reforge stage 64: stage 64 host review reviewed; run active; coverage 2/2",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795276871.8559458,
+      "timestamp_str": "2026-11-21 19:01:11",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 65",
+      "phase_num": 3,
+      "description": "Reforge stage 65: window 195, 3 commit(s), 20 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795276933.0772555,
+      "timestamp_str": "2026-11-21 19:02:13",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 65",
+      "phase_num": 3,
+      "description": "Reforge stage 65: stage 65 host review reviewed; run active; coverage 29/29",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795277111.1088507,
+      "timestamp_str": "2026-11-21 19:05:11",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 66",
+      "phase_num": 3,
+      "description": "Reforge stage 66: window 198, 3 commit(s), 11 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795277155.783967,
+      "timestamp_str": "2026-11-21 19:05:55",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 66",
+      "phase_num": 3,
+      "description": "Reforge stage 66: stage 66 host review reviewed; run active; coverage 17/17",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795277199.9051468,
+      "timestamp_str": "2026-11-21 19:06:39",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 67",
+      "phase_num": 3,
+      "description": "Reforge stage 67: window 201, 3 commit(s), 21 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795277218.769484,
+      "timestamp_str": "2026-11-21 19:06:58",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 67",
+      "phase_num": 3,
+      "description": "Reforge stage 67: stage 67 host review reviewed; run active; coverage 36/36",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795277281.8542516,
+      "timestamp_str": "2026-11-21 19:08:01",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 68",
+      "phase_num": 3,
+      "description": "Reforge stage 68: window 204, 3 commit(s), 10 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795277299.8988452,
+      "timestamp_str": "2026-11-21 19:08:19",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 68",
+      "phase_num": 3,
+      "description": "Reforge stage 68: stage 68 host review reviewed; run active; coverage 18/18",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795277355.20859,
+      "timestamp_str": "2026-11-21 19:09:15",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 69",
+      "phase_num": 3,
+      "description": "Reforge stage 69: window 207, 3 commit(s), 112 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795277523.4486125,
+      "timestamp_str": "2026-11-21 19:12:03",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 69",
+      "phase_num": 3,
+      "description": "Reforge stage 69: stage 69 host review reviewed; run active; coverage 114/114",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795277876.164374,
+      "timestamp_str": "2026-11-21 19:17:56",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 70",
+      "phase_num": 3,
+      "description": "Reforge stage 70: window 209, 2 commit(s), 223 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795278057.3002381,
+      "timestamp_str": "2026-11-21 19:20:57",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
+    },
+    {
+      "task_id": "reforge:run-1",
+      "phase": "reforge stage 70",
+      "phase_num": 3,
+      "description": "Reforge stage 70: stage 70 host review reviewed; run completed; coverage 223/223",
+      "files_affected": [],
       "status": "completed",
-      "timestamp": 1795005869.0306108,
-      "timestamp_str": "2026-11-18 15:44:29",
-      "agent": "kilo:1",
-      "head": "3fa054fa658258e9d37f87d5869d1e5070f1c0ab",
-      "delivery": {
-        "roots": [
-          "."
-        ],
-        "forced": false
-      }
+      "timestamp": 1795278211.449504,
+      "timestamp_str": "2026-11-21 19:23:31",
+      "agent": "opencode",
+      "operator_task": "atelier-ui-eval-id"
     }
   ]
 }

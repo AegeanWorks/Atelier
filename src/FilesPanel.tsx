@@ -14,6 +14,17 @@ interface WorkspaceFile {
   size: number;
 }
 
+function FileGlyph({ type }: { type: TreeEntry["type"] }): React.JSX.Element {
+  const common = {
+    width: 12, height: 12, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+    strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const,
+    "aria-hidden": true,
+  };
+  return type === "directory"
+    ? <svg {...common}><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></svg>
+    : <svg {...common}><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v5h4" /></svg>;
+}
+
 function messageOf(error: unknown): string {
   if (error instanceof ApiError) return `${error.message} ${error.fix}`;
   return error instanceof Error ? error.message : String(error);
@@ -153,7 +164,8 @@ export default function FilesPanel({ openRequest = null }: { openRequest?: OpenR
                 onClick={() => void open(entry.path)}
                 data-testid="file-item"
               >
-                <span aria-hidden="true">{entry.type === "directory" ? "▸" : "·"}</span> {entry.name}
+                <FileGlyph type={entry.type} />
+                <span>{entry.name}</span>
               </button>
             </li>
           ))}

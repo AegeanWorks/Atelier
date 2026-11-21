@@ -107,6 +107,7 @@ function runShell(command: string, cwd: string, timeoutMs: number, env: NodeJS.P
       killProcessTree(child.pid);
     };
     signal?.addEventListener("abort", onAbort, { once: true });
+    if (signal?.aborted === true) onAbort();
     const timer = setTimeout(() => {
       timedOut = true;
       killProcessTree(child.pid);
