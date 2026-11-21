@@ -4683,5 +4683,49 @@
     "final_snapshot_entries": 29,
     "surface_digest": "8dbb00ca98843c25b7d1361bbef68793a6795ab8d8fe0f3319aa062500cc6404",
     "baseline_digest": "8dbb00ca98843c25b7d1361bbef68793a6795ab8d8fe0f3319aa062500cc6404"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [
+      "src/App.tsx",
+      "src/theme.css",
+      "tests/ui/layout.test.tsx"
+    ],
+    "no_visual_reason": "",
+    "baseline_commit": "aa3fc294d609210c75dd676f5af4f656f187ddc3",
+    "contract_hash": "532d27b0250ac9c359a0aab70f356421285e9bd09d30e73a5941d6eb90c4a900",
+    "started_at": 1795287843.73844,
+    "finished_at": 1795288134.7706294,
+    "strikes": 1,
+    "reviewer": "agent:opencode:1",
+    "review": {
+      "reviewer": "agent:opencode:1",
+      "surface": "app",
+      "surface_digest": "472417350e92f71d34e79d6044a9428ce8621ee37c97d6c172e9de3e20b218ff",
+      "snapshot_digest": "4a34ce0421c9324e5d00cdaf3d08d8d02dd487e2a357818e6765b08f54158748",
+      "snapshot_entries": 29,
+      "visual": true,
+      "reviewed_at": 1795288134.7706325,
+      "scoped_paths": [
+        "src/App.tsx",
+        "src/theme.css",
+        "tests/ui/layout.test.tsx"
+      ],
+      "scoped_digest": "d01f7959327dd6356d8c42fbf6a483287694fec078c243e4e594f644f6b7a186"
+    },
+    "allowed_removals": [],
+    "allowed_tests": [
+      {
+        "path": "tests/ui/layout.test.tsx",
+        "reason": "New tests prove the resizable pane dividers: accessible separators, keyboard nudge, persistence, reset and clamping."
+      }
+    ],
+    "final_snapshot_digest": "4a34ce0421c9324e5d00cdaf3d08d8d02dd487e2a357818e6765b08f54158748",
+    "final_snapshot_entries": 29,
+    "surface_digest": "472417350e92f71d34e79d6044a9428ce8621ee37c97d6c172e9de3e20b218ff",
+    "baseline_digest": "8dbb00ca98843c25b7d1361bbef68793a6795ab8d8fe0f3319aa062500cc6404"
   }
 ]

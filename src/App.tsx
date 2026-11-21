@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { api, ensureAuth, ApiError } from "./api";
 import type { Approval, Boot, ConfigView, Message, CheckpointEntry, RuleConfig, Session, UsageSummary } from "./types";
 import type { TodoItem } from "./TodoStrip";
@@ -29,6 +29,17 @@ import DiffView from "./DiffView";
 type Mode = "plan" | "build";
 type WorkspaceTab = "files" | "git" | "history" | "plans" | "preview" | "task" | "usage" | "settings" | "evals";
 type Theme = "dark" | "light";
+type Pane = "rail" | "workspace";
+type PaneWidths = Record<Pane, number>;
+
+// The three-pane shell starts from these widths and the user can drag either divider.
+// Bounds keep the conversation usable: neither side can eat the whole window.
+const DEFAULT_PANE_WIDTHS: PaneWidths = { rail: 248, workspace: 456 };
+const PANE_BOUNDS: Record<Pane, readonly [number, number]> = { rail: [196, 340], workspace: [320, 620] };
+const clampWidth = (value: number, pane: Pane): number => {
+  const [min, max] = PANE_BOUNDS[pane];
+  return Math.min(max, Math.max(min, Math.round(value)));
+};
 
 // The palette chord is Ctrl+K off macOS and ⌘K on macOS. Name what the platform
 // actually uses instead of shipping a Mac glyph to every user (G-008: truthful labels).
@@ -210,6 +221,20 @@ export default function App(): React.JSX.Element {
   const [railOpen, setRailOpen] = useState(false);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [workspaceCollapsed, setWorkspaceCollapsed] = useState(false);
+  const [paneWidths, setPaneWidths] = useState<PaneWidths>(() => {
+    try {
+      const stored = localStorage.getItem("atelier.layout");
+      if (stored !== null) {
+        const parsed = JSON.parse(stored) as Partial<PaneWidths>;
+        if (typeof parsed.rail === "number" && typeof parsed.workspace === "number" && Number.isFinite(parsed.rail) && Number.isFinite(parsed.workspace)) {
+          return { rail: clampWidth(parsed.rail, "rail"), workspace: clampWidth(parsed.workspace, "workspace") };
+        }
+      }
+    } catch {
+      // A corrupt or unavailable store simply falls back to the default layout.
+    }
+    return { ...DEFAULT_PANE_WIDTHS };
+  });
   const [live, setLive] = useState(false);
   const [stick, setStick] = useState(true);
   const [showJump, setShowJump] = useState(false);
@@ -247,6 +272,39 @@ export default function App(): React.JSX.Element {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("atelier.theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem("atelier.layout", JSON.stringify(paneWidths));
+  }, [paneWidths]);
+
+  const beginResize = useCallback((pane: Pane, event: ReactPointerEvent<HTMLDivElement>): void => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = paneWidths[pane];
+    const direction = pane === "rail" ? 1 : -1;
+    const onMove = (move: globalThis.PointerEvent): void => {
+      const next = clampWidth(startWidth + (move.clientX - startX) * direction, pane);
+      setPaneWidths((current) => (current[pane] === next ? current : { ...current, [pane]: next }));
+    };
+    const onUp = (): void => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      document.body.style.removeProperty("cursor");
+      document.body.style.removeProperty("user-select");
+    };
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  }, [paneWidths]);
+
+  const nudgeResize = useCallback((pane: Pane, event: KeyboardEvent<HTMLDivElement>): void => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const step = (event.shiftKey ? 32 : 8) * (event.key === "ArrowRight" ? 1 : -1) * (pane === "rail" ? 1 : -1);
+    setPaneWidths((current) => ({ ...current, [pane]: clampWidth(current[pane] + step, pane) }));
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("atelier.drafts", JSON.stringify(drafts));
@@ -1210,7 +1268,40 @@ export default function App(): React.JSX.Element {
       <a className="skip-link" href="#composer">
         Skip to composer
       </a>
-      <div className="app-shell" data-testid="app-shell" data-workspace-collapsed={workspaceCollapsed}>
+      <div
+        className="app-shell"
+        data-testid="app-shell"
+        data-workspace-collapsed={workspaceCollapsed}
+        style={{ "--rail": `${paneWidths.rail}px`, "--workspace": `${paneWidths.workspace}px` } as CSSProperties}
+      >
+        <div
+          className="pane-resizer pane-resizer-rail"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize conversation list"
+          aria-valuemin={PANE_BOUNDS.rail[0]}
+          aria-valuemax={PANE_BOUNDS.rail[1]}
+          aria-valuenow={paneWidths.rail}
+          tabIndex={0}
+          onPointerDown={(event) => beginResize("rail", event)}
+          onKeyDown={(event) => nudgeResize("rail", event)}
+          onDoubleClick={() => setPaneWidths((current) => ({ ...current, rail: DEFAULT_PANE_WIDTHS.rail }))}
+          data-testid="resize-rail"
+        />
+        <div
+          className="pane-resizer pane-resizer-workspace"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize workspace panel"
+          aria-valuemin={PANE_BOUNDS.workspace[0]}
+          aria-valuemax={PANE_BOUNDS.workspace[1]}
+          aria-valuenow={paneWidths.workspace}
+          tabIndex={0}
+          onPointerDown={(event) => beginResize("workspace", event)}
+          onKeyDown={(event) => nudgeResize("workspace", event)}
+          onDoubleClick={() => setPaneWidths((current) => ({ ...current, workspace: DEFAULT_PANE_WIDTHS.workspace }))}
+          data-testid="resize-workspace"
+        />
         <aside className="rail" data-open={railOpen} aria-label="Conversations" data-testid="rail">
           <div className="brand-row">
             <span className="brand-mark" aria-hidden="true">A</span>
