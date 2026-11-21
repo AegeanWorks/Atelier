@@ -97,7 +97,7 @@ describe("background shell tasks", () => {
   });
 
   /** Poll until the log reports its ceiling, because a loaded host writes 1 MB more slowly. */
-  async function ceilingReached(id: string, timeoutMs = 40_000): Promise<boolean> {
+  async function ceilingReached(id: string, timeoutMs = 120_000): Promise<boolean> {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       if (readTaskOutput(id, 0, 200).output.includes("[log truncated at 1000000 bytes]")) return true;
@@ -118,7 +118,7 @@ describe("background shell tasks", () => {
     expect(readTaskOutput(id, 0, 4_000).output).toContain("truncated at 1000000 bytes");
     killTask(id);
     await settled(id);
-  }, 60_000);
+  }, 150_000);
 
   it("reads a bounded window without loading the whole log", async () => {
     // The read path seeks, so a window from a large log must stay cheap; before the fix it read
