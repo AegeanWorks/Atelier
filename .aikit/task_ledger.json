@@ -1,13 +1,13 @@
 {
   "version": 1,
   "active_task": {
-    "task_id": "atelier-workbench-layout",
+    "task_id": "atelier-desktop-only",
     "last_phase": "phase 4",
     "active_phase": 4,
     "status": "in_progress",
-    "updated_at": 1795294221.0646844,
+    "updated_at": 1795297366.8728116,
     "owner": "opencode:1",
-    "lease_until": 1795301421.0646844,
+    "lease_until": 1795304566.8728116,
     "started_by": "opencode:1",
     "continuations": [],
     "workspaces": [
@@ -18,42 +18,6 @@
     ]
   },
   "checkpoints": [
-    {
-      "task_id": "reforge:run-1",
-      "phase": "reforge stage 63",
-      "phase_num": 3,
-      "description": "Reforge stage 63: window 189, 3 commit(s), 10 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1795276456.021492,
-      "timestamp_str": "2026-11-21 18:54:16",
-      "agent": "opencode",
-      "operator_task": "atelier-ui-eval-id"
-    },
-    {
-      "task_id": "reforge:run-1",
-      "phase": "reforge stage 63",
-      "phase_num": 3,
-      "description": "Reforge stage 63: stage 63 host review reviewed; run active; coverage 42/42",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1795276676.362702,
-      "timestamp_str": "2026-11-21 18:57:56",
-      "agent": "opencode",
-      "operator_task": "atelier-ui-eval-id"
-    },
-    {
-      "task_id": "reforge:run-1",
-      "phase": "reforge stage 64",
-      "phase_num": 3,
-      "description": "Reforge stage 64: window 192, 3 commit(s), 1 file(s) reviewed (unreviewed), 0 finding(s), 0 repaired, empty \u2014 nothing to commit",
-      "files_affected": [],
-      "status": "in_progress",
-      "timestamp": 1795276786.157873,
-      "timestamp_str": "2026-11-21 18:59:46",
-      "agent": "opencode",
-      "operator_task": "atelier-ui-eval-id"
-    },
     {
       "task_id": "reforge:run-1",
       "phase": "reforge stage 64",
@@ -277,6 +241,64 @@
       "status": "in_progress",
       "timestamp": 1795294221.0646844,
       "timestamp_str": "2026-11-21 23:50:21",
+      "agent": "opencode:1",
+      "checklists": "passed",
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-workbench-layout",
+      "phase": "completed",
+      "phase_num": 5,
+      "description": "Task 'atelier-workbench-layout' completed successfully.",
+      "status": "completed",
+      "timestamp": 1795297335.967299,
+      "timestamp_str": "2026-11-22 00:42:15",
+      "agent": "opencode:1",
+      "head": "9c4653f01e80bbab77b437bd1bf6181361c5c3c4",
+      "delivery": {
+        "roots": [
+          "."
+        ],
+        "forced": false
+      }
+    },
+    {
+      "task_id": "atelier-desktop-only",
+      "phase": "phase 1",
+      "phase_num": 1,
+      "description": "[1/2] Make the shell genuinely desktop-only: remove overlay states, mobile controls and responsive breakpoints; target gates/screenshots at 1440px.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795297359.2869606,
+      "timestamp_str": "2026-11-22 00:42:39",
+      "agent": "opencode:1",
+      "impact_assessment": {
+        "why": "The user declared the product desktop-only; leftover mobile chrome and narrow/tablet gates kept the layout split.",
+        "benefits": "One three-pane desktop shell; no dead controls; verification matches the supported viewport.",
+        "risks": "contract: tab/testids preserved; dependency: none; concurrency: none; state: none",
+        "mitigation": "Keep workspace-reopen for collapsed workspace, update guidelines+ADR-124, verify with browser gate and screenshots."
+      },
+      "workspaces": [
+        {
+          "name": "atelier",
+          "path": "projects/atelier"
+        }
+      ]
+    },
+    {
+      "task_id": "atelier-desktop-only",
+      "phase": "phase 4",
+      "phase_num": 4,
+      "description": "Desktop-only shell: removed railOpen/workspaceOpen overlay states, mobile-only buttons and all max-width media queries (-257 lines); browser/audit/screenshot scripts now use 1440px only; G-004/007/008/010 aligned, ADR-124 recorded; obsolete overlay tests replaced with desktop assertions. G-007/G-010 vision review of 1440px screenshots and running UI: no clipping/overlap/stale copy, mobile controls gone. npm test 125 files / 678 tests; browser gate PASS at 1440 on chromium/firefox/webkit.",
+      "files_affected": [],
+      "status": "in_progress",
+      "timestamp": 1795297366.8728116,
+      "timestamp_str": "2026-11-22 00:42:46",
       "agent": "opencode:1",
       "checklists": "passed",
       "workspaces": [

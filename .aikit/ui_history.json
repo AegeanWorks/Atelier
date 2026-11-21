@@ -4775,5 +4775,35 @@
     "final_snapshot_entries": 32,
     "surface_digest": "5565da5d3204244eb692921cd9003d67380fc52dc46df4ea2d4a0bf7eca26fd5",
     "baseline_digest": "472417350e92f71d34e79d6044a9428ce8621ee37c97d6c172e9de3e20b218ff"
+  },
+  {
+    "schema": 1,
+    "surface": "app",
+    "mode": "visual",
+    "visual_change": true,
+    "changed_paths": [],
+    "no_visual_reason": "",
+    "no_change_reason": "Desktop-only shell review: inspected the committed 1440px screenshots and running UI; no clipping, overlap or stale copy; mobile overlay controls are gone, lower-left Workspace section and right workbench render correctly.",
+    "baseline_commit": "9c4653f01e80bbab77b437bd1bf6181361c5c3c4",
+    "contract_hash": "532d27b0250ac9c359a0aab70f356421285e9bd09d30e73a5941d6eb90c4a900",
+    "started_at": 1795297135.0808036,
+    "finished_at": 1795297264.6625478,
+    "strikes": 0,
+    "reviewer": "agent:opencode:1",
+    "review": {
+      "reviewer": "agent:opencode:1",
+      "surface": "app",
+      "surface_digest": "48152d048f25c573006583c64b59c6735b6cd2266eb3457c4dcf93da0453676d",
+      "snapshot_digest": "d4bfeaad76321be1599c9626e66a2d375929037437414e9327f5bde7575df043",
+      "snapshot_entries": 14,
+      "visual": true,
+      "reviewed_at": 1795297264.662551
+    },
+    "allowed_removals": [],
+    "allowed_tests": [],
+    "final_snapshot_digest": "d4bfeaad76321be1599c9626e66a2d375929037437414e9327f5bde7575df043",
+    "final_snapshot_entries": 14,
+    "surface_digest": "48152d048f25c573006583c64b59c6735b6cd2266eb3457c4dcf93da0453676d",
+    "baseline_digest": "48152d048f25c573006583c64b59c6735b6cd2266eb3457c4dcf93da0453676d"
   }
 ]
