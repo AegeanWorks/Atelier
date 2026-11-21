@@ -871,3 +871,10 @@ contract, a dependency, a data format or the architecture; IDs are consecutive a
 - **Context**: The browser gate (G-004: three engines render the shell and do not scroll sideways) failed inside a full 12-gate run when Firefox's first navigation exceeded its flat 20 s timeout, while chromium and webkit had just passed and the same script passed all three engines alone minutes later. The gate was measuring the machine's load, not the interface, the same defect ADR-122 fixed for the shell probes.
 - **Decision**: Replace the two literal timeouts with named constants, `NAVIGATE_MS` 45 s and `SELECTOR_MS` 20 s, applied to both selector waits, and say in the comment that they are host-speed bounds rather than assertions. Every check is unchanged: the shell renders, the conversation list appears, no horizontal overflow at 390, 768 and 1440 px, and no console errors.
 - **Consequences**: A busy host can no longer flip a passing interface into a failing gate, and a real rendering or overflow regression still fails because none of those checks moved. Evidence: the script passed alone immediately before the edit and again after it, with all three engines green.
+
+### ADR-124: The shell is desktop-only
+- **Date**: 2026-11-22
+- **Status**: Accepted
+- **Context**: The product targets desktop (G-011); responsive overlays, mobile-only controls and 390/768 px gates kept the layout split and added dead chrome.
+- **Decision**: Remove the mobile/tablet overlay states and controls, drop responsive breakpoints, and target verification and screenshots at the 1440 px desktop width only. The three-pane resizable shell is always present; the workspace-reopen control remains for a collapsed workspace.
+- **Consequences**: No phone/tablet layouts are verified or supported; the browser smoke, audit and screenshot suites use one desktop viewport; the lower-left rail and right workbench are the only supported arrangement.

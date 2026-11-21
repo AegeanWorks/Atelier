@@ -15,8 +15,6 @@ const out = join(ROOT, "shots", label);
 mkdirSync(out, { recursive: true });
 const stateName = (kind) => (label.length === 0 ? kind : kind === "before" ? "empty" : "conversation");
 const viewports = [
-  { width: 390, height: 844, name: "narrow" },
-  { width: 768, height: 1024, name: "tablet" },
   { width: 1440, height: 900, name: "desktop" },
 ];
 

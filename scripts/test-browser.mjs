@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-// G-004: the interface renders and does not scroll sideways in Chromium, Firefox and WebKit at 390, 768 and 1440 px.
+// G-011: desktop only - the interface renders without sideways scroll in Chromium, Firefox and WebKit at 1440 px.
 import { ENGINES, launchEngine, startUi, stopUi } from "./browser.mjs";
 
 const WIDTHS = [
-  { width: 390, height: 844 },
-  { width: 768, height: 1024 },
   { width: 1440, height: 900 },
 ];
 
@@ -16,7 +14,7 @@ const SELECTOR_MS = 20_000;
 async function checkEngine(engine, base) {
   const browser = await launchEngine(engine);
   try {
-    const page = await browser.newPage({ viewport: WIDTHS[2] });
+    const page = await browser.newPage({ viewport: WIDTHS[0] });
     const errors = [];
     page.on("console", (message) => {
       if (message.type() === "error") errors.push(message.text());
@@ -46,7 +44,7 @@ try {
   for (const engine of ENGINES) {
     try {
       await checkEngine(engine, ui.base);
-      console.log(`PASS browser: ${engine} rendered the shell, reached the API and has no sideways scroll at 390, 768 and 1440 px`);
+      console.log(`PASS browser: ${engine} rendered the shell, reached the API and has no sideways scroll at 1440 px`);
     } catch (error) {
       failures.push(`${engine}: ${error instanceof Error ? error.message : String(error)}`);
     }

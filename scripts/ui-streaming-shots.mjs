@@ -14,8 +14,6 @@ if (label.length > 0 && !/^[a-z0-9_-]+$/i.test(label)) {
 const out = join(ROOT, "shots", "streaming", label.length === 0 ? "current" : label);
 mkdirSync(out, { recursive: true });
 const viewports = [
-  { width: 390, height: 844, name: "narrow" },
-  { width: 768, height: 1024, name: "tablet" },
   { width: 1440, height: 900, name: "desktop" },
 ];
 

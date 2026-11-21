@@ -224,8 +224,6 @@ export default function App(): React.JSX.Element {
   const [paletteQuery, setPaletteQuery] = useState("");
   const [paletteIndex, setPaletteIndex] = useState(0);
   const [terminalOpen, setTerminalOpen] = useState(false);
-  const [railOpen, setRailOpen] = useState(false);
-  const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [workspaceCollapsed, setWorkspaceCollapsed] = useState(false);
   const [paneWidths, setPaneWidths] = useState<PaneWidths>(() => {
     try {
@@ -703,7 +701,6 @@ export default function App(): React.JSX.Element {
         setPaletteOpen(false);
         setTerminalOpen(false);
         setSettingsOpen(false);
-        setWorkspaceOpen(false);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -753,7 +750,6 @@ export default function App(): React.JSX.Element {
       });
       setSessions((current) => [data.session, ...current]);
       setActiveId(data.session.id);
-      setRailOpen(false);
       composerRef.current?.focus();
     } catch (caught) {
       setError(toErrorState(caught));
@@ -894,7 +890,6 @@ export default function App(): React.JSX.Element {
       }
       setOpenRequest({ path: name, nonce: Date.now() });
       setTab("files");
-      setWorkspaceOpen(true);
       return;
     }
     setNotice("This project has no AGENTS.md or CLAUDE.md yet. Run /init to have the agent write one.");
@@ -1030,7 +1025,6 @@ export default function App(): React.JSX.Element {
       if (refreshed !== null) setCustomCommands(refreshed.commands);
       setOpenRequest({ path: data.skill.path, nonce: Date.now() });
       setTab("files");
-      setWorkspaceOpen(true);
       setNotice(`Created ${data.skill.path}. Edit it and save, then use /${name}.`);
     } catch (caught) {
       setError(toErrorState(caught));
@@ -1209,8 +1203,7 @@ export default function App(): React.JSX.Element {
       return;
     }
     setTab(id);
-    setWorkspaceOpen(true);
-  }
+    }
 
   const paletteActions: Array<{ id: string; label: string; hint?: string; run: () => void }> = [
     { id: "new", label: "New conversation", run: () => void createConversation() },
@@ -1308,7 +1301,7 @@ export default function App(): React.JSX.Element {
           onDoubleClick={() => setPaneWidths((current) => ({ ...current, workspace: DEFAULT_PANE_WIDTHS.workspace }))}
           data-testid="resize-workspace"
         />
-        <aside className="rail" data-open={railOpen} aria-label="Conversations" data-testid="rail">
+        <aside className="rail" aria-label="Conversations" data-testid="rail">
           <div className="brand-row">
             <span className="brand-mark" aria-hidden="true">A</span>
             <span className="brand">atelier</span>
@@ -1337,8 +1330,7 @@ export default function App(): React.JSX.Element {
             onToggleArchived={() => void toggleArchivedView()}
             onSelect={(id) => {
               setActiveId(id);
-              setRailOpen(false);
-            }}
+                    }}
             onRename={(id, title) => void renameSession(id, title)}
             onDelete={(id) => void deleteSession(id)}
             onPin={(id, pinned) => void setPinned(id, pinned)}
@@ -1386,9 +1378,6 @@ export default function App(): React.JSX.Element {
 
         <main className="conversation" aria-label="Conversation">
           <header className="conversation-header" data-testid="conversation-header">
-            <button className="icon-button mobile-only" type="button" aria-label="Open conversations" onClick={() => setRailOpen(true)}>
-              ☰
-            </button>
             <div className="header-title">
               <h1>{activeSession?.title ?? "New conversation"}</h1>
               <div className="header-sub" title={boot?.workspace ?? "workspace"}>{formatWorkspace(boot?.workspace)} · local</div>
@@ -1404,13 +1393,12 @@ export default function App(): React.JSX.Element {
               </button>
             ) : null}
             <button
-              className="icon-button mobile-only workspace-reopen"
+              className="icon-button workspace-reopen"
               type="button"
               aria-label="Open workspace"
               title="Open workspace panels"
-              aria-expanded={workspaceOpen}
               data-testid="open-workspace"
-              onClick={() => { setWorkspaceOpen(true); setWorkspaceCollapsed(false); }}
+              onClick={() => setWorkspaceCollapsed(false)}
             >
               ▤
             </button>
@@ -1429,9 +1417,6 @@ export default function App(): React.JSX.Element {
               data-testid="export-conversation"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>
-            </button>
-            <button className="icon-button palette-shortcut mobile-only" type="button" aria-label={`${PALETTE_MODIFIER} K command palette`} onClick={() => setPaletteOpen(true)} data-testid="open-palette">
-              {PALETTE_MODIFIER} K
             </button>
           </header>
 
@@ -1484,7 +1469,7 @@ export default function App(): React.JSX.Element {
                 <strong>No provider key yet</strong>
                 <div>Add a provider and its key in Settings, or set the key in the atelier environment, before sending a message.</div>
               </div>
-              <button className="small-button" type="button" onClick={() => { setSettingsOpen(true); setWorkspaceOpen(true); }} data-testid="provider-settings">
+              <button className="small-button" type="button" onClick={() => setSettingsOpen(true)} data-testid="provider-settings">
                 Open Settings
               </button>
             </div>
@@ -1669,8 +1654,7 @@ export default function App(): React.JSX.Element {
             onDismiss={() => setActivity([])}
             onOpenTask={() => {
               setTab("task");
-              setWorkspaceOpen(true);
-            }}
+                    }}
           />
 
           <form className="composer" onSubmit={(event) => void sendMessage(event)} data-testid="composer">
@@ -1788,10 +1772,7 @@ export default function App(): React.JSX.Element {
           </form>
         </main>
 
-        <section className="workspace" data-open={workspaceOpen} aria-label="Workspace" data-testid="workspace">
-          <button className="workspace-back mobile-only" type="button" onClick={() => setWorkspaceOpen(false)} data-testid="workspace-back">
-            <span aria-hidden="true">←</span> Back to conversation
-          </button>
+        <section className="workspace" aria-label="Workspace" data-testid="workspace">
           <div className="workspace-tabbar">
           <div className="workspace-tabs" role="tablist" aria-label="Workspace panels" data-testid="workspace-tabs">
             {PRIMARY_TABS.map((item) => (

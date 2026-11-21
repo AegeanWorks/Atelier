@@ -7,8 +7,6 @@ import { ROOT } from "./runtime.mjs";
 const out = join(ROOT, "shots", "fork");
 mkdirSync(out, { recursive: true });
 const viewports = [
-  { width: 390, height: 844, name: "narrow" },
-  { width: 768, height: 1024, name: "tablet" },
   { width: 1440, height: 900, name: "desktop" },
 ];
 let ui;
@@ -35,24 +33,12 @@ try {
     await page.locator('[data-testid="message"]').first().hover();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     const box = await page.locator('[data-testid="fork-message"]').first().boundingBox();
-    const inView = box !== null && box.x >= 0 && box.x + box.width <= view.width + 1 && box.height >= (view.width < 768 ? 21 : 18);
+    const inView = box !== null && box.x >= 0 && box.x + box.width <= view.width + 1 && box.height >= 18;
     console.log(`${view.name}: horizontalScroll=${overflow} forkButtonVisibleAndTappable=${inView} size=${box === null ? "none" : `${Math.round(box.width)}x${Math.round(box.height)}`}`);
     if (overflow || !inView) failed = true;
     await page.screenshot({ path: join(out, `after-${view.name}.png`) });
   }
-  // Touch device: actions must be visible without hover and large enough to tap.
-  const touch = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
-  const phone = await touch.newPage();
-  await phone.goto(ui.base, { waitUntil: "domcontentloaded", timeout: 20_000 });
-  await phone.waitForSelector('[data-testid="fork-message"]', { timeout: 10_000 });
-  const phoneBox = await phone.locator('[data-testid="fork-message"]').first().boundingBox();
-  const phoneOpacity = await phone.locator('[data-testid="fork-message"]').first().evaluate((node) => getComputedStyle(node).opacity);
-  const tappable = phoneBox !== null && phoneBox.height >= 32 && phoneOpacity === "1";
-  console.log(`touch: forkButtonVisibleWithoutHover=${phoneOpacity === "1"} size=${phoneBox === null ? "none" : `${Math.round(phoneBox.width)}x${Math.round(phoneBox.height)}`} tappable=${tappable}`);
-  if (!tappable) failed = true;
-  await phone.screenshot({ path: join(out, "after-touch.png") });
-  await touch.close();
-  await page.setViewportSize(viewports[2]);
+  await page.setViewportSize(viewports[0]);
   await page.locator('[data-testid="fork-message"]').first().click();
   await page.waitForFunction(() => document.body.innerText.includes("Fork: Fork demo"), null, { timeout: 10_000 });
   console.log("fork opened a new conversation in the real app");

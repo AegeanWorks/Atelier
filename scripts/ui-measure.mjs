@@ -3,8 +3,6 @@
 import { launchBrowser, startUi, stopUi } from "./browser.mjs";
 
 const viewports = [
-  { width: 390, height: 844, name: "narrow" },
-  { width: 768, height: 1024, name: "tablet" },
   { width: 1440, height: 900, name: "desktop" },
 ];
 

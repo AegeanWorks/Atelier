@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Scenario: the first-run provider hint, then a click on "Open Settings", at 390/768/1440.
+// Scenario: the first-run provider hint, then a click on "Open Settings", at 1440.
 // Usage: node scripts/ui-firstrun-shots.mjs before|after   (writes shots/firstrun/<label>-<width>.png)
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
@@ -10,8 +10,6 @@ const label = process.argv[2] === "before" ? "before" : "after";
 const out = join(ROOT, "shots", "firstrun");
 mkdirSync(out, { recursive: true });
 const viewports = [
-  { width: 390, height: 844, name: "narrow" },
-  { width: 768, height: 1024, name: "tablet" },
   { width: 1440, height: 900, name: "desktop" },
 ];
 let ui;

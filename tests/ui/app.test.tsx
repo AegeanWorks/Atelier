@@ -148,25 +148,21 @@ describe("atelier shell", () => {
     expect(await screen.findByTestId("settings-panel")).toBeTruthy();
   });
 
-  it("slides the workspace into view when the first-run hint opens Settings", async () => {
+  it("keeps the desktop workspace beside the conversation when Settings opens", async () => {
     render(<App />);
     await screen.findByTestId("provider-notice");
-    expect(screen.getByTestId("workspace").getAttribute("data-open")).toBe("false");
+    expect(screen.getByTestId("workspace")).toBeTruthy();
     fireEvent.click(screen.getByTestId("provider-settings"));
-    expect(screen.getByTestId("workspace").getAttribute("data-open")).toBe("true");
+    expect(await screen.findByTestId("settings-panel")).toBeTruthy();
+    expect(screen.getByTestId("workspace")).toBeTruthy();
   });
 
-  it("lets the workspace overlay be left with the back button and Escape", async () => {
+  it("keeps the workspace visible after Escape (no overlay to dismiss)", async () => {
     render(<App />);
     await screen.findByTestId("provider-notice");
-    const workspace = screen.getByTestId("workspace");
-    fireEvent.click(screen.getByTestId("provider-settings"));
-    expect(workspace.getAttribute("data-open")).toBe("true");
-    fireEvent.click(screen.getByTestId("workspace-back"));
-    expect(workspace.getAttribute("data-open")).toBe("false");
     fireEvent.click(screen.getByTestId("provider-settings"));
     fireEvent.keyDown(window, { key: "Escape" });
-    expect(workspace.getAttribute("data-open")).toBe("false");
+    expect(screen.getByTestId("workspace")).toBeTruthy();
   });
 
   it("explains a no_model block in actionable words", async () => {

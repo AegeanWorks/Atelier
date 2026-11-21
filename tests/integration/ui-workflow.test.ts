@@ -26,7 +26,7 @@ describe("UI screenshot workflow", () => {
     expect(rule).toContain("(user)");
     expect(rule).toContain("ui:before");
     expect(rule).toContain("ui:after");
-    expect(rule).toContain("390/768/1440");
+    expect(rule).toContain("1440");
     expect(rule).toContain("checkpoint");
   });
 
