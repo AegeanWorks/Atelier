@@ -22,10 +22,17 @@
     },
     "social_preview": {
       "path": "assets/social-preview.svg",
-      "status": "pending_review",
+      "status": "approved",
       "commit": "",
       "generated_at": "2026-11-13T23:49:16",
-      "review": null
+      "review": {
+        "status": "approved",
+        "reviewer": "agent:opencode:1",
+        "method": "vision",
+        "notes": "Vision review of the rendered 1280x640 asset: terminal-green theme matches the palette, Atelier title and description are legible, tags and brand footer align, no clipping.",
+        "score": 88,
+        "reviewed_at": "2026-11-22T09:49:13"
+      }
     }
   },
   "screenshots": []
