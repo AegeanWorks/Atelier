@@ -15,7 +15,7 @@
 </div>
 
 > [!WARNING]
-> ## ARCHIVED — READ ONLY
+> **Archived** — READ ONLY
 > This project was retired on **2026-11-22**. The UI did not meet the owner's standards and **no further development is planned**.
 > The GitHub repository is **archived** and the code is frozen. Issues and pull requests are closed.
 
