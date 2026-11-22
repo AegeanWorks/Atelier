@@ -1,6 +1,8 @@
 # Atelier
 
 [![Built with AIKit](https://img.shields.io/badge/built%20with-AIKit-6f42c1)](https://github.com/AegeanWorks/AIKit)
+[![License: AL-1.1](https://img.shields.io/badge/license-AL--1.1-2ea44f)](LICENSE)
+[![Commercial license: ACL-1.0](https://img.shields.io/badge/commercial-ACL--1.0-blueviolet)](COMMERCIAL.md)
 
 Local-first agent workspace: multi-conversation chat, file editing, git diffs, terminal, browser preview, and plans in one fast UI for any model API.
 
