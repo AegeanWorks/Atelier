@@ -35,5 +35,11 @@
     "shots/atelier-before.png"
   ],
   "ui_checked_at": "2026-11-20",
-  "ui_source": "detected"
+  "ui_source": "detected",
+  "archived": true,
+  "archived_at": "2026-11-22",
+  "archive_reason": "User judged the UI unsatisfactory; no further development planned.",
+  "archive_repo": "AegeanWorks/Atelier",
+  "archive_description": "[ARCHIVED] [!WARNING] ## ARCHIVED \u2014 READ ONLY This project was retired on 2026-11-22. The UI did not meet the owner's standards and no further development is planned. The GitHub repository is archived and the code is frozen. Issues and pull requests are closed.",
+  "archive_origin": "projects/atelier"
 }
