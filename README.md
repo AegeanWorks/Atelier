@@ -14,8 +14,6 @@
 > This project was retired on **2026-11-22**. The UI did not meet the owner's standards and **no further development is planned**.
 > The GitHub repository is **archived** and the code is frozen. Issues and pull requests are closed.
 
-> **Archived**: User judged the UI unsatisfactory; no further development planned. (archived 2026-11-22). This project is read-only; its GitHub repository is archived.
-
 Local-first agent workspace: multi-conversation chat, file editing, git diffs, terminal, browser preview, and plans in one fast UI for any model API.
 
 ## ⚡ 30-Second Cold-Start Quick Reference
