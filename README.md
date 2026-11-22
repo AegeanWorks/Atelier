@@ -1,8 +1,20 @@
 # Atelier
 
-[![Built with AIKit](https://img.shields.io/badge/built%20with-AIKit-6f42c1)](https://github.com/AegeanWorks/AIKit)
-[![License: AL-1.1](https://img.shields.io/badge/license-AL--1.1-2ea44f)](LICENSE)
-[![Commercial license: ACL-1.0](https://img.shields.io/badge/commercial-ACL--1.0-blueviolet)](COMMERCIAL.md)
+<div align="center">
+
+[![STATUS: ARCHIVED - READ ONLY](https://img.shields.io/badge/STATUS-ARCHIVED-red?style=for-the-badge)](https://github.com/AegeanWorks/Atelier)
+[![Built with AIKit](https://img.shields.io/badge/built%20with-AIKit-6f42c1?style=for-the-badge)](https://github.com/AegeanWorks/AIKit)
+[![License: AL-1.1](https://img.shields.io/badge/License-AL--1.1-2ea44f?style=for-the-badge)](LICENSE)
+[![Commercial: ACL-1.0](https://img.shields.io/badge/Commercial-ACL--1.0-blueviolet?style=for-the-badge)](COMMERCIAL.md)
+
+</div>
+
+> [!WARNING]
+> ## ARCHIVED — READ ONLY
+> This project was retired on **2026-11-22**. The UI did not meet the owner's standards and **no further development is planned**.
+> The GitHub repository is **archived** and the code is frozen. Issues and pull requests are closed.
+
+> **Archived**: User judged the UI unsatisfactory; no further development planned. (archived 2026-11-22). This project is read-only; its GitHub repository is archived.
 
 Local-first agent workspace: multi-conversation chat, file editing, git diffs, terminal, browser preview, and plans in one fast UI for any model API.
 
