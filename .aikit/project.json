@@ -35,5 +35,11 @@
     "shots/atelier-before.png"
   ],
   "ui_checked_at": "2026-11-20",
-  "ui_source": "detected"
+  "ui_source": "detected",
+  "archived": true,
+  "archived_at": "2026-11-22",
+  "archive_reason": "User judged the UI unsatisfactory; no further development planned.",
+  "archive_repo": "AegeanWorks/Atelier",
+  "archive_description": "[ARCHIVED] Local-first agent workspace: multi-conversation chat, file editing, git diffs, terminal, browser preview, and plans in one fast UI for any model API.",
+  "archive_origin": "projects/atelier"
 }
